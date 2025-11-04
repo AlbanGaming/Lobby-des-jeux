@@ -1,0 +1,28 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+#wordContainer {
+  margin-bottom: 20px;
+}
+
+#wordContainer .letter {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 1px solid black;
+  margin-right: 5px;
+  text-align: center;
+  line-height: 30px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+#wordContainer .letter:hover {
+  background-color: lightgray;
+}
