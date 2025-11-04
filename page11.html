@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Manager Game</title>
+    <style>
+        :root {
+            --primary-color: #00ff00;
+            --secondary-color: #003300;
+            --bg-color: #000000;
+            --text-color: #00ff00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .startup-screen {
+            max-width: 600px;
+            margin: 100px auto;
+            background: var(--bg-color);
+            border: 3px solid var(--primary-color);
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .startup-screen h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+        
+        .form-group {
+            margin: 25px 0;
+            text-align: left;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--primary-color);
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+        
+        .color-picker-group {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .color-picker-group > div {
+            flex: 1;
+        }
+        
+        input[type="color"] {
+            height: 50px;
+            cursor: pointer;
+        }
+        
+        .start-btn {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin-top: 30px;
+            transition: all 0.3s;
+        }
+        
+        .start-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .game-container {
+            display: none;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: var(--bg-color);
+            padding: 15px;
+            border: 2px solid var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat {
+            font-size: 14px;
+            padding: 8px;
+            background: var(--secondary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .stat.warning {
+            border-color: #ff0000;
+            background: #330000;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            background: var(--bg-color);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: var(--secondary-color);
+        }
+        
+        .tab.active {
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        
+        .panel {
+            background: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            padding: 20px;
+        }
+        
+        .panel h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--primary-color);
+            padding-bottom: 5px;
+            font-size: 18px;
+        }
+        
+        .clicker-section {
+            text-align: center;
+        }
+        
+        #clickButton {
+            background: var(--primary-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 20px 40px;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.1s;
+        }
+        
+        #clickButton:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+        
+        #clickButton:active {
+            transform: scale(0.95);
+        }
+        
+        #clickButton:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .task-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .task-option {
+            background: var(--bg-color);
+            border: 2px solid var(--secondary-color);
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .task-option:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .task-option.selected {
+            background: var(--secondary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .task-option.locked {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .task-option small {
+            display: block;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+        
+        .ascii-art {
+            font-size: 9px;
+            line-height: 1.1;
+            white-space: pre;
+            color: var(--primary-color);
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--secondary-color);
+            border: 1px solid var(--primary-color);
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            color: var(--text-color);
+            text-shadow: 0 0 3px var(--bg-color);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        th, td {
+            border: 1px solid var(--primary-color);
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--secondary-color);
+        }
+        
+        .button {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            margin: 5px;
+            font-size: 12px;
+        }
+        
+        .button:hover {
+            background: var(--primary-color);
+            color: var(--bg-color);
+        }
+        
+        .button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .button.danger {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .button.danger:hover {
+            background: #ff0000;
+            color: #fff;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .rd-tree {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .rd-item {
+            background: var(--secondary-color);
+            border: 2px solid var(--primary-color);
+            padding: 15px;
+        }
+        
+        .rd-item.locked {
+            opacity: 0.4;
+            border-color: #666;
+        }
+        
+        .rd-item.completed {
+            border-color: #00ff00;
+            background: #002200;
+        }
+        
+        .rd-item.in-progress {
+            border-color: #ffff00;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .rd-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .rd-title {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .rd-level {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        .rd-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            font-size: 11px;
+            margin: 10px 0;
+        }
+        
+        .rd-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .part-stock {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .part-card {
+            background: var(--secondary-color);
+            border: 1px solid var(--primary-color);
+            padding: 10px;
+            font-size: 11px;
+        }
+        
+        .part-card .condition {
+            margin-top: 5px;
+            padding: 3px;
+            text-align: center;
+            border: 1px solid;
+        }
+        
+        .part-card .condition.new {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .part-card .condition.good {
+            border-color: #88ff00;
+            color: #88ff00;
+        }
+        
+        .part-card .condition.damaged {
+            border-color: #ff8800;
+            color: #ff8800;
+        }
+        
+        .part-card .condition.broken {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-color);
+            border: 2px solid var(--primary-color);
+            padding: 15px 20px;
+            max-width: 300px;
+            z-index: 1000;
+            animation: slideIn 0.3s;
+        }
+        
+        .notification.error {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+        
+        .notification.success {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Écran de démarrage -->
+    <div id="startupScreen" class="startup-screen">
+        <h1>🏎️ F1 MANAGER</h1>
+        <p style="margin-bottom: 30px;">Créez votre écurie et dominez la F1</p>
+        
+        <div class="form-group">
+            <label>Nom de l'écurie</label>
+            <input type="text" id="teamName" placeholder="Ex: Racing Bulls" maxlength="30">
+        </div>
+        
+        <div class="form-group">
+            <label>Année de début</label>
+            <select id="startYear">
+                <option value="2022">2022 - Nouvelle réglementation (effet de sol)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Couleurs de l'écurie</label>
+            <div class="color-picker-group">
+                <div>
+                    <label>Couleur principale</label>
+                    <input type="color" id="primaryColor" value="#00ff00">
+                </div>
+                <div>
+                    <label>Couleur secondaire</label>
+                    <input type="color" id="secondaryColor" value="#003300">
+                </div>
+            </div>
+        </div>
+        
+        <button class="start-btn" onclick="startGame()">DÉMARRER LA SAISON</button>
+    </div>
+
+    <!-- Jeu principal -->
+    <div id="gameContainer" class="game-container">
+        <div class="header">
+            <h1 id="teamNameDisplay">🏎️ ÉCURIE</h1>
+            <div class="stats">
+                <div class="stat">💰 Argent: <span id="money">0</span> €</div>
+                <div class="stat">🔬 Points R&D: <span id="rdPoints">0</span></div>
+                <div class="stat">⏰ Temps ingénieurs: <span id="engineerTime">0</span> / <span id="maxEngineerTime">0</span></div>
+                <div class="stat">👷 Ingénieurs: <span id="engineerCount">0</span></div>
+                <div class="stat">📅 Jour: <span id="currentDay">1</span> / 365</div>
+                <div class="stat">🏁 Prochaine course: <span id="nextRace">Bahrain</span> (J<span id="nextRaceDay">15</span>)</div>
+                <div class="stat" id="budgetCapStat">💼 Budget Cap: <span id="budgetSpent">0</span>M / <span id="budgetLimit">140</span>M</div>
+                <div class="stat">🏆 Sponsor: <span id="mainSponsor">-</span></div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="accueil">🏠 Accueil</button>
+            <button class="tab" data-tab="aero">✈️ R&D Aéro</button>
+            <button class="tab" data-tab="fabrication">🏭 Fabrication</button>
+        </div>
+        
+        <!-- ACCUEIL -->
+        <div id="accueil" class="tab-content">
+            <div class="content">
+                <div class="panel">
+                    <h2>Centre de Commande</h2>
+                    <div class="clicker-section">
+                        <button id="clickButton">TRAVAILLER</button>
+                        <div style="margin: 10px 0;">
+                            <div>Clics: <span id="clickCount">0</span></div>
+                            <div style="font-size: 11px; opacity: 0.7;">Coût: <span id="clickCost">10</span> unités de temps</div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-selector" id="taskSelector">
+                        <div class="task-option selected" data-task="rdpoints">
+                            🔬 Générer des points R&D
+                            <small>+10 points R&D | 10 temps</small>
+                        </div>
+                    </div>
+                    
+                    <button class="button" id="nextDayBtn" style="width: 100%; margin-top: 20px;">
+                        ⏭️ PASSER AU JOUR SUIVANT
+                    </button>
+                </div>
+                
+                <div class="panel">
+                    <h2>Tâches automatiques</h2>
+                    <div id="autoTaskList" style="font-size: 12px;">
+                        <p style="opacity: 0.5;">Aucune tâche automatique configurée</p>
+                        <p style="opacity: 0.7; margin-top: 10px; font-size: 11px;">Les responsables permettront d'automatiser les tâches</p>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2>Performance de l'écurie</h2>
+                    <div style="font-size: 12px;">
+                        <div style="margin: 10px 0;">
+                            <strong>Performance Aéro:</strong> <span id="aeroPerf">0</span> pts
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>Performance Châssis:</strong> <span id="chassisPerf">0</span> pts
+                        </div>
+                        <div style="margin: 10px 0;">
+                            <strong>Performance Moteur:</strong> <span id="enginePerf">0</span> pts
+                        </div>
+                        <div style="margin: 15px 0; padding: 10px; border: 1px solid var(--primary-color); background: var(--secondary-color);">
+                            <strong>TOTAL:</strong> <span id="totalPerf">0</span> pts
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel full-width">
+                    <h2>Calendrier des Courses 2022</h2>
+                    <table id="raceTable">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Circuit</th>
+                                <th>Jour</th>
+                                <th>Statut</th>
+                                <th>Position</th>
+                                <th>Gains</th>
+                            </tr>
+                        </thead>
+                        <tbody id="raceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- R&D AÉRO -->
+        <div id="aero" class="tab-content" style="display:none;">
+            <div class="content">
+                <div class="panel">
+                    <h2>Centre de Commande</h2>
+                    <div class="clicker-section">
+                        <button id="clickButtonAero">TRAVAILLER</button>
+                        <div style="margin: 10px 0;">
+                            <div>Temps: <span id="engineerTimeAero">0</span> / <span id="maxEngineerTimeAero">0</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-selector" id="taskSelectorAero"></div>
+                    
+                    <div class="ascii-art" id="aeroAscii">
+    ═══════════════
+   ╱               ╲
+  ╱  AILERON AVANT  ╲
+ ╱___________________╲
+    </div>
+                </div>
+                
+                <div class="panel full-width">
+                    <h2>Arbre de Développement Aérodynamique</h2>
+                    <div class="rd-tree" id="aeroTree"></div>
+                </div>
+                
+                <div class="panel full-width">
+                    <h2>Classement Performance Aéro</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Écurie</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="aeroRanking"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FABRICATION -->
+        <div id="fabrication" class="tab-content" style="display:none;">
+            <div class="content">
+                <div class="panel">
+                    <h2>Centre de Commande</h2>
+                    <div class="clicker-section">
+                        <button id="clickButtonFab">FABRIQUER</button>
+                        <div style="margin: 10px 0;">
+                            <div>Temps: <span id="engineerTimeFab">0</span> / <span id="maxEngineerTimeFab">0</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-selector" id="taskSelectorFab"></div>
+                </div>
+                
+                <div class="panel full-width">
+                    <h2>Pièces Développées (Prêtes à fabriquer)</h2>
+                    <div id="developedParts" style="font-size: 12px;"></div>
+                </div>
+                
+                <div class="panel full-width">
+                    <h2>Stock de Pièces Fabriquées</h2>
+                    <div class="part-stock" id="partStock"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // État du jeu
+        const game = {
+            teamName: '',
+            colors: { primary: '#00ff00', secondary: '#003300' },
+            year: 2022,
+            money: 20000000,
+            rdPoints: 500,
+            engineerTime: 0,
+            maxEngineerTime: 0,
+            engineers: 15,
+            clickCount: 0,
+            currentDay: 1,
+            currentRace: 0,
+            budgetSpent: 0,
+            budgetLimit: 140000000,
+            mainSponsor: '',
+            currentTask: 'rdpoints',
+            performance: { aero: 0, chassis: 0, engine: 0 },
+            aeroParts: {},
+            developedParts: [],
+            partStock: [],
+            races: [],
+            teams: []
+        };
+
+        // Circuits 2022
+        const circuits = [
+            { name: 'Bahrain', day: 15 },
+            { name: 'Arabie Saoudite', day: 30 },
+            { name: 'Australie', day: 45 },
+            { name: 'Emilie-Romagne', day: 60 },
+            { name: 'Miami', day: 75 },
+            { name: 'Espagne', day: 90 },
+            { name: 'Monaco', day: 105 },
+            { name: 'Azerbaïdjan', day: 120 },
+            { name: 'Canada', day: 135 },
+            { name: 'Grande-Bretagne', day: 150 },
+            { name: 'Autriche', day: 165 },
+            { name: 'France', day: 180 },
+            { name: 'Hongrie', day: 195 },
+            { name: 'Belgique', day: 210 },
+            { name: 'Pays-Bas', day: 225 },
+            { name: 'Italie', day: 240 },
+            { name: 'Singapour', day: 255 },
+            { name: 'Japon', day: 270 },
+            { name: 'USA', day: 285 },
+            { name: 'Mexique', day: 300 },
+            { name: 'Brésil', day: 315 },
+            { name: 'Abu Dhabi', day: 330 }
+        ];
+
+        // Sponsors possibles
+        const sponsors = [
+            'Mercedes-Benz', 'BMW', 'Audi', 'Porsche', 'Toyota',
+            'Honda', 'Renault', 'Ford', 'Nissan', 'Hyundai'
+        ];
+
+        // Définition des pièces aéro
+        const aeroParts = {
+            frontWingFlaps: {
+                id: 'frontWingFlaps',
+                name: 'Ailettes aileron avant',
+                maxLevel: 5,
+                baseCosts: { money: 80000, rd: 800, time: 8000 },
+                testCosts: { rd: 80, time: 1000 },
+                stats: { downforce: 15, drag: 5, efficiency: 10 },
+                dependencies: [],
+                unlocked: true
+            },
+            nose: {
+                id: 'nose',
+                name: 'Nez',
+                maxLevel: 3,
+                baseCosts: { money: 120000, rd: 1200, time: 12000 },
+                testCosts: { rd: 120, time: 1500 },
+                stats: { downforce: 10, drag: -3, efficiency: 12 },
+                dependencies: ['frontWingFlaps'],
+                unlocked: false
+            },
+            floorEntry: {
+                id: 'floorEntry',
+                name: 'Entrée fond plat',
+                maxLevel: 4,
+                baseCosts: { money: 150000, rd: 1500, time: 15000 },
+                testCosts: { rd: 150, time: 2000 },
+                stats: { downforce: 25, drag: 3, efficiency: 20 },
+                dependencies: ['nose'],
+                unlocked: false
+            },
+            floor: {
+                id: 'floor',
+                name: 'Fond plat',
+                maxLevel: 5,
+                baseCosts: { money: 200000, rd: 2000, time: 20000 },
+                testCosts: { rd: 200, time: 2500 },
+                stats: { downforce: 35, drag: 5, efficiency: 30 },
+                dependencies: ['floorEntry'],
+                unlocked: false
+            },
+            diffuser: {
+                id: 'diffuser',
+                name: 'Diffuseur',
+                maxLevel: 4,
+                baseCosts: { money: 180000, rd: 1800, time: 18000 },
+                testCosts: { rd: 180, time: 2200 },
+                stats: { downforce: 30, drag: 2, efficiency: 25 },
+                dependencies: ['floor'],
+                unlocked: false
+            },
+            engineCover: {
+                id: 'engineCover',
+                name: 'Capot moteur',
+                maxLevel: 3,
+                baseCosts: { money: 100000, rd: 1000, time: 10000 },
+                testCosts: { rd: 100, time: 1200 },
+                stats: { downforce: 8, drag: -5, efficiency: 15 },
+                dependencies: ['nose'],
+                unlocked: false
+            },
+            sidepodEntry: {
+                id: 'sidepodEntry',
+                name: 'Entrée d\'air pontons',
+                maxLevel: 4,
+                baseCosts: { money: 130000, rd: 1300, time: 13000 },
+                testCosts: { rd: 130, time: 1600 },
+                stats: { downforce: 12, drag: -2, efficiency: 18 },
+                dependencies: ['engineCover'],
+                unlocked: false
+            },
+            sidepods: {
+                id: 'sidepods',
+                name: 'Pontons',
+                maxLevel: 5,
+                baseCosts: { money: 160000, rd: 1600, time: 16000 },
+                testCosts: { rd: 160, time: 1800 },
+                stats: { downforce: 20, drag: 4, efficiency: 22 },
+                dependencies: ['sidepodEntry'],
+                unlocked: false
+            },
+            rearWing: {
+                id: 'rearWing',
+                name: 'Aileron arrière',
+                maxLevel: 5,
+                baseCosts: { money: 140000, rd: 1400, time: 14000 },
+                testCosts: { rd: 140, time: 1700 },
+                stats: { downforce: 28, drag: 8, efficiency: 20 },
+                dependencies: ['diffuser'],
+                unlocked: false
+            },
+            beamWing: {
+                id: 'beamWing',
+                name: 'Beam wing',
+                maxLevel: 3,
+                baseCosts: { money: 90000, rd: 900, time: 9000 },
+                testCosts: { rd: 90, time: 1100 },
+                stats: { downforce: 12, drag: 3, efficiency: 10 },
+                dependencies: ['rearWing'],
+                unlocked: false
+            },
+            drs: {
+                id: 'drs',
+                name: 'Système DRS',
+                maxLevel: 3,
+                baseCosts: { money: 110000, rd: 1100, time: 11000 },
+                testCosts: { rd: 110, time: 1300 },
+                stats: { downforce: 5, drag: -10, efficiency: 25 },
+                dependencies: ['rearWing'],
+                unlocked: false
+            }
+        };
+
+        // Initialisation du jeu
+        function startGame() {
+            const teamName = document.getElementById('teamName').value.trim();
+            if (!teamName) {
+                alert('Veuillez entrer un nom d\'écurie !');
+                return;
+            }
+            
+            game.teamName = teamName;
+            game.colors.primary = document.getElementById('primaryColor').value;
+            game.colors.secondary = document.getElementById('secondaryColor').value;
+            game.year = parseInt(document.getElementById('startYear').value);
+            
+            // Appliquer les couleurs
+            document.documentElement.style.setProperty('--primary-color', game.colors.primary);
+            document.documentElement.style.setProperty('--secondary-color', game.colors.secondary);
+            document.documentElement.style.setProperty('--text-color', game.colors.primary);
+            
+            // Sponsor aléatoire
+            game.mainSponsor = sponsors[Math.floor(Math.random() * sponsors.length)];
+            
+            // Initialiser les ingénieurs
+            game.maxEngineerTime = game.engineers * 100;
+            game.engineerTime = game.maxEngineerTime;
+            
+            // Initialiser les pièces aéro
+            for (let key in aeroParts) {
+                game.aeroParts[key] = {
+                    level: 0,
+                    status: 'locked',
+                    progress3D: 0,
+                    progressTest: 0,
+                    failCount: 0
+                };
+            }
+            game.aeroParts.frontWingFlaps.status = 'available';
+            
+            // Initialiser les courses
+            game.races = circuits.map((circuit, i) => ({
+                number: i + 1,
+                name: circuit.name,
+                day: circuit.day,
+                completed: false,
+                position: null,
+                earnings: 0
+            }));
+            
+            // Initialiser les équipes concurrentes
+            const teamNames = ['Red Bull', 'Ferrari', 'Mercedes', 'McLaren', 'Alpine', 'Aston Martin', 'Alfa Romeo', 'Haas', 'Williams'];
+            game.teams = teamNames.map(name => ({
+                name: name,
+                aeroPerf: Math.floor(Math.random() * 300) + 200
+            }));
+            game.teams.push({ name: game.teamName, aeroPerf: 0 });
+            
+            // Afficher le jeu
+            document.getElementById('startupScreen').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'block';
+            
+            updateUI();
+            renderRaces();
+            renderAeroTree();
+            renderAeroRanking();
+        }
+
+        // Mise à jour de l'interface
+        function updateUI() {
+            document.getElementById('teamNameDisplay').textContent = '🏎️ ' + game.teamName.toUpperCase();
+            document.getElementById('money').textContent = formatMoney(game.money);
+            document.getElementById('rdPoints').textContent = game.rdPoints;
+            document.getElementById('engineerTime').textContent = game.engineerTime;
+            document.getElementById('maxEngineerTime').textContent = game.maxEngineerTime;
+            document.getElementById('engineerCount').textContent = game.engineers;
+            document.getElementById('currentDay').textContent = game.currentDay;
+            document.getElementById('clickCount').textContent = game.clickCount;
+            document.getElementById('mainSponsor').textContent = game.mainSponsor;
+            document.getElementById('budgetSpent').textContent = (game.budgetSpent / 1000000).toFixed(1);
+            document.getElementById('budgetLimit').textContent = (game.budgetLimit / 1000000).toFixed(0);
+            
+            // Budget cap warning
+            const budgetStat = document.getElementById('budgetCapStat');
+            if (game.budgetSpent > game.budgetLimit) {
+                budgetStat.classList.add('warning');
+            } else {
+                budgetStat.classList.remove('warning');
+            }
+            
+            // Prochaine course
+            const nextRace = game.races[game.currentRace];
+            if (nextRace) {
+                document.getElementById('nextRace').textContent = nextRace.name;
+                document.getElementById('nextRaceDay').textContent = nextRace.day;
+            }
+            
+            // Performance
+            calculatePerformance();
+            document.getElementById('aeroPerf').textContent = game.performance.aero;
+            document.getElementById('chassisPerf').textContent = game.performance.chassis;
+            document.getElementById('enginePerf').textContent = game.performance.engine;
+            document.getElementById('totalPerf').textContent = game.performance.aero + game.performance.chassis + game.performance.engine;
+            
+            // Sync temps pour tous les clickers
+            document.getElementById('engineerTimeAero').textContent = game.engineerTime;
+            document.getElementById('maxEngineerTimeAero').textContent = game.maxEngineerTime;
+            document.getElementById('engineerTimeFab').textContent = game.engineerTime;
+            document.getElementById('maxEngineerTimeFab').textContent = game.maxEngineerTime;
+            
+            // État des boutons
+            updateClickButtons();
+        }
+
+        function formatMoney(amount) {
+            if (amount >= 1000000) {
+                return (amount / 1000000).toFixed(1) + 'M';
+            } else if (amount >= 1000) {
+                return (amount / 1000).toFixed(0) + 'K';
+            }
+            return amount.toFixed(0);
+        }
+
+        function calculatePerformance() {
+            let aeroPerf = 0;
+            for (let key in game.aeroParts) {
+                const part = game.aeroParts[key];
+                const def = aeroParts[key];
+                if (part.level > 0) {
+                    aeroPerf += (def.stats.downforce + def.stats.efficiency - def.stats.drag) * part.level;
+                }
+            }
+            game.performance.aero = aeroPerf;
+        }
+
+        function updateClickButtons() {
+            const canClick = game.engineerTime >= 10;
+            document.getElementById('clickButton').disabled = !canClick;
+            document.getElementById('clickButtonAero').disabled = !canClick;
+            document.getElementById('clickButtonFab').disabled = !canClick;
+        }
+
+        // Gestion des onglets
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetTab = tab.dataset.tab;
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                document.getElementById(targetTab).style.display = 'block';
+                
+                if (targetTab === 'aero') renderAeroTree();
+                if (targetTab === 'fabrication') renderFabrication();
+            });
+        });
+
+        // Clicker principal (Accueil)
+        document.getElementById('clickButton').addEventListener('click', () => {
+            if (game.engineerTime < 10) return;
+            
+            game.clickCount++;
+            game.engineerTime -= 10;
+            
+            if (game.currentTask === 'rdpoints') {
+                game.rdPoints += 10;
+            }
+            
+            updateUI();
+        });
+
+        // Clicker Aéro
+        document.getElementById('clickButtonAero').addEventListener('click', () => {
+            if (game.engineerTime < 10) return;
+            handleAeroClick();
+        });
+
+        // Clicker Fabrication
+        document.getElementById('clickButtonFab').addEventListener('click', () => {
+            if (game.engineerTime < 10) return;
+            handleFabClick();
+        });
+
+        // Passer au jour suivant
+        document.getElementById('nextDayBtn').addEventListener('click', () => {
+            game.currentDay++;
+            game.engineerTime = game.maxEngineerTime;
+            
+            // Vérifier si on atteint une course
+            const nextRace = game.races[game.currentRace];
+            if (nextRace && game.currentDay >= nextRace.day) {
+                runRace();
+            }
+            
+            // Paiement mensuel (tous les 30 jours)
+            if (game.currentDay % 30 === 0) {
+                const salaries = game.engineers * 5000; // 5K par ingénieur par mois
+                game.money -= salaries;
+                showNotification(`Salaires payés: -${formatMoney(salaries)}€`, 'error');
+            }
+            
+            updateUI();
+        });
+
+        // Course
+        function runRace() {
+            const race = game.races[game.currentRace];
+            
+            // Calculer position basée sur performance
+            const totalPerf = game.performance.aero + game.performance.chassis + game.performance.engine;
+            const teamPerf = game.teams.find(t => t.name === game.teamName);
+            teamPerf.aeroPerf = game.performance.aero;
+            
+            // Classement des équipes
+            const sortedTeams = [...game.teams].sort((a, b) => {
+                const perfA = a.name === game.teamName ? totalPerf : a.aeroPerf + Math.random() * 100;
+                const perfB = b.name === game.teamName ? totalPerf : b.aeroPerf + Math.random() * 100;
+                return perfB - perfA;
+            });
+            
+            const position = sortedTeams.findIndex(t => t.name === game.teamName) + 1;
+            
+            // Gains
+            const baseEarnings = 250000;
+            const positionBonus = Math.max(0, (21 - position) * 25000);
+            const earnings = baseEarnings + positionBonus;
+            const rdGain = Math.floor(500 + (21 - position) * 25);
+            
+            race.completed = true;
+            race.position = position;
+            race.earnings = earnings;
+            
+            game.money += earnings;
+            game.rdPoints += rdGain;
+            game.budgetSpent += earnings * 0.1; // Frais de course
+            
+            // Usure des pièces (10% chance de dommage)
+            game.partStock.forEach(part => {
+                if (Math.random() < 0.1 && part.condition !== 'broken') {
+                    const conditions = ['new', 'good', 'damaged', 'broken'];
+                    const currentIndex = conditions.indexOf(part.condition);
+                    if (currentIndex < conditions.length - 1) {
+                        part.condition = conditions[currentIndex + 1];
+                    }
+                }
+            });
+            
+            game.currentRace++;
+            
+            showNotification(`Course terminée! Position: P${position} | Gains: +${formatMoney(earnings)}€ +${rdGain} R&D`, 'success');
+            renderRaces();
+            renderFabrication();
+        }
+
+        // Affichage des courses
+        function renderRaces() {
+            const tbody = document.getElementById('raceTableBody');
+            tbody.innerHTML = game.races.map(race => `
+                <tr>
+                    <td>${race.number}</td>
+                    <td>${race.name}</td>
+                    <td>J${race.day}</td>
+                    <td>${race.completed ? '✅ Terminée' : race.number === game.currentRace + 1 ? '▶️ Prochaine' : '⏳ À venir'}</td>
+                    <td>${race.position ? 'P' + race.position : '-'}</td>
+                    <td>${race.earnings ? '+' + formatMoney(race.earnings) + '€' : '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Arbre R&D Aéro
+        function renderAeroTree() {
+            const container = document.getElementById('aeroTree');
+            container.innerHTML = '';
+            
+            for (let key in aeroParts) {
+                const def = aeroParts[key];
+                const state = game.aeroParts[key];
+                
+                // Vérifier dépendances
+                let canUnlock = state.status !== 'locked';
+                if (!canUnlock && def.dependencies.length === 0) {
+                    canUnlock = true;
+                }
+                if (!canUnlock) {
+                    canUnlock = def.dependencies.every(depId => game.aeroParts[depId].level > 0);
+                }
+                
+                if (canUnlock && state.status === 'locked') {
+                    state.status = 'available';
+                }
+                
+                const div = document.createElement('div');
+                div.className = 'rd-item';
+                
+                if (state.status === 'locked') div.classList.add('locked');
+                if (state.level === def.maxLevel) div.classList.add('completed');
+                if (state.status === 'design3d' || state.status === 'testing') div.classList.add('in-progress');
+                
+                const costs = calculatePartCosts(key);
+                const canAfford = game.money >= costs.money && game.rdPoints >= costs.rd;
+                
+                let statusText = '';
+                let progressHTML = '';
+                let buttonsHTML = '';
+                
+                if (state.status === 'locked') {
+                    statusText = '🔒 Verrouillé';
+                } else if (state.level === def.maxLevel) {
+                    statusText = `✅ Niveau MAX (${def.maxLevel}/${def.maxLevel})`;
+                } else if (state.status === 'available') {
+                    statusText = `Niveau ${state.level}/${def.maxLevel}`;
+                    buttonsHTML = `
+                        <button class="button" onclick="startDesign3D('${key}')" ${!canAfford ? 'disabled' : ''}>
+                            🎨 Conception 3D
+                        </button>
+                    `;
+                } else if (state.status === 'design3d') {
+                    statusText = `⚙️ Conception 3D en cours`;
+                    progressHTML = `
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(state.progress3D / costs.time) * 100}%"></div>
+                            <div class="progress-text">${state.progress3D} / ${costs.time}</div>
+                        </div>
+                    `;
+                    buttonsHTML = `<button class="button" disabled>En cours...</button>`;
+                } else if (state.status === 'ready-test') {
+                    statusText = `🧪 Prêt pour tests`;
+                    buttonsHTML = `
+                        <button class="button" onclick="startTesting('${key}')">
+                            🧪 Lancer tests simulés
+                        </button>
+                    `;
+                } else if (state.status === 'testing') {
+                    statusText = `🧪 Tests en cours`;
+                    progressHTML = `
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(state.progressTest / def.testCosts.time) * 100}%"></div>
+                            <div class="progress-text">${state.progressTest} / ${def.testCosts.time}</div>
+                        </div>
+                    `;
+                    buttonsHTML = `<button class="button" disabled>En cours...</button>`;
+                } else if (state.status === 'ready-fab') {
+                    statusText = `✅ Prêt à fabriquer (Niveau ${state.level + 1})`;
+                    buttonsHTML = `<button class="button" onclick="prepareForFab('${key}')">📦 Envoyer en fabrication</button>`;
+                }
+                
+                div.innerHTML = `
+                    <div class="rd-header">
+                        <div class="rd-title">${def.name}</div>
+                        <div class="rd-level">${statusText}</div>
+                    </div>
+                    <div class="rd-stats">
+                        <div>💰 ${formatMoney(costs.money)}€</div>
+                        <div>🔬 ${costs.rd} pts R&D</div>
+                        <div>⏱️ ${costs.time} temps</div>
+                        <div>📊 Appui: +${def.stats.downforce * (state.level + 1)}</div>
+                        <div>🌊 Traînée: ${def.stats.drag > 0 ? '+' : ''}${def.stats.drag * (state.level + 1)}</div>
+                        <div>⚡ Efficacité: +${def.stats.efficiency * (state.level + 1)}</div>
+                    </div>
+                    ${progressHTML}
+                    <div class="rd-actions">
+                        ${buttonsHTML}
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            }
+            
+            renderAeroTasks();
+        }
+
+        function calculatePartCosts(partId) {
+            const def = aeroParts[partId];
+            const state = game.aeroParts[partId];
+            const level = state.level + 1;
+            const failMultiplier = 1 - (state.failCount * 0.1); // -10% par échec
+            
+            return {
+                money: Math.floor(def.baseCosts.money * level * failMultiplier),
+                rd: Math.floor(def.baseCosts.rd * level * failMultiplier),
+                time: Math.floor(def.baseCosts.time * level * failMultiplier)
+            };
+        }
+
+        function renderAeroTasks() {
+            const selector = document.getElementById('taskSelectorAero');
+            selector.innerHTML = '';
+            
+            for (let key in game.aeroParts) {
+                const state = game.aeroParts[key];
+                const def = aeroParts[key];
+                
+                if (state.status === 'design3d') {
+                    const costs = calculatePartCosts(key);
+                    const option = document.createElement('div');
+                    option.className = 'task-option';
+                    if (game.currentTask === 'design3d-' + key) option.classList.add('selected');
+                    option.dataset.task = 'design3d-' + key;
+                    option.innerHTML = `
+                        🎨 Conception: ${def.name}
+                        <small>Progression: ${state.progress3D} / ${costs.time}</small>
+                    `;
+                    option.addEventListener('click', () => selectTask('design3d-' + key));
+                    selector.appendChild(option);
+                }
+                
+                if (state.status === 'testing') {
+                    const option = document.createElement('div');
+                    option.className = 'task-option';
+                    if (game.currentTask === 'testing-' + key) option.classList.add('selected');
+                    option.dataset.task = 'testing-' + key;
+                    option.innerHTML = `
+                        🧪 Tests: ${def.name}
+                        <small>Progression: ${state.progressTest} / ${def.testCosts.time}</small>
+                    `;
+                    option.addEventListener('click', () => selectTask('testing-' + key));
+                    selector.appendChild(option);
+                }
+            }
+            
+            if (selector.children.length === 0) {
+                selector.innerHTML = '<div style="opacity: 0.5; padding: 10px;">Aucune tâche R&D en cours</div>';
+            }
+        }
+
+        function selectTask(task) {
+            game.currentTask = task;
+            document.querySelectorAll('.task-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if (opt.dataset.task === task) opt.classList.add('selected');
+            });
+        }
+
+        function startDesign3D(partId) {
+            const costs = calculatePartCosts(partId);
+            
+            if (game.money < costs.money || game.rdPoints < costs.rd) {
+                showNotification('Ressources insuffisantes!', 'error');
+                return;
+            }
+            
+            game.money -= costs.money;
+            game.rdPoints -= costs.rd;
+            game.budgetSpent += costs.money;
+            game.aeroParts[partId].status = 'design3d';
+            game.aeroParts[partId].progress3D = 0;
+            game.currentTask = 'design3d-' + partId;
+            
+            showNotification(`Conception 3D lancée: ${aeroParts[partId].name}`, 'success');
+            updateUI();
+            renderAeroTree();
+        }
+
+        function startTesting(partId) {
+            const def = aeroParts[partId];
+            
+            if (game.rdPoints < def.testCosts.rd) {
+                showNotification('Points R&D insuffisants!', 'error');
+                return;
+            }
+            
+            game.rdPoints -= def.testCosts.rd;
+            game.aeroParts[partId].status = 'testing';
+            game.aeroParts[partId].progressTest = 0;
+            game.currentTask = 'testing-' + partId;
+            
+            showNotification(`Tests simulés lancés: ${def.name}`, 'success');
+            updateUI();
+            renderAeroTree();
+        }
+
+        function handleAeroClick() {
+            game.clickCount++;
+            game.engineerTime -= 10;
+            
+            if (game.currentTask.startsWith('design3d-')) {
+                const partId = game.currentTask.replace('design3d-', '');
+                const state = game.aeroParts[partId];
+                const costs = calculatePartCosts(partId);
+                
+                state.progress3D += 10;
+                
+                if (state.progress3D >= costs.time) {
+                    state.status = 'ready-test';
+                    state.progress3D = 0;
+                    showNotification(`Conception 3D terminée: ${aeroParts[partId].name}`, 'success');
+                    game.currentTask = 'rdpoints';
+                }
+            } else if (game.currentTask.startsWith('testing-')) {
+                const partId = game.currentTask.replace('testing-', '');
+                const state = game.aeroParts[partId];
+                const def = aeroParts[partId];
+                
+                state.progressTest += 10;
+                
+                if (state.progressTest >= def.testCosts.time) {
+                    // Test terminé - 10% risque d'échec
+                    if (Math.random() < 0.1) {
+                        // ÉCHEC
+                        state.status = 'available';
+                        state.progressTest = 0;
+                        state.failCount++;
+                        showNotification(`❌ Tests échoués: ${def.name}. Recommencez la conception (coûts réduits).`, 'error');
+                    } else {
+                        // SUCCÈS
+                        state.status = 'ready-fab';
+                        state.progressTest = 0;
+                        showNotification(`✅ Tests réussis: ${def.name}. Pièce prête à fabriquer!`, 'success');
+                    }
+                    game.currentTask = 'rdpoints';
+                }
+            }
+            
+            updateUI();
+            renderAeroTree();
+        }
+
+        function prepareForFab(partId) {
+            const def = aeroParts[partId];
+            const state = game.aeroParts[partId];
+            
+            game.developedParts.push({
+                id: partId,
+                name: def.name,
+                level: state.level + 1,
+                fabProgress: 0,
+                fabTime: Math.floor(def.baseCosts.time * 0.5), // Fab = 50% du temps de conception
+                fabCost: Math.floor(def.baseCosts.money * 0.3) // Fab = 30% du coût
+            });
+            
+            state.level++;
+            state.status = state.level < def.maxLevel ? 'available' : 'completed';
+            state.failCount = 0;
+            
+            showNotification(`${def.name} (Niv ${state.level}) envoyé en fabrication!`, 'success');
+            renderAeroTree();
+            renderFabrication();
+        }
+
+        // Classement aéro
+        function renderAeroRanking() {
+            const tbody = document.getElementById('aeroRanking');
+            const sorted = [...game.teams].sort((a, b) => b.aeroPerf - a.aeroPerf);
+            tbody.innerHTML = sorted.map((team, i) => `
+                <tr${team.name === game.teamName ? ' style="background: var(--secondary-color); font-weight: bold;"' : ''}>
+                    <td>${i + 1}</td>
+                    <td>${team.name}</td>
+                    <td>${team.aeroPerf} pts</td>
+                </tr>
+            `).join('');
+        }
+
+        // Fabrication
+        function renderFabrication() {
+            const devContainer = document.getElementById('developedParts');
+            const stockContainer = document.getElementById('partStock');
+            
+            // Pièces à fabriquer
+            if (game.developedParts.length === 0) {
+                devContainer.innerHTML = '<p style="opacity: 0.5;">Aucune pièce développée. Terminez d\'abord la R&D!</p>';
+            } else {
+                devContainer.innerHTML = game.developedParts.map((part, i) => `
+                    <div style="padding: 10px; margin: 5px 0; background: var(--secondary-color); border: 1px solid var(--primary-color);">
+                        <strong>${part.name} (Niveau ${part.level})</strong><br>
+                        <small>Coût fab: ${formatMoney(part.fabCost)}€ | Temps: ${part.fabTime}</small>
+                        ${part.fabProgress > 0 ? `
+                            <div class="progress-bar" style="margin-top: 5px;">
+                                <div class="progress-fill" style="width: ${(part.fabProgress / part.fabTime) * 100}%"></div>
+                                <div class="progress-text">${part.fabProgress} / ${part.fabTime}</div>
+                            </div>
+                        ` : ''}
+                        <button class="button" onclick="startFab(${i})" ${part.fabProgress > 0 ? 'disabled' : ''} style="margin-top: 5px;">
+                            ${part.fabProgress > 0 ? '⚙️ En cours...' : '🏭 Fabriquer (x4)'}
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            // Stock
+            if (game.partStock.length === 0) {
+                stockContainer.innerHTML = '<p style="opacity: 0.5; padding: 20px; text-align: center;">Aucune pièce fabriquée</p>';
+            } else {
+                stockContainer.innerHTML = '';
+                game.partStock.forEach((part, i) => {
+                    const card = document.createElement('div');
+                    card.className = 'part-card';
+                    card.innerHTML = `
+                        <div><strong>${part.name}</strong></div>
+                        <div style="font-size: 10px; opacity: 0.7;">Niveau ${part.level}</div>
+                        <div class="condition ${part.condition}">${getConditionText(part.condition)}</div>
+                        <button class="button" onclick="sellPart(${i})" style="width: 100%; margin-top: 5px; font-size: 10px;">
+                            💰 Vendre (${formatMoney(part.value)}€)
+                        </button>
+                    `;
+                    stockContainer.appendChild(card);
+                });
+            }
+            
+            renderFabTasks();
+        }
+
+        function getConditionText(condition) {
+            const texts = {
+                new: '🆕 NEUF',
+                good: '✅ BON',
+                damaged: '⚠️ ABÎMÉ',
+                broken: '❌ CASSÉ'
+            };
+            return texts[condition] || condition;
+        }
+
+        function renderFabTasks() {
+            const selector = document.getElementById('taskSelectorFab');
+            selector.innerHTML = '';
+            
+            game.developedParts.forEach((part, i) => {
+                if (part.fabProgress > 0 && part.fabProgress < part.fabTime) {
+                    const option = document.createElement('div');
+                    option.className = 'task-option';
+                    if (game.currentTask === 'fab-' + i) option.classList.add('selected');
+                    option.dataset.task = 'fab-' + i;
+                    option.innerHTML = `
+                        🏭 Fabrication: ${part.name}
+                        <small>Progression: ${part.fabProgress} / ${part.fabTime}</small>
+                    `;
+                    option.addEventListener('click', () => selectTask('fab-' + i));
+                    selector.appendChild(option);
+                }
+            });
+            
+            if (selector.children.length === 0) {
+                selector.innerHTML = '<div style="opacity: 0.5; padding: 10px;">Aucune fabrication en cours</div>';
+            }
+        }
+
+        function startFab(index) {
+            const part = game.developedParts[index];
+            
+            if (game.money < part.fabCost * 4) {
+                showNotification('Argent insuffisant pour fabriquer 4 pièces!', 'error');
+                return;
+            }
+            
+            game.money -= part.fabCost * 4;
+            game.budgetSpent += part.fabCost * 4;
+            part.fabProgress = 1;
+            game.currentTask = 'fab-' + index;
+            
+            showNotification(`Fabrication lancée: ${part.name} (x4)`, 'success');
+            updateUI();
+            renderFabrication();
+        }
+
+        function handleFabClick() {
+            game.clickCount++;
+            game.engineerTime -= 10;
+            
+            if (game.currentTask.startsWith('fab-')) {
+                const index = parseInt(game.currentTask.replace('fab-', ''));
+                const part = game.developedParts[index];
+                
+                part.fabProgress += 10;
+                
+                if (part.fabProgress >= part.fabTime) {
+                    // Fabrication terminée - Créer 4 pièces
+                    for (let i = 0; i < 4; i++) {
+                        const failChance = Math.random();
+                        const condition = failChance < 0.9 ? 'new' : 'damaged';
+                        
+                        game.partStock.push({
+                            id: part.id,
+                            name: part.name,
+                            level: part.level,
+                            condition: condition,
+                            value: part.fabCost * (condition === 'new' ? 1.5 : 0.7)
+                        });
+                    }
+                    
+                    showNotification(`✅ Fabrication terminée: ${part.name} (x4)`, 'success');
+                    game.developedParts.splice(index, 1);
+                    game.currentTask = 'rdpoints';
+                    renderFabrication();
+                }
+            }
+            
+            updateUI();
+        }
+
+        function sellPart(index) {
+            const part = game.partStock[index];
+            game.money += part.value;
+            game.partStock.splice(index, 1);
+            showNotification(`Pièce vendue: +${formatMoney(part.value)}€`, 'success');
+            updateUI();
+            renderFabrication();
+        }
+
+        // Notifications
+        function showNotification(message, type = 'success') {
+            const notif = document.createElement('div');
+            notif.className = 'notification ' + type;
+            notif.textContent = message;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.remove();
+            }, 3000);
+        }
+
+        // Auto-save (localStorage)
+        setInterval(() => {
+            if (game.teamName) {
+                localStorage.setItem('f1manager_save', JSON.stringify(game));
+            }
+        }, 10000);
+
+        // Load save
+        window.addEventListener('load', () => {
+            const save = localStorage.getItem('f1manager_save');
+            if (save) {
+                const confirmLoad = confirm('Une sauvegarde a été détectée. Voulez-vous continuer votre partie ?');
+                if (confirmLoad) {
+                    Object.assign(game, JSON.parse(save));
+                    
+                    // Appliquer les couleurs sauvegardées
+                    document.documentElement.style.setProperty('--primary-color', game.colors.primary);
+                    document.documentElement.style.setProperty('--secondary-color', game.colors.secondary);
+                    document.documentElement.style.setProperty('--text-color', game.colors.primary);
+                    
+                    document.getElementById('startupScreen').style.display = 'none';
+                    document.getElementById('gameContainer').style.display = 'block';
+                    
+                    updateUI();
+                    renderRaces();
+                    renderAeroTree();
+                    renderAeroRanking();
+                    renderFabrication();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
