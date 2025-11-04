@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blokus Online</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script>
+        const { useState, useEffect } = React;
+        const e = React.createElement;
+        
+        const BOARD_SIZE = 20;
+        const COLORS = ['#3b82f6', '#ef4444', '#22c55e', '#eab308'];
+        const COLOR_NAMES = ['Bleu', 'Rouge', 'Vert', 'Jaune'];
+
+        const PIECES = [
+          [[0,0]], 
+          [[0,0],[0,1]], 
+          [[0,0],[0,1],[0,2]], 
+          [[0,0],[0,1],[1,1]], 
+          [[0,0],[0,1],[0,2],[0,3]], 
+          [[0,0],[0,1],[0,2],[1,2]], 
+          [[0,0],[0,1],[1,1],[1,2]], 
+          [[0,0],[1,0],[0,1],[1,1]], 
+          [[0,0],[0,1],[0,2],[1,1]], 
+          [[0,0],[0,1],[0,2],[0,3],[0,4]], 
+          [[0,0],[0,1],[0,2],[0,3],[1,3]], 
+          [[0,0],[0,1],[0,2],[1,2],[1,3]], 
+          [[0,0],[0,1],[1,1],[1,2],[1,3]], 
+          [[0,0],[0,1],[0,2],[1,1],[2,1]], 
+          [[0,0],[0,1],[1,1],[1,2],[2,2]], 
+          [[0,0],[1,0],[1,1],[2,1],[2,2]], 
+          [[0,0],[0,1],[0,2],[1,0],[2,0]], 
+          [[0,0],[1,0],[1,1],[2,0],[3,0]], 
+          [[0,1],[1,0],[1,1],[1,2],[2,1]], 
+          [[0,0],[0,1],[0,2],[1,2],[2,2]], 
+          [[0,0],[0,1],[1,1],[1,2],[2,1]], 
+        ];
+
+        const RotateCwIcon = () => e('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 },
+          e('polyline', { points: '23 4 23 10 17 10' }),
+          e('path', { d: 'M20.49 15a9 9 0 1 1-2.12-9.36L23 10' })
+        );
+
+        const UsersIcon = () => e('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 },
+          e('path', { d: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2' }),
+          e('circle', { cx: 9, cy: 7, r: 4 }),
+          e('path', { d: 'M23 21v-2a4 4 0 0 0-3-3.87' }),
+          e('path', { d: 'M16 3.13a4 4 0 0 1 0 7.75' })
+        );
+
+        const PlayIcon = () => e('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 },
+          e('polygon', { points: '5 3 19 12 5 21 5 3' })
+        );
+
+        const CopyIcon = () => e('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 },
+          e('rect', { x: 9, y: 9, width: 13, height: 13, rx: 2, ry: 2 }),
+          e('path', { d: 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1' })
+        );
+
+        const CheckIcon = () => e('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 },
+          e('polyline', { points: '20 6 9 17 4 12' })
+        );
+
+        const BlokusGame = () => {
+          const [gameId, setGameId] = useState('');
+          const [playerId, setPlayerId] = useState('');
+          const [gameState, setGameState] = useState(null);
+          const [selectedPiece, setSelectedPiece] = useState(null);
+          const [rotation, setRotation] = useState(0);
+          const [hoveredCell, setHoveredCell] = useState(null);
+          const [isJoined, setIsJoined] = useState(false);
+          const [copied, setCopied] = useState(false);
+
+          useEffect(() => {
+            const id = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            setPlayerId(id);
+          }, []);
+
+          useEffect(() => {
+            if (!gameId || !isJoined) return;
+
+            const loadGame = async () => {
+              try {
+                const result = await window.storage.get('blokus_' + gameId, true);
+                if (result) {
+                  setGameState(JSON.parse(result.value));
+                }
+              } catch (error) {
+                console.log('Chargement de la partie...');
+              }
+            };
+
+            loadGame();
+            const interval = setInterval(loadGame, 1000);
+            return () => clearInterval(interval);
+          }, [gameId, isJoined]);
+
+          const createGame = async () => {
+            const newGameId = Math.random().toString(36).substr(2, 9).toUpperCase();
+            const newGame = {
+              id: newGameId,
+              players: [{ id: playerId, color: 0, name: 'Joueur 1' }],
+              board: Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(null)),
+              currentPlayer: 0,
+              usedPieces: [[], [], [], []],
+              firstMove: [true, true, true, true],
+              started: false
+            };
+            
+            try {
+              await window.storage.set('blokus_' + newGameId, JSON.stringify(newGame), true);
+              setGameId(newGameId);
+              setGameState(newGame);
+              setIsJoined(true);
+            } catch (error) {
+              alert('Erreur lors de la création de la partie');
+            }
+          };
+
+          const joinGame = async (id) => {
+            if (!id) return;
+            
+            try {
+              const result = await window.storage.get('blokus_' + id, true);
+              if (!result) {
+                alert('Partie introuvable');
+                return;
+              }
+              
+              const game = JSON.parse(result.value);
+              
+              if (game.players.length >= 4) {
+                alert('Partie complète');
+                return;
+              }
+
+              const existingPlayer = game.players.find(p => p.id === playerId);
+              if (!existingPlayer) {
+                game.players.push({
+                  id: playerId,
+                  color: game.players.length,
+                  name: 'Joueur ' + (game.players.length + 1)
+                });
+                await window.storage.set('blokus_' + id, JSON.stringify(game), true);
+              }
+              
+              setGameId(id);
+              setGameState(game);
+              setIsJoined(true);
+            } catch (error) {
+              alert('Erreur lors de la connexion');
+            }
+          };
+
+          const startGame = async () => {
+            if (!gameState || gameState.players.length < 2) {
+              alert('Il faut au moins 2 joueurs');
+              return;
+            }
+            
+            const updatedGame = Object.assign({}, gameState, { started: true });
+            await window.storage.set('blokus_' + gameId, JSON.stringify(updatedGame), true);
+            setGameState(updatedGame);
+          };
+
+          const rotatePiece = (piece, times) => {
+            let result = piece;
+            for (let i = 0; i < times % 4; i++) {
+              result = result.map(coord => [-coord[1], coord[0]]);
+            }
+            return result;
+          };
+
+          const normalizePiece = (piece) => {
+            const minX = Math.min.apply(null, piece.map(coord => coord[0]));
+            const minY = Math.min.apply(null, piece.map(coord => coord[1]));
+            return piece.map(coord => [coord[0] - minX, coord[1] - minY]);
+          };
+
+          const canPlacePiece = (piece, row, col, playerColor) => {
+            const rotated = normalizePiece(rotatePiece(piece, rotation));
+            const board = gameState.board;
+            
+            let touchesCorner = false;
+            let touchesSide = false;
+
+            for (let i = 0; i < rotated.length; i++) {
+              const dx = rotated[i][0];
+              const dy = rotated[i][1];
+              const newRow = row + dx;
+              const newCol = col + dy;
+              
+              if (newRow < 0 || newRow >= BOARD_SIZE || newCol < 0 || newCol >= BOARD_SIZE) {
+                return false;
+              }
+              
+              if (board[newRow][newCol] !== null) {
+                return false;
+              }
+
+              const adjacents = [[0,1], [0,-1], [1,0], [-1,0]];
+              for (let j = 0; j < adjacents.length; j++) {
+                const adjRow = newRow + adjacents[j][0];
+                const adjCol = newCol + adjacents[j][1];
+                if (adjRow >= 0 && adjRow < BOARD_SIZE && adjCol >= 0 && adjCol < BOARD_SIZE) {
+                  if (board[adjRow][adjCol] === playerColor) {
+                    touchesSide = true;
+                  }
+                }
+              }
+
+              const corners = [[1,1], [1,-1], [-1,1], [-1,-1]];
+              for (let j = 0; j < corners.length; j++) {
+                const cornerRow = newRow + corners[j][0];
+                const cornerCol = newCol + corners[j][1];
+                if (cornerRow >= 0 && cornerRow < BOARD_SIZE && cornerCol >= 0 && cornerCol < BOARD_SIZE) {
+                  if (board[cornerRow][cornerCol] === playerColor) {
+                    touchesCorner = true;
+                  }
+                }
+              }
+            }
+
+            if (gameState.firstMove[playerColor]) {
+              const boardCorners = [[0,0], [0,BOARD_SIZE-1], [BOARD_SIZE-1,0], [BOARD_SIZE-1,BOARD_SIZE-1]];
+              let onCorner = false;
+              for (let i = 0; i < rotated.length; i++) {
+                for (let j = 0; j < boardCorners.length; j++) {
+                  if (row + rotated[i][0] === boardCorners[j][0] && col + rotated[i][1] === boardCorners[j][1]) {
+                    onCorner = true;
+                  }
+                }
+              }
+              return onCorner && !touchesSide;
+            }
+
+            return touchesCorner && !touchesSide;
+          };
+
+          const placePiece = async (row, col) => {
+            if (!selectedPiece || !gameState) return;
+            
+            const currentPlayerData = gameState.players.find(p => p.id === playerId);
+            if (!currentPlayerData || gameState.currentPlayer !== currentPlayerData.color) return;
+
+            if (!canPlacePiece(selectedPiece, row, col, currentPlayerData.color)) return;
+
+            const rotated = normalizePiece(rotatePiece(selectedPiece, rotation));
+            const newBoard = gameState.board.map(r => r.slice());
+            
+            for (let i = 0; i < rotated.length; i++) {
+              newBoard[row + rotated[i][0]][col + rotated[i][1]] = currentPlayerData.color;
+            }
+
+            const newUsedPieces = gameState.usedPieces.map(arr => arr.slice());
+            newUsedPieces[currentPlayerData.color].push(PIECES.indexOf(selectedPiece));
+
+            const newFirstMove = gameState.firstMove.slice();
+            newFirstMove[currentPlayerData.color] = false;
+
+            const updatedGame = {
+              id: gameState.id,
+              players: gameState.players,
+              board: newBoard,
+              currentPlayer: (gameState.currentPlayer + 1) % gameState.players.length,
+              usedPieces: newUsedPieces,
+              firstMove: newFirstMove,
+              started: gameState.started
+            };
+
+            await window.storage.set('blokus_' + gameId, JSON.stringify(updatedGame), true);
+            setGameState(updatedGame);
+            setSelectedPiece(null);
+            setRotation(0);
+          };
+
+          const copyGameId = () => {
+            navigator.clipboard.writeText(gameId);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          };
+
+          if (!isJoined) {
+            return e('div', { className: 'min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4' },
+              e('div', { className: 'bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full' },
+                e('h1', { className: 'text-4xl font-bold text-center mb-8 text-indigo-900' }, 'Blokus Online'),
+                e('div', { className: 'space-y-4' },
+                  e('button', {
+                    onClick: createGame,
+                    className: 'w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2'
+                  }, e(PlayIcon), 'Créer une partie'),
+                  e('div', { className: 'relative' },
+                    e('div', { className: 'absolute inset-0 flex items-center' },
+                      e('div', { className: 'w-full border-t border-gray-300' })
+                    ),
+                    e('div', { className: 'relative flex justify-center text-sm' },
+                      e('span', { className: 'px-2 bg-white text-gray-500' }, 'ou')
+                    )
+                  ),
+                  e('input', {
+                    type: 'text',
+                    placeholder: 'Code de la partie',
+                    value: gameId,
+                    onChange: (ev) => setGameId(ev.target.value.toUpperCase()),
+                    className: 'w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:outline-none'
+                  }),
+                  e('button', {
+                    onClick: () => joinGame(gameId),
+                    className: 'w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2'
+                  }, e(UsersIcon), 'Rejoindre')
+                )
+              )
+            );
+          }
+
+          if (!gameState || !gameState.started) {
+            return e('div', { className: 'min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4' },
+              e('div', { className: 'bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full' },
+                e('h1', { className: 'text-3xl font-bold text-center mb-6 text-indigo-900' }, "Salle d'attente"),
+                e('div', { className: 'mb-6 p-4 bg-indigo-50 rounded-xl' },
+                  e('p', { className: 'text-sm text-gray-600 mb-2' }, 'Code de la partie:'),
+                  e('div', { className: 'flex items-center gap-2' },
+                    e('code', { className: 'text-2xl font-bold text-indigo-900 flex-1' }, gameId),
+                    e('button', {
+                      onClick: copyGameId,
+                      className: 'p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition'
+                    }, copied ? e(CheckIcon) : e(CopyIcon))
+                  )
+                ),
+                e('div', { className: 'space-y-3 mb-6' }, 
+                  gameState.players.map((player) =>
+                    e('div', {
+                      key: player.id,
+                      className: 'flex items-center gap-3 p-3 bg-gray-50 rounded-lg'
+                    },
+                      e('div', {
+                        className: 'w-8 h-8 rounded-full',
+                        style: { backgroundColor: COLORS[player.color] }
+                      }),
+                      e('span', { className: 'font-semibold' }, player.name),
+                      player.id === playerId && e('span', { className: 'ml-auto text-sm text-indigo-600' }, '(Vous)')
+                    )
+                  )
+                ),
+                gameState.players[0].id === playerId ?
+                  e('button', {
+                    onClick: startGame,
+                    disabled: gameState.players.length < 2,
+                    className: 'w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-4 px-6 rounded-xl transition'
+                  }, 'Démarrer la partie (' + gameState.players.length + '/4)') :
+                  e('p', { className: 'text-center text-gray-600' }, "En attente que l'hôte démarre...")
+              )
+            );
+          }
+
+          const currentPlayerData = gameState.players.find(p => p.id === playerId);
+          const isMyTurn = currentPlayerData && gameState.currentPlayer === currentPlayerData.color;
+
+          return e('div', { className: 'min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4' },
+            e('div', { className: 'max-w-7xl mx-auto' },
+              e('div', { className: 'bg-white rounded-2xl shadow-2xl p-6' },
+                e('div', { className: 'flex items-center justify-between mb-6' },
+                  e('h1', { className: 'text-3xl font-bold text-indigo-900' }, 'Blokus Online'),
+                  e('div', { className: 'flex items-center gap-4' }, 
+                    gameState.players.map((player) =>
+                      e('div', {
+                        key: player.id,
+                        className: 'flex items-center gap-2 px-4 py-2 rounded-lg ' + (
+                          gameState.currentPlayer === player.color
+                            ? 'bg-indigo-100 ring-2 ring-indigo-500'
+                            : 'bg-gray-100'
+                        )
+                      },
+                        e('div', {
+                          className: 'w-6 h-6 rounded-full',
+                          style: { backgroundColor: COLORS[player.color] }
+                        }),
+                        e('span', { className: 'font-semibold' }, player.name)
+                      )
+                    )
+                  )
+                ),
+                e('div', { className: 'grid grid-cols-1 lg:grid-cols-4 gap-6' },
+                  e('div', { className: 'lg:col-span-3' },
+                    e('div', { className: 'inline-block bg-amber-100 p-2 rounded-lg' },
+                      e('div', {
+                        className: 'grid gap-0',
+                        style: { gridTemplateColumns: 'repeat(' + BOARD_SIZE + ', 1.5rem)' }
+                      }, gameState.board.map((row, i) =>
+                        row.map((cell, j) => {
+                          const canPlace = selectedPiece && isMyTurn && canPlacePiece(selectedPiece, i, j, currentPlayerData.color);
+                          const isHovered = hoveredCell && hoveredCell[0] === i && hoveredCell[1] === j;
+                          
+                          return e('div', {
+                            key: i + '-' + j,
+                            onClick: () => canPlace && placePiece(i, j),
+                            onMouseEnter: () => setHoveredCell([i, j]),
+                            onMouseLeave: () => setHoveredCell(null),
+                            className: 'w-6 h-6 border border-amber-300 ' + (canPlace ? 'cursor-pointer hover:bg-green-200' : ''),
+                            style: {
+                              backgroundColor: cell !== null ? COLORS[cell] : isHovered && canPlace ? '#86efac' : '#fef3c7'
+                            }
+                          });
+                        })
+                      ))
+                    )
+                  ),
+                  e('div', { className: 'space-y-4' },
+                    e('div', { className: 'bg-indigo-50 p-4 rounded-xl' },
+                      e('h3', { className: 'font-bold mb-2' }, 
+                        isMyTurn ? '🎮 À votre tour!' : '⏳ Tour de ' + COLOR_NAMES[gameState.currentPlayer]
+                      )
+                    ),
+                    selectedPiece && e('button', {
+                      onClick: () => setRotation((rotation + 1) % 4),
+                      className: 'w-full bg-indigo-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-indigo-700 transition'
+                    }, e(RotateCwIcon), 'Rotation'),
+                    e('div', { className: 'max-h-96 overflow-y-auto space-y-2' },
+                      e('h3', { className: 'font-bold sticky top-0 bg-white py-2' }, 'Vos pièces:'),
+                      PIECES.map((piece, idx) => {
+                        if (currentPlayerData && gameState.usedPieces[currentPlayerData.color].includes(idx)) {
+                          return null;
+                        }
+                        
+                        return e('button', {
+                          key: idx,
+                          disabled: !isMyTurn,
+                          onClick: () => {
+                            setSelectedPiece(piece);
+                            setRotation(0);
+                          },
+                          className: 'w-full p-3 rounded-lg border-2 transition ' + (
+                            selectedPiece === piece
+                              ? 'border-indigo-500 bg-indigo-50'
+                              : 'border-gray-300 hover:border-indigo-300'
+                          ) + ' ' + (!isMyTurn ? 'opacity-50 cursor-not-allowed' : '')
+                        },
+                          e('div', {
+                            className: 'grid gap-1',
+                            style: { gridTemplateColumns: 'repeat(5, 0.5rem)', justifyContent: 'center' }
+                          }, Array.from({ length: 5 }).map((x, i) =>
+                            Array.from({ length: 5 }).map((y, j) => {
+                              const hasPiece = piece.some(coord => coord[0] === i && coord[1] === j);
+                              return e('div', {
+                                key: i + '-' + j,
+                                className: 'w-2 h-2',
+                                style: {
+                                  backgroundColor: hasPiece && currentPlayerData ? COLORS[currentPlayerData.color] : 'transparent'
+                                }
+                              });
+                            })
+                          ))
+                        );
+                      })
+                    )
+                  )
+                )
+              )
+            )
+          );
+        };
+
+        ReactDOM.render(e(BlokusGame), document.getElementById('root'));
+    </script>
+</body>
+</html>
