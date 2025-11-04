@@ -1,55 +1,497 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lobby</title>
-    <link rel="stylesheet" href="styles/style.css">
+    <title>Game Lobby - Collection Premium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            font-weight: 400;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-image {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 1;
+        }
+
+        .game-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .game-card:hover .game-image img {
+            transform: scale(1.1);
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(102, 126, 234, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-card:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .play-icon {
+            width: 60px;
+            height: 60px;
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover .play-icon {
+            transform: scale(1);
+        }
+
+        .game-content {
+            padding: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .game-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #a0c4ff;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .container {
+                padding: 30px 15px;
+            }
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 10px;
+            height: 10px;
+            background: #48bb78;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #48bb78;
+            animation: pulse 2s infinite;
+            z-index: 2;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.6;
+                transform: scale(1.1);
+            }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <h1>Lobby des jeux</h1>
-    <div class="lobby">
-        <div class="interface" onclick="navigateTo('page1.html')">
-            <img src="images/interface_1.jpg" alt="logo Juste Prix">
-            <p>Le Juste Prix</p>
-        </div>
-        <div class="interface" onclick="navigateTo('page2.html')">
-            <img src="images/interface_2.jpg" alt="logo du Juste Heure">
-            <p>Le Juste Heure</p>
-        </div>
-        <div class="interface" onclick="navigateTo('page3.html')">
-            <img src="images/interface3.jpg" alt="logo Morpion">
-            <p>Morpion (Tic Tac Toe)</p>
-        </div>
-      <div class="interface" onclick="navigateTo('page4.html')">
-          <img src="images/interface4.jpg" alt="logo devinettes'">
-          <p>Devinettes</p>
-      </div>
-      <div class="interface" onclick="navigateTo('page5.html')">
-          <img src="images/interface5.jpg" alt="logo bubble pop'">
-          <p>Bubble Pop</p>
-      </div>
-      <div class="interface" onclick="navigateTo('page6.html')">
-          <img src="images/interface6.png" alt="logo mini jeux'">
-          <p>mini jeux dino</p>
-      </div>
-      <div class="interface" onclick="navigateTo('page7.html')">
-          <img src="images/interface7.png" alt="logo Flap Flap Oiseaux'">
-          <p>Flap Flap Oiseaux</p>
-      </div>
-      <div class="interface" onclick="navigateTo('page8.html')">
-          <img src="images/interface8.jpg" alt="logo Wordle'">
-          <p>Wordle</p>
-      </div>
-      <div class="interface" onclick="navigateTo('page9.html')">
-          <img src="images/interface9.jpg" alt="logo Paint Empire'">
-          <p>Paint Empire</p>
-      </div>
-      <div class="interface" onclick="navigateTo('page10.html')">
-          <img src="images/interface10.jpg" alt="logo Blokus'">
-          <p>Blokus</p>
-      </div>
+    <div class="stars" id="stars"></div>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
     </div>
-    <script src="scripts/script.js"></script>
+
+    <div class="container">
+        <header>
+            <h1>Collection de Jeux</h1>
+            <p class="subtitle">Découvrez notre sélection premium de jeux créés par notre communauté</p>
+        </header>
+
+        <div class="games-grid">
+            <div class="game-card" onclick="navigateTo('page1.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface_1.jpg" alt="Le Juste Prix" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23667eea%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EJuste Prix%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Le Juste Prix</h3>
+                    <span class="game-category">Estimation</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page2.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface_2.jpg" alt="Le Juste Heure" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23764ba2%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EJuste Heure%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Le Juste Heure</h3>
+                    <span class="game-category">Chrono</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page3.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface3.jpg" alt="Morpion" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%235e72e4%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EMorpion%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Morpion</h3>
+                    <span class="game-category">Stratégie</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page4.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface4.jpg" alt="Devinettes" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23f093fb%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EDevinettes%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Devinettes</h3>
+                    <span class="game-category">Réflexion</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page5.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface5.jpg" alt="Bubble Pop" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%234facfe%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EBubble Pop%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Bubble Pop</h3>
+                    <span class="game-category">Arcade</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page6.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface6.png" alt="Mini Jeux Dino" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%2343e97b%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EDino%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Mini Jeux Dino</h3>
+                    <span class="game-category">Arcade</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page7.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface7.png" alt="Flap Flap Oiseaux" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23fa709a%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EFlap Flap%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Flap Flap Oiseaux</h3>
+                    <span class="game-category">Action</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page8.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface8.jpg" alt="Wordle" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%236a11cb%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EWordle%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Wordle</h3>
+                    <span class="game-category">Mots</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page9.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface9.jpg" alt="Paint Empire" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23ff6b6b%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EPaint Empire%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Paint Empire</h3>
+                    <span class="game-category">Créatif</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page10.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface10.jpg" alt="Blokus" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%2300d2ff%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EBlokus%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">Blokus</h3>
+                    <span class="game-category">Stratégie</span>
+                </div>
+            </div>
+
+            <div class="game-card" onclick="navigateTo('page11.html')">
+                <div class="game-image">
+                    <div class="status-indicator"></div>
+                    <img src="images/interface11.jpg" alt="F1 Manager" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23ee0a24%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3EF1 Manager%3C/text%3E%3C/svg%3E'">
+                    <div class="play-overlay">
+                        <div class="play-icon">▶</div>
+                    </div>
+                </div>
+                <div class="game-content">
+                    <h3 class="game-title">F1 Manager</h3>
+                    <span class="game-category">Simulation</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Créer l'effet d'étoiles
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const numberOfStars = 100;
+            
+            for (let i = 0; i < numberOfStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function navigateTo(page) {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            
+            setTimeout(() => {
+                window.location.href = page;
+            }, 300);
+        }
+
+        // Initialiser les étoiles au chargement
+        createStars();
+
+        // Animation au scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            observer.observe(card);
+        });
+    </script>
 </body>
 </html>
