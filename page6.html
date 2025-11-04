@@ -1,21 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dino Game</title>
+    <title>Dino Runner Pro</title>
     <link rel="stylesheet" href="styles/page6.css">
 </head>
 <body>
-    <div class="game-container">
-        <div class="dino"></div>
-        <div class="obstacle"></div>
-        <div class="game-over">Game Over!</div>
-        <div class="score">Score: <span id="score">0</span></div> <!-- Ajout de l'élément pour afficher le score -->
-       <button id="restart-btn">Restart</button> <!-- Ajout du bouton Restart -->
-      <a href="index.html" class="retour-btn">Retour Lobby</a>
+    <div class="clouds" id="clouds"></div>
+    
+    <div class="container">
+        <h1 class="title">🦖 DINO RUNNER</h1>
+        
+        <div class="game-canvas">
+            <canvas id="gameCanvas" width="1000" height="400"></canvas>
+            
+            <div class="ui-overlay">
+                <div class="score-container">
+                    <div class="score-label">SCORE</div>
+                    <div class="score-value" id="score">0</div>
+                </div>
+                <div class="high-score-container">
+                    <div class="high-score-label">MEILLEUR</div>
+                    <div class="high-score-value" id="highScore">0</div>
+                </div>
+            </div>
 
+            <div class="start-screen" id="startScreen">
+                <div class="start-title">🦖 Prêt à courir ?</div>
+                <div class="instructions">
+                    <p><strong>ESPACE</strong> ou <strong>CLIC</strong> pour sauter</p>
+                    <p>Évitez les cactus et battez votre record !</p>
+                </div>
+                <button class="start-btn" id="startBtn">COMMENCER</button>
+            </div>
+
+            <div class="game-over-screen" id="gameOverScreen">
+                <div class="game-over-title">💥 GAME OVER</div>
+                <div class="final-score">Score: <span id="finalScore">0</span></div>
+                <button class="restart-btn" id="restartBtn">REJOUER</button>
+                <a href="index.html"><button class="menu-btn">RETOUR LOBBY</button></a>
+            </div>
+        </div>
     </div>
+
     <script src="scripts/page6.js"></script>
 </body>
 </html>

@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Art Empire - Le Simulateur d'Artiste Ultime</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        /* SIDEBAR GAUCHE - Stats et Infos */
+        .left-sidebar {
+            width: 300px;
+            background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.3);
+        }
+
+        .player-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .player-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .player-name {
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .player-title {
+            text-align: center;
+            color: #ffd700;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .stat-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            color: #a0aec0;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .stat-per-sec {
+            color: #48bb78;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .level-progress {
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background: rgba(0,0,0,0.3);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* ZONE CENTRALE - Atelier */
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .game-title {
+            font-size: 36px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .quick-stats {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .quick-stat {
+            text-align: center;
+            flex: 1;
+        }
+
+        .quick-stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .quick-stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .workshop {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .workshop-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto 30px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .canvas-container:hover {
+            transform: scale(1.02);
+        }
+
+        .canvas-container:active {
+            transform: scale(0.98);
+        }
+
+        .canvas {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border: 10px solid #8B4513;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-art {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transition: background 0.3s ease;
+        }
+
+        .paint-effect {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: paintSplash 0.5s ease-out forwards;
+        }
+
+        @keyframes paintSplash {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .progress-container {
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        .painting-progress-bar {
+            background: #e2e8f0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .painting-progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            margin: 10px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .action-button:active {
+            transform: translateY(0);
+        }
+
+        .action-button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .action-button.sell {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .action-button.sell:hover {
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.6);
+        }
+
+        /* SIDEBAR DROITE - Shop et Upgrades */
+        .right-sidebar {
+            width: 400px;
+            background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.3);
+        }
+
+        .shop-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .upgrade-card {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .upgrade-card:hover {
+            transform: translateX(-5px);
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .upgrade-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .upgrade-card.locked:hover {
+            transform: none;
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+        .upgrade-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .upgrade-icon {
+            font-size: 32px;
+        }
+
+        .upgrade-info {
+            flex: 1;
+            margin: 0 15px;
+        }
+
+        .upgrade-name {
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-description {
+            color: #a0aec0;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-level {
+            color: #ffd700;
+            font-size: 12px;
+        }
+
+        .upgrade-cost {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .upgrade-cost.expensive {
+            background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+        }
+
+        .upgrade-effect {
+            background: rgba(102, 126, 234, 0.2);
+            padding: 8px;
+            border-radius: 8px;
+            color: #a0aec0;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+        }
+
+        .achievements {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .achievement {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .achievement.unlocked {
+            border-color: #ffd700;
+            box-shadow: 0 3px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .achievement-icon {
+            font-size: 32px;
+            filter: grayscale(100%);
+        }
+
+        .achievement.unlocked .achievement-icon {
+            filter: none;
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-name {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .achievement-desc {
+            color: #a0aec0;
+            font-size: 12px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateX(500px);
+            transition: transform 0.5s ease;
+            z-index: 1000;
+            max-width: 350px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .notification-message {
+            font-size: 14px;
+        }
+
+        .floating-money {
+            position: absolute;
+            color: #48bb78;
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleFloat 2s ease-out forwards;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .left-sidebar, .right-sidebar {
+                width: 280px;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .game-container {
+                flex-direction: column;
+            }
+            .left-sidebar, .right-sidebar {
+                width: 100%;
+                height: auto;
+            }
+        }
+
+        .prestige-section {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .prestige-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .prestige-button {
+            background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(252, 70, 107, 0.4);
+        }
+
+        .prestige-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(252, 70, 107, 0.6);
+        }
+
+        .prestige-multiplier {
+            color: #2d3748;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- SIDEBAR GAUCHE -->
+        <div class="left-sidebar">
+            <div class="player-card">
+                <div class="player-avatar">🎨</div>
+                <div class="player-name" id="playerName">Artiste Débutant</div>
+                <div class="player-title" id="playerTitle">Apprenti</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">💰 Argent</div>
+                <div class="stat-value" id="money">0€</div>
+                <div class="stat-per-sec" id="moneyPerSec">+0€/s</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">🏆 Niveau</div>
+                <div class="stat-value" id="level">1</div>
+                <div class="level-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="xpBar">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">🖼️ Tableaux Vendus</div>
+                <div class="stat-value" id="paintingsSold">0</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">⭐ Points de Prestige</div>
+                <div class="stat-value" id="prestigePoints">0</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">🏠 Atelier</div>
+                <div class="stat-value" id="studioName">Garage</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-label">📊 Statistiques</div>
+                <div class="stat-per-sec" style="margin-top: 10px;">
+                    <div>Clicks: <span id="totalClicks">0</span></div>
+                    <div>Temps de jeu: <span id="playTime">0m</span></div>
+                    <div>Revenus totaux: <span id="totalEarnings">0€</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ZONE CENTRALE -->
+        <div class="main-area">
+            <div class="header">
+                <div class="game-title">🎨 ART EMPIRE 🎨</div>
+                <div class="quick-stats">
+                    <div class="quick-stat">
+                        <div class="quick-stat-value" id="quickMoney">0€</div>
+                        <div class="quick-stat-label">Argent</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value" id="quickPaintings">0</div>
+                        <div class="quick-stat-label">Tableaux</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value" id="quickLevel">1</div>
+                        <div class="quick-stat-label">Niveau</div>
+                    </div>
+                    <div class="quick-stat">
+                        <div class="quick-stat-value" id="quickPerSec">0€/s</div>
+                        <div class="quick-stat-label">Par seconde</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workshop">
+                <div class="workshop-title">🖌️ Votre Atelier</div>
+                
+                <div class="canvas-container" id="canvas">
+                    <div class="canvas">
+                        <div class="canvas-art" id="canvasArt"></div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="painting-progress-bar">
+                        <div class="painting-progress-fill" id="paintingProgress">0%</div>
+                    </div>
+                </div>
+
+                <div>
+                    <button class="action-button" id="paintBtn">
+                        🖌️ Peindre (+<span id="clickValue">1</span>%)
+                    </button>
+                    <button class="action-button sell" id="sellBtn" disabled>
+                        💰 Vendre le Tableau (<span id="paintingValue">0</span>€)
+                    </button>
+                </div>
+
+                <div style="margin-top: 20px; color: #666;">
+                    <p>💡 Cliquez sur la toile ou appuyez sur ESPACE pour peindre !</p>
+                    <p>Progression: <span id="paintingPercentage">0</span>% / 100%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR DROITE -->
+        <div class="right-sidebar">
+            <div class="tabs">
+                <button class="tab active" data-tab="upgrades">🛒 Améliorations</button>
+                <button class="tab" data-tab="achievements">🏆 Succès</button>
+            </div>
+
+            <div id="upgradesTab" class="tab-content">
+                <div class="shop-section">
+                    <div class="section-title">🖌️ Équipement</div>
+                    <div id="equipmentUpgrades"></div>
+                </div>
+
+                <div class="shop-section">
+                    <div class="section-title">🏠 Ateliers</div>
+                    <div id="studioUpgrades"></div>
+                </div>
+
+                <div class="shop-section">
+                    <div class="section-title">👥 Assistants</div>
+                    <div id="assistantUpgrades"></div>
+                </div>
+
+                <div class="prestige-section">
+                    <div class="prestige-title">⭐ PRESTIGE ⭐</div>
+                    <p style="color: #2d3748; margin-bottom: 15px;">
+                        Recommencez avec un bonus permanent !
+                    </p>
+                    <button class="prestige-button" id="prestigeBtn">
+                        Prestige (Besoin: 1M€)
+                    </button>
+                    <div class="prestige-multiplier" id="prestigeMultiplier">
+                        Multiplicateur actuel: x1.0
+                    </div>
+                </div>
+            </div>
+
+            <div id="achievementsTab" class="tab-content" style="display: none;">
+                <div class="section-title">🏆 Vos Succès</div>
+                <div class="achievements" id="achievementsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <div class="notification-title" id="notifTitle"></div>
+        <div class="notification-message" id="notifMessage"></div>
+    </div>
+
+    <script>
+        // État du jeu
+        const game = {
+            money: 0,
+            totalEarnings: 0,
+            paintingProgress: 0,
+            paintingsSold: 0,
+            level: 1,
+            xp: 0,
+            xpNeeded: 100,
+            clickPower: 1,
+            moneyPerSecond: 0,
+            totalClicks: 0,
+            playTime: 0,
+            prestigePoints: 0,
+            prestigeMultiplier: 1,
+            currentStudio: 0,
+            
+            upgrades: {
+                // Équipement
+                brush: { level: 0, cost: 10, multiplier: 1.5, icon: '🖌️', name: 'Pinceau', desc: 'Augmente la vitesse de peinture' },
+                paint: { level: 0, cost: 50, multiplier: 1.5, icon: '🎨', name: 'Peinture de Qualité', desc: 'Meilleure valeur des tableaux' },
+                easel: { level: 0, cost: 200, multiplier: 1.5, icon: '🖼️', name: 'Chevalet Pro', desc: '+10% par click' },
+                palette: { level: 0, cost: 500, multiplier: 1.5, icon: '🎭', name: 'Palette Premium', desc: 'Bonus de couleurs' },
+                canvas: { level: 0, cost: 1000, multiplier: 1.5, icon: '🖌️', name: 'Toile de Maître', desc: 'Toiles de meilleure qualité' },
+                
+                // Ateliers
+                studio1: { level: 0, cost: 5000, multiplier: 1.8, icon: '🏠', name: 'Petit Atelier', desc: '+50€/s', passive: 50 },
+                studio2: { level: 0, cost: 25000, multiplier: 1.8, icon: '🏢', name: 'Grand Atelier', desc: '+250€/s', passive: 250, unlock: 10 },
+                studio3: { level: 0, cost: 100000, multiplier: 1.8, icon: '🏛️', name: 'Galerie d\'Art', desc: '+1000€/s', passive: 1000, unlock: 20 },
+                studio4: { level: 0, cost: 500000, multiplier: 1.8, icon: '🏰', name: 'Musée Privé', desc: '+5000€/s', passive: 5000, unlock: 30 },
+                
+                // Assistants
+                assistant1: { level: 0, cost: 2000, multiplier: 1.6, icon: '👤', name: 'Apprenti', desc: '+25€/s', passive: 25 },
+                assistant2: { level: 0, cost: 10000, multiplier: 1.6, icon: '👥', name: 'Artiste Junior', desc: '+100€/s', passive: 100, unlock: 15 },
+                assistant3: { level: 0, cost: 50000, multiplier: 1.6, icon: '👨‍🎨', name: 'Maître Artiste', desc: '+500€/s', passive: 500, unlock: 25 },
+                assistant4: { level: 0, cost: 250000, multiplier: 1.6, icon: '🎖️', name: 'Légende Vivante', desc: '+2500€/s', passive: 2500, unlock: 35 }
+            },
+            
+            achievements: [
+                { id: 'first_paint', name: 'Premier Coup de Pinceau', desc: 'Peindre votre premier tableau', icon: '🎨', unlocked: false, check: () => game.paintingsSold >= 1 },
+                { id: 'paint_10', name: 'Artiste Prometteur', desc: 'Vendre 10 tableaux', icon: '🖼️', unlocked: false, check: () => game.paintingsSold >= 10 },
+                { id: 'paint_100', name: 'Productivité Artistique', desc: 'Vendre 100 tableaux', icon: '🏆', unlocked: false, check: () => game.paintingsSold >= 100 },
+                { id: 'millionaire', name: 'Millionnaire', desc: 'Gagner 1 000 000€', icon: '💰', unlocked: false, check: () => game.totalEarnings >= 1000000 },
+                { id: 'level_10', name: 'Niveau 10', desc: 'Atteindre le niveau 10', icon: '⭐', unlocked: false, check: () => game.level >= 10 },
+                { id: 'level_50', name: 'Maître Artiste', desc: 'Atteindre le niveau 50', icon: '👑', unlocked: false, check: () => game.level >= 50 },
+                { id: 'clicks_1000', name: 'Marathonien du Click', desc: 'Cliquer 1000 fois', icon: '🖱️', unlocked: false, check: () => game.totalClicks >= 1000 },
+                { id: 'passive_income', name: 'Revenu Passif', desc: 'Générer 100€/s', icon: '💸', unlocked: false, check: () => game.moneyPerSecond >= 100 },
+                { id: 'first_upgrade', name: 'Première Amélioration', desc: 'Acheter votre première amélioration', icon: '🛒', unlocked: false, check: () => Object.values(game.upgrades).some(u => u.level > 0) },
+                { id: 'prestige', name: 'Renaissance Artistique', desc: 'Faire votre premier prestige', icon: '⭐', unlocked: false, check: () => game.prestigePoints > 0 }
+            ]
+        };
+
+        // Couleurs pour les tableaux
+        const paintingColors = [
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+            'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+            'linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)',
+            'linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)'
+        ];
+
+        let currentPaintingColor = 0;
+
+        // Initialisation
+        function init() {
+            loadGame();
+            renderUpgrades();
+            renderAchievements();
+            updateUI();
+            
+            // Boucle de jeu
+            setInterval(gameLoop, 100);
+            setInterval(saveGame, 5000);
+            setInterval(() => {
+                game.playTime++;
+                updatePlayTime();
+            }, 60000);
+            
+            // Event Listeners
+            document.getElementById('canvas').addEventListener('click', paint);
+            document.getElementById('paintBtn').addEventListener('click', paint);
+            document.getElementById('sellBtn').addEventListener('click', sellPainting);
+            document.getElementById('prestigeBtn').addEventListener('click', prestige);
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    paint();
+                }
+            });
+            
+            // Tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    const tabName = tab.dataset.tab;
+                    document.getElementById('upgradesTab').style.display = tabName === 'upgrades' ? 'block' : 'none';
+                    document.getElementById('achievementsTab').style.display = tabName === 'achievements' ? 'block' : 'none';
+                });
+            });
+        }
+
+        // Boucle de jeu
+        function gameLoop() {
+            // Revenu passif
+            const passiveIncome = game.moneyPerSecond / 10;
+            if (passiveIncome > 0) {
+                game.money += passiveIncome * game.prestigeMultiplier;
+                game.totalEarnings += passiveIncome * game.prestigeMultiplier;
+            }
+            
+            updateUI();
+            checkAchievements();
+        }
+
+        // Peindre
+        function paint() {
+            const clickValue = getClickValue();
+            game.paintingProgress += clickValue;
+            game.totalClicks++;
+            
+            if (game.paintingProgress > 100) {
+                game.paintingProgress = 100;
+            }
+            
+            // Effet visuel
+            createPaintEffect();
+            
+            // Mise à jour UI
+            updatePaintingProgress();
+            
+            if (game.paintingProgress >= 100) {
+                document.getElementById('sellBtn').disabled = false;
+            }
+        }
+
+        // Créer effet de peinture
+        function createPaintEffect() {
+            const canvas = document.getElementById('canvas');
+            const rect = canvas.getBoundingClientRect();
+            
+            const x = Math.random() * rect.width;
+            const y = Math.random() * rect.height;
+            
+            const effect = document.createElement('div');
+            effect.className = 'paint-effect';
+            effect.style.left = x + 'px';
+            effect.style.top = y + 'px';
+            effect.style.background = paintingColors[currentPaintingColor];
+            
+            canvas.appendChild(effect);
+            
+            setTimeout(() => effect.remove(), 500);
+            
+            // Particules
+            for (let i = 0; i < 5; i++) {
+                createParticle(rect.left + x, rect.top + y);
+            }
+        }
+
+        // Créer particule
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            particle.style.background = paintingColors[currentPaintingColor];
+            particle.style.setProperty('--tx', (Math.random() - 0.5) * 100 + 'px');
+            particle.style.setProperty('--ty', (Math.random() - 0.5) * 100 + 'px');
+            
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 2000);
+        }
+
+        // Vendre tableau
+        function sellPainting() {
+            const value = getPaintingValue();
+            game.money += value;
+            game.totalEarnings += value;
+            game.paintingsSold++;
+            game.paintingProgress = 0;
+            
+            // XP
+            const xpGain = Math.floor(value / 10);
+            addXP(xpGain);
+            
+            // Nouvelle couleur
+            currentPaintingColor = (currentPaintingColor + 1) % paintingColors.length;
+            document.getElementById('canvasArt').style.background = paintingColors[currentPaintingColor];
+            
+            // Effet d'argent
+            showFloatingMoney(value);
+            
+            // Notification
+            showNotification('Tableau Vendu !', `+${formatNumber(value)}€ | +${xpGain} XP`);
+            
+            document.getElementById('sellBtn').disabled = true;
+            updateUI();
+        }
+
+        // Valeur du click
+        function getClickValue() {
+            let base = game.clickPower;
+            
+            // Bonus des améliorations
+            base += game.upgrades.brush.level * 0.5;
+            base += game.upgrades.easel.level * 1;
+            base += game.upgrades.palette.level * 0.8;
+            
+            // Multiplicateur de prestige
+            base *= game.prestigeMultiplier;
+            
+            return base;
+        }
+
+        // Valeur du tableau
+        function getPaintingValue() {
+            let base = 10 + (game.level * 5);
+            
+            // Bonus des améliorations
+            base *= (1 + game.upgrades.paint.level * 0.2);
+            base *= (1 + game.upgrades.canvas.level * 0.3);
+            
+            // Multiplicateur de prestige
+            base *= game.prestigeMultiplier;
+            
+            return Math.floor(base);
+        }
+
+        // Ajouter XP
+        function addXP(amount) {
+            game.xp += amount;
+            
+            while (game.xp >= game.xpNeeded) {
+                game.xp -= game.xpNeeded;
+                game.level++;
+                game.xpNeeded = Math.floor(game.xpNeeded * 1.5);
+                
+                showNotification('Niveau Supérieur !', `Niveau ${game.level} atteint ! 🎉`);
+                
+                // Bonus de niveau
+                game.clickPower += 0.5;
+            }
+        }
+
+        // Acheter amélioration
+        function buyUpgrade(upgradeId) {
+            const upgrade = game.upgrades[upgradeId];
+            const cost = getUpgradeCost(upgradeId);
+            
+            // Vérifier niveau requis
+            if (upgrade.unlock && game.level < upgrade.unlock) {
+                showNotification('Niveau Insuffisant', `Niveau ${upgrade.unlock} requis`);
+                return;
+            }
+            
+            if (game.money >= cost) {
+                game.money -= cost;
+                upgrade.level++;
+                
+                // Calculer revenu passif
+                calculatePassiveIncome();
+                
+                showNotification('Amélioration Achetée !', `${upgrade.name} niveau ${upgrade.level}`);
+                renderUpgrades();
+                updateUI();
+            } else {
+                showNotification('Fonds Insuffisants', `Il vous manque ${formatNumber(cost - game.money)}€`);
+            }
+        }
+
+        // Coût d'amélioration
+        function getUpgradeCost(upgradeId) {
+            const upgrade = game.upgrades[upgradeId];
+            return Math.floor(upgrade.cost * Math.pow(upgrade.multiplier, upgrade.level));
+        }
+
+        // Calculer revenu passif
+        function calculatePassiveIncome() {
+            game.moneyPerSecond = 0;
+            
+            Object.entries(game.upgrades).forEach(([id, upgrade]) => {
+                if (upgrade.passive && upgrade.level > 0) {
+                    game.moneyPerSecond += upgrade.passive * upgrade.level;
+                }
+            });
+        }
+
+        // Prestige
+        function prestige() {
+            if (game.totalEarnings < 1000000) {
+                showNotification('Prestige Impossible', 'Vous devez avoir gagné 1 000 000€ au total');
+                return;
+            }
+            
+            if (confirm('⭐ PRESTIGE ⭐\n\nVous allez recommencer depuis le début mais avec un multiplicateur permanent de x1.5 !\n\nContinuer ?')) {
+                game.prestigePoints++;
+                game.prestigeMultiplier = 1 + (game.prestigePoints * 0.5);
+                
+                // Reset
+                game.money = 0;
+                game.paintingProgress = 0;
+                game.paintingsSold = 0;
+                game.level = 1;
+                game.xp = 0;
+                game.xpNeeded = 100;
+                game.clickPower = 1;
+                game.totalClicks = 0;
+                
+                Object.keys(game.upgrades).forEach(key => {
+                    game.upgrades[key].level = 0;
+                });
+                
+                calculatePassiveIncome();
+                renderUpgrades();
+                updateUI();
+                
+                showNotification('✨ PRESTIGE ACCOMPLI ✨', `Multiplicateur: x${game.prestigeMultiplier.toFixed(1)}`);
+            }
+        }
+
+        // Render améliorations
+        function renderUpgrades() {
+            const equipment = ['brush', 'paint', 'easel', 'palette', 'canvas'];
+            const studios = ['studio1', 'studio2', 'studio3', 'studio4'];
+            const assistants = ['assistant1', 'assistant2', 'assistant3', 'assistant4'];
+            
+            renderUpgradeCategory('equipmentUpgrades', equipment);
+            renderUpgradeCategory('studioUpgrades', studios);
+            renderUpgradeCategory('assistantUpgrades', assistants);
+        }
+
+        function renderUpgradeCategory(containerId, upgradeIds) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            upgradeIds.forEach(id => {
+                const upgrade = game.upgrades[id];
+                const cost = getUpgradeCost(id);
+                const canAfford = game.money >= cost;
+                const isLocked = upgrade.unlock && game.level < upgrade.unlock;
+                
+                const card = document.createElement('div');
+                card.className = 'upgrade-card' + (isLocked ? ' locked' : '');
+                
+                let effect = upgrade.desc;
+                if (upgrade.passive) {
+                    effect = `+${upgrade.passive * (upgrade.level + 1)}€/s total`;
+                }
+                
+                card.innerHTML = `
+                    <div class="upgrade-header">
+                        <div class="upgrade-icon">${upgrade.icon}</div>
+                        <div class="upgrade-info">
+                            <div class="upgrade-name">${upgrade.name}</div>
+                            <div class="upgrade-description">${upgrade.desc}</div>
+                            <div class="upgrade-level">Niveau: ${upgrade.level}</div>
+                        </div>
+                        <div class="upgrade-cost ${cost > 100000 ? 'expensive' : ''}">
+                            ${formatNumber(cost)}€
+                        </div>
+                    </div>
+                    <div class="upgrade-effect">
+                        ${isLocked ? `🔒 Niveau ${upgrade.unlock} requis` : effect}
+                    </div>
+                `;
+                
+                if (!isLocked) {
+                    card.addEventListener('click', () => buyUpgrade(id));
+                }
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Render succès
+        function renderAchievements() {
+            const container = document.getElementById('achievementsList');
+            container.innerHTML = '';
+            
+            game.achievements.forEach(achievement => {
+                const div = document.createElement('div');
+                div.className = 'achievement' + (achievement.unlocked ? ' unlocked' : '');
+                
+                div.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-info">
+                        <div class="achievement-name">${achievement.name}</div>
+                        <div class="achievement-desc">${achievement.desc}</div>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        // Vérifier succès
+        function checkAchievements() {
+            game.achievements.forEach(achievement => {
+                if (!achievement.unlocked && achievement.check()) {
+                    achievement.unlocked = true;
+                    showNotification('🏆 Succès Débloqué !', achievement.name);
+                    renderAchievements();
+                }
+            });
+        }
+
+        // Mise à jour UI
+        function updateUI() {
+            // Argent
+            document.getElementById('money').textContent = formatNumber(game.money) + '€';
+            document.getElementById('quickMoney').textContent = formatNumber(game.money) + '€';
+            document.getElementById('moneyPerSec').textContent = '+' + formatNumber(game.moneyPerSecond * game.prestigeMultiplier) + '€/s';
+            document.getElementById('quickPerSec').textContent = formatNumber(game.moneyPerSecond * game.prestigeMultiplier) + '€/s';
+            
+            // Niveau
+            document.getElementById('level').textContent = game.level;
+            document.getElementById('quickLevel').textContent = game.level;
+            const xpPercent = (game.xp / game.xpNeeded) * 100;
+            document.getElementById('xpBar').style.width = xpPercent + '%';
+            document.getElementById('xpBar').textContent = Math.floor(xpPercent) + '%';
+            
+            // Tableaux
+            document.getElementById('paintingsSold').textContent = game.paintingsSold;
+            document.getElementById('quickPaintings').textContent = game.paintingsSold;
+            
+            // Prestige
+            document.getElementById('prestigePoints').textContent = game.prestigePoints;
+            document.getElementById('prestigeMultiplier').textContent = `Multiplicateur actuel: x${game.prestigeMultiplier.toFixed(1)}`;
+            
+            // Stats
+            document.getElementById('totalClicks').textContent = game.totalClicks;
+            document.getElementById('totalEarnings').textContent = formatNumber(game.totalEarnings) + '€';
+            
+            // Valeurs
+            document.getElementById('clickValue').textContent = getClickValue().toFixed(1);
+            document.getElementById('paintingValue').textContent = formatNumber(getPaintingValue());
+            
+            // Titre joueur
+            updatePlayerTitle();
+        }
+
+        // Mise à jour progression peinture
+        function updatePaintingProgress() {
+            const percent = Math.min(100, game.paintingProgress);
+            document.getElementById('paintingProgress').style.width = percent + '%';
+            document.getElementById('paintingProgress').textContent = Math.floor(percent) + '%';
+            document.getElementById('paintingPercentage').textContent = Math.floor(percent);
+        }
+
+        // Mise à jour titre joueur
+        function updatePlayerTitle() {
+            let title = 'Apprenti';
+            let name = 'Artiste Débutant';
+            
+            if (game.level >= 50) {
+                title = 'Légende Vivante';
+                name = 'Maître Absolu';
+            } else if (game.level >= 40) {
+                title = 'Maître Reconnu';
+                name = 'Artiste de Renom';
+            } else if (game.level >= 30) {
+                title = 'Artiste Célèbre';
+                name = 'Peintre Émérite';
+            } else if (game.level >= 20) {
+                title = 'Artiste Confirmé';
+                name = 'Peintre Talentueux';
+            } else if (game.level >= 10) {
+                title = 'Artiste Prometteur';
+                name = 'Peintre Compétent';
+            }
+            
+            document.getElementById('playerName').textContent = name;
+            document.getElementById('playerTitle').textContent = title;
+        }
+
+        // Mise à jour temps de jeu
+        function updatePlayTime() {
+            const hours = Math.floor(game.playTime / 60);
+            const minutes = game.playTime % 60;
+            
+            if (hours > 0) {
+                document.getElementById('playTime').textContent = `${hours}h ${minutes}m`;
+            } else {
+                document.getElementById('playTime').textContent = `${minutes}m`;
+            }
+        }
+
+        // Afficher argent flottant
+        function showFloatingMoney(amount) {
+            const canvas = document.getElementById('canvas');
+            const rect = canvas.getBoundingClientRect();
+            
+            const money = document.createElement('div');
+            money.className = 'floating-money';
+            money.textContent = '+' + formatNumber(amount) + '€';
+            money.style.left = (rect.left + rect.width / 2) + 'px';
+            money.style.top = (rect.top + rect.height / 2) + 'px';
+            
+            document.body.appendChild(money);
+            setTimeout(() => money.remove(), 1000);
+        }
+
+        // Afficher notification
+        function showNotification(title, message) {
+            const notif = document.getElementById('notification');
+            document.getElementById('notifTitle').textContent = title;
+            document.getElementById('notifMessage').textContent = message;
+            
+            notif.classList.add('show');
+            
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        }
+
+        // Formater nombre
+        function formatNumber(num) {
+            if (num >= 1000000000) return (num / 1000000000).toFixed(2) + 'B';
+            if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(2) + 'K';
+            return Math.floor(num);
+        }
+
+        // Sauvegarder
+        function saveGame() {
+            localStorage.setItem('artEmpireSave', JSON.stringify(game));
+        }
+
+        // Charger
+        function loadGame() {
+            const save = localStorage.getItem('artEmpireSave');
+            if (save) {
+                const loaded = JSON.parse(save);
+                Object.assign(game, loaded);
+                calculatePassiveIncome();
+                document.getElementById('canvasArt').style.background = paintingColors[currentPaintingColor];
+            }
+        }
+
+        // Démarrer le jeu
+        init();
+    </script>
+</body>
+</html>
