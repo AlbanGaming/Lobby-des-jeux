@@ -2042,25 +2042,24 @@
         // Save user data
         function saveUserData() {
             try {
-                const dataStr = JSON.stringify(userData);
-                const compressed = btoa(dataStr);
-                localStorage.setItem('gameverse_user_data', compressed);
+                document.cookie = `gameverse_user_data=${JSON.stringify(userData)}; path=/; max-age=${60*60*24*365}`; // 1 an
+                console.log("Données sauvegardées dans un cookie !");
             } catch (e) {
-                console.error('Erreur de sauvegarde:', e);
+                console.error("Erreur de sauvegarde :", e);
             }
         }
 
-        // Load user data
         function loadUserData() {
             try {
-                const compressed = localStorage.getItem('gameverse_user_data');
-                if (compressed) {
-                    const dataStr = atob(compressed);
-                    const loaded = JSON.parse(dataStr);
-                    userData = { ...userData, ...loaded };
+                const cookies = document.cookie.split(';').map(c => c.trim());
+                const userCookie = cookies.find(c => c.startsWith('gameverse_user_data='));
+                if (userCookie) {
+                    const dataStr = userCookie.split('=')[1];
+                    userData = JSON.parse(decodeURIComponent(dataStr));
+                    console.log("Données chargées depuis le cookie !");
                 }
             } catch (e) {
-                console.error('Erreur de chargement:', e);
+                console.error("Erreur de chargement :", e);
             }
         }
 
