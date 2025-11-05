@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Manager Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Écran de configuration -->
+    <div class="setup-screen" id="setupScreen">
+        <h1>🏎️ F1 MANAGER</h1>
+        <h2>Créez votre écurie et dominez la F1</h2>
+        <div class="form-group">
+            <label>Nom de l'écurie</label>
+            <input type="text" id="teamName" placeholder="Entrez le nom de votre écurie" value="Racing Team">
+        </div>
+        <div class="form-group">
+            <label>Année de début</label>
+            <select id="startYear">
+                <option value="2022">2022 - Nouvelle réglementation (effet de sol)</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Couleurs de l'écurie</label>
+            <div class="color-inputs">
+                <div>
+                    <label>Couleur principale</label>
+                    <input type="color" id="primaryColor" value="#e94560">
+                </div>
+                <div>
+                    <label>Couleur secondaire</label>
+                    <input type="color" id="secondaryColor" value="#0f3460">
+                </div>
+            </div>
+        </div>
+        <button class="btn" onclick="startGame()">DÉMARRER LA SAISON</button>
+    </div>
+
+    <!-- Interface du jeu -->
+    <div class="game-container" id="gameContainer">
+        <!-- En-tête avec statistiques -->
+        <div class="header">
+            <h1 id="teamNameDisplay">🏎️ ÉCURIE</h1>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">💰 Argent</div>
+                    <div class="stat-value" id="money">50M €</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">🔬 Points R&D</div>
+                    <div class="stat-value" id="rdPoints">100</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">⏰ Temps ingénieurs</div>
+                    <div class="stat-value" id="engineerTime">0 / 300</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">👷 Ingénieurs</div>
+                    <div class="stat-value" id="engineers">15</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">📅 Semaine</div>
+                    <div class="stat-value" id="currentWeek">1 / 52</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">🏁 Prochaine course</div>
+                    <div class="stat-value" id="nextRace">Bahrain (S3)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">💼 Budget Cap</div>
+                    <div class="stat-value" id="budgetCap">0M / 140M</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">🏆 Position</div>
+                    <div class="stat-value" id="position">10ème</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Onglets -->
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('home')">🏠 Accueil</div>
+            <div class="tab" onclick="switchTab('aero')">✈️ R&D Aéro</div>
+            <div class="tab" onclick="switchTab('chassis')">🏗️ R&D Châssis</div>
+            <div class="tab" onclick="switchTab('engine')">⚙️ R&D Moteur</div>
+            <div class="tab" onclick="switchTab('electronics')">📡 R&D Électronique</div>
+            <div class="tab" onclick="switchTab('brakes')">🛑 R&D Freins</div>
+            <div class="tab" onclick="switchTab('manufacturing')">🏭 Fabrication</div>
+            <div class="tab" onclick="switchTab('team')">💼 Gestion Équipe</div>
+            <div class="tab" onclick="switchTab('history')">📚 Historique</div>
+        </div>
+
+        <!-- Contenu -->
+        <div class="content" id="content"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/main.js"></script>
+    <script src="scripts/home.js"></script>
+    <script src="scripts/aero.js"></script>
+    <script src="scripts/chassis.js"></script>
+    <script src="scripts/engine.js"></script>
+    <script src="scripts/electronics.js"></script>
+    <script src="scripts/brakes.js"></script>
+    <script src="scripts/manufacturing.js"></script>
+    <script src="scripts/team.js"></script>
+    <script src="scripts/history.js"></script>
+</body>
+</html>
