@@ -675,7 +675,7 @@
         <!-- ZONE CENTRALE -->
         <div class="main-area">
             <div class="header">
-                <div class="game-title">🎨 ART EMPIRE 🎨</div>
+                <div class="game-title">🎨 PAINT EMPIRE 🎨</div>
                 <div class="quick-stats">
                     <div class="quick-stat">
                         <div class="quick-stat-value" id="quickMoney">0€</div>
@@ -786,7 +786,7 @@
             level: 1,
             xp: 0,
             xpNeeded: 100,
-            clickPower: 1,
+            clickPower: 2,
             moneyPerSecond: 0,
             totalClicks: 0,
             playTime: 0,
@@ -796,8 +796,8 @@
             
             upgrades: {
                 // Équipement
-                brush: { level: 0, cost: 10, multiplier: 1.5, icon: '🖌️', name: 'Pinceau', desc: 'Augmente la vitesse de peinture' },
-                paint: { level: 0, cost: 50, multiplier: 1.5, icon: '🎨', name: 'Peinture de Qualité', desc: 'Meilleure valeur des tableaux' },
+                brush: { level: 0, cost: 10, multiplier: 2, icon: '🖌️', name: 'Pinceau', desc: 'Augmente la vitesse de peinture' },
+                paint: { level: 0, cost: 50, multiplier: 2, icon: '🎨', name: 'Peinture de Qualité', desc: 'Meilleure valeur des tableaux' },
                 easel: { level: 0, cost: 200, multiplier: 1.5, icon: '🖼️', name: 'Chevalet Pro', desc: '+10% par click' },
                 palette: { level: 0, cost: 500, multiplier: 1.5, icon: '🎭', name: 'Palette Premium', desc: 'Bonus de couleurs' },
                 canvas: { level: 0, cost: 1000, multiplier: 1.5, icon: '🖌️', name: 'Toile de Maître', desc: 'Toiles de meilleure qualité' },
@@ -809,10 +809,11 @@
                 studio4: { level: 0, cost: 500000, multiplier: 1.8, icon: '🏰', name: 'Musée Privé', desc: '+5000€/s', passive: 5000, unlock: 30 },
                 
                 // Assistants
-                assistant1: { level: 0, cost: 2000, multiplier: 1.6, icon: '👤', name: 'Apprenti', desc: '+25€/s', passive: 25 },
-                assistant2: { level: 0, cost: 10000, multiplier: 1.6, icon: '👥', name: 'Artiste Junior', desc: '+100€/s', passive: 100, unlock: 15 },
+                assistant1: { level: 0, cost: 1500, multiplier: 1.6, icon: '👤', name: 'Apprenti', desc: '+25€/s', passive: 25 },
+                assistant2: { level: 0, cost: 5000, multiplier: 1.6, icon: '👥', name: 'Artiste Junior', desc: '+100€/s', passive: 100, unlock: 15 },
                 assistant3: { level: 0, cost: 50000, multiplier: 1.6, icon: '👨‍🎨', name: 'Maître Artiste', desc: '+500€/s', passive: 500, unlock: 25 },
-                assistant4: { level: 0, cost: 250000, multiplier: 1.6, icon: '🎖️', name: 'Légende Vivante', desc: '+2500€/s', passive: 2500, unlock: 35 }
+                assistant4: { level: 0, cost: 100000, multiplier: 1.6, icon: '🎖️', name: 'Légende Vivante', desc: '+2500€/s', passive: 2500, unlock: 35 },
+                assistant4: { level: 0, cost: 250000, multiplier: 1.6, icon: '🦸‍♂️', name: 'Surhumain', desc: '+5000€/s', passive: 5000, unlock: 35 }
             },
             
             achievements: [
