@@ -1775,8 +1775,12 @@
             userData.gamesStats[gameId].plays++;
             userData.gamesStats[gameId].time += Math.floor(Math.random() * 300) + 60; // Simulate time
             userData.totalPlays++;
+            
+            // Calculate level based on total plays
+            userData.level = Math.floor(userData.totalPlays / 5) + 1;
 
             saveUserData();
+            console.log('🎮 Lancement du jeu:', gameId, 'Stats:', userData.gamesStats[gameId]);
 
             setTimeout(() => {
                 window.location.href = page;
@@ -1790,8 +1794,10 @@
             
             if (index > -1) {
                 userData.favorites.splice(index, 1);
+                console.log('💔 Retiré des favoris:', gameId);
             } else {
                 userData.favorites.push(gameId);
+                console.log('❤️ Ajouté aux favoris:', gameId);
             }
 
             saveUserData();
@@ -1920,6 +1926,7 @@
             saveUserData();
             updateUI();
             renderAvatarGrid();
+            console.log('🎭 Avatar changé:', avatar);
         }
 
         // Save username
@@ -1931,6 +1938,7 @@
                 userData.username = username.toUpperCase();
                 saveUserData();
                 updateUI();
+                console.log('✏️ Pseudo enregistré:', username);
                 alert('Pseudo enregistré ! 🎮');
             } else {
                 alert('Le pseudo doit contenir au moins 3 caractères !');
@@ -1954,7 +1962,20 @@
 
             document.getElementById('usernameInput').value = userData.username;
 
+            // Update toggle switches in settings modal
+            Object.keys(userData.settings).forEach(setting => {
+                const toggles = document.querySelectorAll(`[onclick*="${setting}"]`);
+                toggles.forEach(toggle => {
+                    if (userData.settings[setting]) {
+                        toggle.classList.add('active');
+                    } else {
+                        toggle.classList.remove('active');
+                    }
+                });
+            });
+
             updateScoreboard();
+            console.log('🔄 UI mise à jour avec:', userData);
         }
 
         // Update scoreboard
@@ -2002,6 +2023,7 @@
             element.classList.toggle('active');
             userData.settings[setting] = element.classList.contains('active');
             saveUserData();
+            console.log('⚙️ Paramètre modifié:', setting, userData.settings[setting]);
         }
 
         // Reset all data
@@ -2042,24 +2064,33 @@
         // Save user data
         function saveUserData() {
             try {
-                document.cookie = `gameverse_user_data=${JSON.stringify(userData)}; path=/; max-age=${60*60*24*365}`; // 1 an
-                console.log("Données sauvegardées dans un cookie !");
+                localStorage.setItem('gameverse_user_data', JSON.stringify(userData));
+                console.log('✅ Données sauvegardées !', userData);
             } catch (e) {
-                console.error("Erreur de sauvegarde :", e);
+                console.error('❌ Erreur de sauvegarde:', e);
+                alert('Erreur lors de la sauvegarde des données !');
             }
         }
 
+        // Load user data
         function loadUserData() {
             try {
-                const cookies = document.cookie.split(';').map(c => c.trim());
-                const userCookie = cookies.find(c => c.startsWith('gameverse_user_data='));
-                if (userCookie) {
-                    const dataStr = userCookie.split('=')[1];
-                    userData = JSON.parse(decodeURIComponent(dataStr));
-                    console.log("Données chargées depuis le cookie !");
+                const saved = localStorage.getItem('gameverse_user_data');
+                if (saved) {
+                    const loaded = JSON.parse(saved);
+                    // Merge avec les données par défaut pour éviter les erreurs
+                    userData = {
+                        ...userData,
+                        ...loaded,
+                        settings: { ...userData.settings, ...(loaded.settings || {}) }
+                    };
+                    console.log('✅ Données chargées !', userData);
+                } else {
+                    console.log('ℹ️ Aucune sauvegarde trouvée, utilisation des données par défaut');
                 }
             } catch (e) {
-                console.error("Erreur de chargement :", e);
+                console.error('❌ Erreur de chargement:', e);
+                alert('Erreur lors du chargement des données !');
             }
         }
 
