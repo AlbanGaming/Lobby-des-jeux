@@ -1772,7 +1772,9 @@
 
             saveUserData();
             updateUI();
-            renderGames(getCurrentFilter());
+            const icon = event.target;
+            icon.classList.toggle('favorited');
+            icon.textContent = userData.favorites.includes(gameId) ? '❤️' : '🤍';
         }
 
         // Share game
