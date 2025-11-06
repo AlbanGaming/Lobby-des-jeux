@@ -1378,20 +1378,6 @@
         <!-- Stats Dashboard -->
         <div class="stats-dashboard">
             <div class="stat-card-large">
-                <div class="stat-icon-large">🎯</div>
-                <div class="stat-info">
-                    <h4 id="gamesPlayed">0</h4>
-                    <p>Parties jouées</p>
-                </div>
-            </div>
-            <div class="stat-card-large">
-                <div class="stat-icon-large">⚡</div>
-                <div class="stat-info">
-                    <h4 id="bestStreak">0</h4>
-                    <p>Meilleure série</p>
-                </div>
-            </div>
-            <div class="stat-card-large">
                 <div class="stat-icon-large">🏆</div>
                 <div class="stat-info">
                     <h4 id="achievements">0</h4>
@@ -1423,12 +1409,6 @@
 
         <!-- Games Grid -->
         <div class="games-grid" id="gamesGrid"></div>
-
-        <!-- Scoreboard -->
-        <div class="scoreboard">
-            <div class="scoreboard-header">🏆 TOP SCORES 🏆</div>
-            <div class="score-entries" id="scoreEntries"></div>
-        </div>
 
         <!-- Recommendations Section -->
         <div class="recommendations">
@@ -1661,16 +1641,6 @@
                         <div class="game-name">${game.name}</div>
                         <div class="game-category-tag">
                             ${getCategoryIcon(game.category)} ${game.category}
-                        </div>
-                        <div class="game-stats">
-                            <div class="game-stat">
-                                <div class="game-stat-value">${gameStats.plays}</div>
-                                <div class="game-stat-label">Parties</div>
-                            </div>
-                            <div class="game-stat">
-                                <div class="game-stat-value">${Math.floor(gameStats.time / 60)}</div>
-                                <div class="game-stat-label">Minutes</div>
-                            </div>
                         </div>
                     </div>
                 `;
@@ -1956,9 +1926,9 @@
             const totalTimePlayed = Object.values(userData.gamesStats).reduce((sum, stat) => sum + stat.time, 0);
             document.getElementById('totalTime').textContent = Math.floor(totalTimePlayed / 3600);
             
-            document.getElementById('gamesPlayed').textContent = userData.totalPlays;
-            document.getElementById('bestStreak').textContent = userData.favorites.length * 2;
-            document.getElementById('achievements').textContent = Math.floor(userData.totalPlays / 10);
+            //document.getElementById('gamesPlayed').textContent = userData.totalPlays;
+            //document.getElementById('bestStreak').textContent = userData.favorites.length * 2;
+            //document.getElementById('achievements').textContent = Math.floor(userData.totalPlays / 10);
 
             document.getElementById('usernameInput').value = userData.username;
 
@@ -1974,7 +1944,7 @@
                 });
             });
 
-            updateScoreboard();
+            //updateScoreboard();
             console.log('🔄 UI mise à jour avec:', userData);
         }
 
