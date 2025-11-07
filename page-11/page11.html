@@ -5,6 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 Manager Game</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Style temporaire pour la barre fixe (sera déplacé dans style.css) */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-bottom: 2px solid var(--primary-color);
+            max-height: 110px;
+            overflow-y: auto;
+        }
+        .game-container {
+            margin-top: 130px;
+            padding: 20px;
+        }
+        select, input[type="number"] {
+            background: rgba(0, 0, 0, 0.2) !important;
+            border: 1px solid var(--primary-color) !important;
+            color: var(--text-color) !important;
+            padding: 8px !important;
+            border-radius: 5px !important;
+            font-family: 'Courier New', monospace !important;
+            width: 100% !important;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+        .stat-box {
+            padding: 8px 10px;
+            font-size: 0.9em;
+        }
+        .stat-value {
+            font-size: 1.1em;
+        }
+    </style>
 </head>
 <body>
     <!-- Écran de configuration -->
@@ -42,7 +82,7 @@
 
     <!-- Interface du jeu -->
     <div class="game-container" id="gameContainer">
-        <!-- En-tête avec statistiques -->
+        <!-- En-tête avec statistiques (fixe) -->
         <div class="header">
             <h1 id="teamNameDisplay">🏎️ ÉCURIE</h1>
             <div class="stats-grid">
