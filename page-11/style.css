@@ -16,8 +16,10 @@ body {
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
     color: var(--text-color);
     min-height: 100vh;
+    padding: 0;
 }
 
+/* Écran de configuration */
 .setup-screen {
     max-width: 800px;
     margin: 50px auto;
@@ -81,6 +83,7 @@ body {
     cursor: pointer;
     transition: all 0.3s;
     font-family: 'Courier New', monospace;
+    margin-top: 20px;
 }
 
 .btn:hover {
@@ -88,39 +91,38 @@ body {
     transform: translateY(-2px);
 }
 
-.game-container {
-    display: none;
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
+/* Barre de stats fixe */
 .header {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    border: 2px solid var(--primary-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border-bottom: 2px solid var(--primary-color);
+    max-height: 110px;
 }
 
 .header h1 {
     color: var(--primary-color);
     text-align: center;
-    font-size: 2em;
-    margin-bottom: 15px;
+    font-size: 1.8em;
+    margin-bottom: 10px;
 }
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
 }
 
 .stat-box {
     background: rgba(255, 255, 255, 0.05);
-    padding: 12px;
+    padding: 8px 10px;
     border-radius: 8px;
     border: 1px solid #555;
+    text-align: center;
 }
 
 .stat-label {
@@ -130,16 +132,27 @@ body {
 
 .stat-value {
     color: var(--primary-color);
-    font-size: 1.3em;
+    font-size: 1.1em;
     font-weight: bold;
-    margin-top: 5px;
+    margin-top: 3px;
 }
 
+/* Conteneur principal du jeu */
+.game-container {
+    margin-top: 130px;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+}
+
+/* Onglets */
 .tabs {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
     flex-wrap: wrap;
+    padding: 0 10px;
 }
 
 .tab {
@@ -151,6 +164,7 @@ body {
     transition: all 0.3s;
     font-family: 'Courier New', monospace;
     color: var(--text-color);
+    font-size: 0.95em;
 }
 
 .tab:hover {
@@ -163,13 +177,16 @@ body {
     color: white;
 }
 
+/* Contenu principal */
 .content {
     background: rgba(0, 0, 0, 0.3);
     padding: 25px;
     border-radius: 10px;
     border: 2px solid #555;
+    margin: 0 10px;
 }
 
+/* Grille principale */
 .main-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -192,24 +209,25 @@ body {
     padding-bottom: 10px;
 }
 
+/* Zone de clic */
 .clicker-zone {
     text-align: center;
-    padding: 30px;
+    padding: 20px;
 }
 
 .click-btn {
-    width: 200px;
-    height: 200px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color) 0%, #ff6b81 100%);
     border: 5px solid #fff;
-    font-size: 1.5em;
+    font-size: 1.3em;
     font-weight: bold;
     color: white;
     cursor: pointer;
     transition: all 0.2s;
     box-shadow: 0 10px 30px rgba(233, 69, 96, 0.5);
-    margin: 20px auto;
+    margin: 15px auto;
     display: block;
 }
 
@@ -222,31 +240,19 @@ body {
     transform: scale(0.95);
 }
 
-.action-selector {
-    margin-top: 20px;
-}
-
+/* Sélecteur d'action */
 .action-selector select {
     width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid #555;
+    padding: 10px;
+    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--primary-color);
     border-radius: 5px;
     color: var(--text-color);
     font-family: 'Courier New', monospace;
-    font-size: 1em;
-    margin-bottom: 10px;
 }
 
-.car-ascii {
-    font-size: 0.7em;
-    line-height: 1.2;
-    color: var(--primary-color);
-    text-align: center;
-    white-space: pre;
-    margin: 20px 0;
-}
-
+/* Tableaux */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -269,6 +275,7 @@ tr:hover {
     background: rgba(255, 255, 255, 0.05);
 }
 
+/* Barre de progression */
 .progress-bar {
     width: 100%;
     height: 25px;
@@ -291,6 +298,7 @@ tr:hover {
     font-size: 0.9em;
 }
 
+/* Liste des tâches */
 .task-list {
     max-height: 300px;
     overflow-y: auto;
@@ -304,6 +312,7 @@ tr:hover {
     border-left: 3px solid var(--primary-color);
 }
 
+/* Arbre de développement */
 .dev-tree {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -346,6 +355,7 @@ tr:hover {
     margin: 5px 0;
 }
 
+/* Boutons petits */
 .small-btn {
     padding: 8px 15px;
     background: var(--primary-color);
@@ -354,8 +364,9 @@ tr:hover {
     color: white;
     cursor: pointer;
     font-family: 'Courier New', monospace;
-    margin: 5px;
+    margin: 5px 0;
     transition: all 0.3s;
+    font-size: 0.9em;
 }
 
 .small-btn:hover {
@@ -367,6 +378,7 @@ tr:hover {
     cursor: not-allowed;
 }
 
+/* Configuration des voitures */
 .car-config {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -392,14 +404,44 @@ tr:hover {
     font-size: 0.9em;
 }
 
-.championship-table {
-    margin-top: 20px;
+.part-selector select {
+    width: 100%;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: var(--text-color);
+    font-family: 'Courier New', monospace;
 }
 
+/* Cartes des sponsors */
+.sponsor-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 2px solid #444;
+}
+
+.sponsor-card.active {
+    border-color: #4ecca3;
+}
+
+/* Messages */
+.message {
+    background: rgba(233, 69, 96, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    margin: 15px 0;
+}
+
+/* Classes de position pour le classement */
 .position-1 { color: #ffd700; font-weight: bold; }
 .position-2 { color: #c0c0c0; font-weight: bold; }
 .position-3 { color: #cd7f32; font-weight: bold; }
 
+/* Groupe d'entrées */
 .input-group {
     display: flex;
     gap: 10px;
@@ -417,31 +459,33 @@ tr:hover {
     font-family: 'Courier New', monospace;
 }
 
-.sponsor-card {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 8px;
-    border: 2px solid #444;
+/* Animation pour les boutons */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
-.sponsor-card.active {
-    border-color: #4ecca3;
+.click-btn:active {
+    animation: pulse 0.3s;
 }
 
-.message {
-    background: rgba(233, 69, 96, 0.2);
-    padding: 15px;
-    border-radius: 8px;
-    border-left: 4px solid var(--primary-color);
-    margin: 15px 0;
-}
-
+/* Responsive */
 @media (max-width: 768px) {
     .main-grid, .car-config {
         grid-template-columns: 1fr;
     }
+
     .stats-grid {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .header {
+        max-height: 150px;
+    }
+
+    .game-container {
+        margin-top: 170px;
+        padding: 10px;
     }
 }

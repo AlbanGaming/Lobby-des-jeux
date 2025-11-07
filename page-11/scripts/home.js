@@ -1,5 +1,8 @@
 function getHomeContent() {
     const totalPerf = gameState.aeroPerf + gameState.chassisPerf + gameState.enginePerf + gameState.electronicsPerf + gameState.brakesPerf;
+    const car1Perf = calculateCarPerformance(0);
+    const car2Perf = calculateCarPerformance(1);
+
     return `
         <div class="main-grid">
             <div class="section">
@@ -16,37 +19,47 @@ function getHomeContent() {
                             </div>
                         </div>
                         <div class="action-selector">
-                            <select id="actionSelect" onchange="changeAction(this.value)">
-                                <option value="rdGeneration" ${gameState.currentAction === 'rdGeneration' ? 'selected' : ''}>
-                                    🔬 Générer des points R&D (+10 points R&D | 10 temps)
-                                </option>
-                                <option value="aeroWork" ${gameState.currentAction === 'aeroWork' ? 'selected' : ''}>
-                                    ✈️ Travail Aéro (selon dev en cours)
-                                </option>
-                                <option value="chassisWork" ${gameState.currentAction === 'chassisWork' ? 'selected' : ''}>
-                                    🏗️ Travail Châssis (selon dev en cours)
-                                </option>
-                                <option value="engineWork" ${gameState.currentAction === 'engineWork' ? 'selected' : ''}>
-                                    ⚙️ Travail Moteur (selon dev en cours)
-                                </option>
-                                <option value="electronicsWork" ${gameState.currentAction === 'electronicsWork' ? 'selected' : ''}>
-                                    📡 Travail Électronique (selon dev en cours)
-                                </option>
-                                <option value="brakesWork" ${gameState.currentAction === 'brakesWork' ? 'selected' : ''}>
-                                    🛑 Travail Freins (selon dev en cours)
-                                </option>
+                            <select id="actionSelect" onchange="changeAction(this.value)" style="background: rgba(0, 0, 0, 0.2); border: 1px solid var(--primary-color); color: var(--text-color);">
+                                <option value="rdGeneration" ${gameState.currentAction === 'rdGeneration' ? 'selected' : ''}>🔬 Générer des points R&D (+10 points R&D | 10 temps)</option>
+                                <option value="aeroWork" ${gameState.currentAction === 'aeroWork' ? 'selected' : ''}>✈️ Travail Aéro</option>
+                                <option value="chassisWork" ${gameState.currentAction === 'chassisWork' ? 'selected' : ''}>🏗️ Travail Châssis</option>
+                                <option value="engineWork" ${gameState.currentAction === 'engineWork' ? 'selected' : ''}>⚙️ Travail Moteur</option>
+                                <option value="electronicsWork" ${gameState.currentAction === 'electronicsWork' ? 'selected' : ''}>📡 Travail Électronique</option>
+                                <option value="brakesWork" ${gameState.currentAction === 'brakesWork' ? 'selected' : ''}>🛑 Travail Freins</option>
                             </select>
                             <div class="input-group" style="margin-top: 15px;">
                                 <label style="color: #aaa;">Temps par clic:</label>
-                                <input type="number" id="timePerClick" value="${gameState.timePerClick}" min="1" max="100" onchange="updateTimePerClick(this.value)">
+                                <input type="number" id="timePerClick" value="${gameState.timePerClick}" min="1" max="100" onchange="updateTimePerClick(this.value)" style="background: rgba(0, 0, 0, 0.2); border: 1px solid var(--primary-color); color: var(--text-color);">
                             </div>
                         </div>
-                        <button class="btn" onclick="advanceWeek()" style="margin-top: 20px;">
-                            ⏭️ PASSER À LA SEMAINE SUIVANTE
-                        </button>
+                        <div style="margin-top: 20px; display: flex; gap: 10px;">
+                            <button class="btn" onclick="advanceWeek()" style="flex: 1; background: var(--primary-color); border: 1px solid #fff;">
+                                ⏭️ PASSER À LA SEMAINE SUIVANTE
+                            </button>
+                            ${gameState.currentRacePhase === 'qualif' ?
+                                `<button class="btn" onclick="simulateQualif()" style="flex: 1; background: #4ecca3; border: 1px solid #fff;">
+                                    🏁 SIMULER LA QUALIFICATION
+                                </button>` :
+                                gameState.currentRacePhase === 'race' ?
+                                `<button class="btn" onclick="simulateRace()" style="flex: 1; background: #4ecca3; border: 1px solid #fff;">
+                                    🏁 SIMULER LA COURSE
+                                </button>` : ''
+                            }
+                        </div>
                     </div>
                     <div style="flex: 1;">
-                        <h4>🏎️ Performance de la voiture</h4>
+                        <h4>🏎️ Performance des Voitures</h4>
+                        <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div style="background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 5px;">
+                                <div style="font-size: 0.9em; color: #aaa;">Voiture #1 (${gameState.drivers[0].name})</div>
+                                <div style="font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin-top: 5px;">${car1Perf} pts</div>
+                            </div>
+                            <div style="background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 5px;">
+                                <div style="font-size: 0.9em; color: #aaa;">Voiture #2 (${gameState.drivers[1].name})</div>
+                                <div style="font-size: 1.2em; color: var(--primary-color); font-weight: bold; margin-top: 5px;">${car2Perf} pts</div>
+                            </div>
+                        </div>
+                        <h4 style="margin-top: 20px;">🏎️ Performance de l'écurie</h4>
                         <div style="margin-top: 10px;">
                             <div style="display: flex; justify-content: space-between; margin: 8px 0;">
                                 <span>Aéro:</span>
@@ -82,13 +95,13 @@ function getHomeContent() {
                     ${gameState.tasks.length === 0 ?
                         '<div style="color: #aaa; text-align: center; padding: 20px;">Aucune tâche en cours</div>' :
                         gameState.tasks.map(task => `
-                            <div class="task-item">
+                            <div class="task-item" style="border-left: 3px solid ${task.progress >= 100 ? '#4ecca3' : 'var(--primary-color)'};">
                                 <div style="font-weight: bold; color: var(--primary-color);">${task.name}</div>
                                 <div style="font-size: 0.9em; color: #aaa; margin-top: 5px;">
                                     ${task.phase} - ${task.progress}%
                                 </div>
-                                <div class="progress-bar" style="margin-top: 8px;">
-                                    <div class="progress-fill" style="width: ${task.progress}%;">
+                                <div class="progress-bar" style="margin-top: 8px; background: rgba(0, 0, 0, 0.3);">
+                                    <div class="progress-fill" style="width: ${task.progress}%; background: ${task.progress >= 100 ? '#4ecca3' : 'linear-gradient(90deg, var(--primary-color), #ff6b81)'};">
                                         ${task.progress}%
                                     </div>
                                 </div>
@@ -137,9 +150,11 @@ function getHomeContent() {
                     </thead>
                     <tbody>
                         ${gameState.constructorStandings.slice(0, 11).map((team, index) => `
-                            <tr class="${team.team === gameState.teamName ? 'position-' + (index + 1) : ''}" style="${team.team === gameState.teamName ? 'background: rgba(233, 69, 96, 0.2);' : ''}">
-                                <td class="position-${index + 1}">${index + 1}</td>
-                                <td style="font-weight: ${team.team === gameState.teamName ? 'bold' : 'normal'};">
+                            <tr class="${team.team === gameState.teamName ? 'position-' + (index + 1) : ''}" style="${team.team === gameState.teamName ? 'background: rgba(233, 69, 96, 0.1);' : ''}">
+                                <td class="position-${index + 1}" style="font-weight: bold; color: ${index + 1 === 1 ? '#ffd700' : index + 1 === 2 ? '#c0c0c0' : index + 1 === 3 ? '#cd7f32' : 'inherit'};">
+                                    ${index + 1}
+                                </td>
+                                <td style="font-weight: ${team.team === gameState.teamName ? 'bold' : 'normal'}; color: ${team.team === gameState.teamName ? 'var(--primary-color)' : 'inherit'};">
                                     ${team.team}${team.team === gameState.teamName ? ' 🏎️' : ''}
                                 </td>
                                 <td>${Math.round(team.points)}</td>
@@ -148,19 +163,6 @@ function getHomeContent() {
                         `).join('')}
                     </tbody>
                 </table>
-            </div>
-        </div>
-        <div class="section">
-            <h3>🏎️ Configuration des Voitures</h3>
-            <div class="car-config">
-                <div class="driver-card">
-                    <h3>🏎️ Voiture #1 - ${gameState.drivers[0].name}</h3>
-                    ${getCarConfigUI(0)}
-                </div>
-                <div class="driver-card">
-                    <h3>🏎️ Voiture #2 - ${gameState.drivers[1].name}</h3>
-                    ${getCarConfigUI(1)}
-                </div>
             </div>
         </div>
     `;

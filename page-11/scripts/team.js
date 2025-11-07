@@ -5,32 +5,37 @@ function getTeamContent() {
             <div class="section">
                 <h3>👥 Pilotes</h3>
                 ${gameState.drivers.map((driver, index) => `
-                    <div class="driver-card" style="margin-bottom: 15px;">
+                    <div class="driver-card" style="margin-bottom: 15px; border: 2px solid ${index === 0 ? 'var(--primary-color)' : 'var(--secondary-color)'};">
                         <h4>Pilote #${index + 1}: ${driver.name}</h4>
                         <div style="color: #aaa; margin: 5px 0;">
-                            Compétence: <span style="color: var(--primary-color); font-weight: bold;">${driver.skill}/100</span>
+                            Compétence: <span style="color: ${driver.skill > 85 ? '#4ecca3' : driver.skill > 70 ? '#ffbb33' : '#ff4444'}; font-weight: bold;">${driver.skill}/100</span>
                         </div>
                         <div style="color: #aaa; margin: 5px 0;">
                             Salaire: <span style="color: var(--primary-color); font-weight: bold;">${(driver.salary / 1000000).toFixed(1)}M € /an</span>
                         </div>
+                        <div style="color: #aaa; margin: 5px 0;">
+                            Voiture: <span style="color: var(--primary-color); font-weight: bold;">#${index + 1}</span>
+                        </div>
                     </div>
                 `).join('')}
-                <button class="btn" onclick="hireDriver()">Recruter un nouveau pilote</button>
+                <button class="btn" onclick="hireDriver()" style="margin-top: 15px; background: var(--primary-color); border: 1px solid #fff;">
+                    Recruter un nouveau pilote
+                </button>
             </div>
             <div class="section">
                 <h3>👷 Ingénieurs</h3>
                 <div style="margin: 15px 0;">
-                    <div style="color: #aaa;">
+                    <div style="color: #aaa; margin: 5px 0;">
                         Nombre d'ingénieurs: <span style="color: var(--primary-color); font-weight: bold;">${gameState.engineers}</span>
                     </div>
-                    <div style="color: #aaa; margin-top: 8px;">
+                    <div style="color: #aaa; margin: 5px 0;">
                         Temps disponible: <span style="color: var(--primary-color); font-weight: bold;">${gameState.maxEngineerTime}</span>
                     </div>
-                    <div style="color: #aaa; margin-top: 8px;">
+                    <div style="color: #aaa; margin: 5px 0;">
                         Coût mensuel: <span style="color: var(--primary-color); font-weight: bold;">${(gameState.engineers * 50000 / 1000000).toFixed(2)}M €</span>
                     </div>
                 </div>
-                <button class="small-btn" onclick="hireEngineer()">
+                <button class="small-btn" onclick="hireEngineer()" style="background: var(--primary-color); border: 1px solid #fff; margin-top: 10px;">
                     Embaucher ingénieur (+1, coût: 50k €/mois)
                 </button>
             </div>
@@ -40,7 +45,7 @@ function getTeamContent() {
             ${gameState.sponsors.length === 0 ?
                 '<div style="color: #aaa; padding: 20px; text-align: center;">Aucun sponsor actif</div>' :
                 gameState.sponsors.map(sponsor => `
-                    <div class="sponsor-card active">
+                    <div class="sponsor-card active" style="border: 2px solid #4ecca3; margin-bottom: 10px;">
                         <div style="font-weight: bold; color: #4ecca3; font-size: 1.1em;">${sponsor.name}</div>
                         <div style="color: #aaa; margin-top: 8px;">
                             Paiement mensuel: <span style="color: var(--primary-color); font-weight: bold;">${(sponsor.monthlyPay / 1000000).toFixed(1)}M €</span>
@@ -57,14 +62,14 @@ function getTeamContent() {
                     const ourPosition = gameState.constructorStandings.find(t => t.team === gameState.teamName)?.position || 11;
                     const meetsRequirements = ourPosition <= sponsor.requirements.position;
                     return `
-                        <div class="sponsor-card ${meetsRequirements ? '' : 'locked'}">
+                        <div class="sponsor-card ${meetsRequirements ? '' : 'locked'}" style="border: 2px solid ${meetsRequirements ? 'var(--primary-color)' : '#555'}; margin-bottom: 10px;">
                             <h4>${sponsor.name}</h4>
                             <div class="dev-cost">💰 ${(sponsor.monthlyPay / 1000000).toFixed(1)}M € / mois</div>
                             <div class="dev-cost">📅 Durée: ${sponsor.duration} mois</div>
                             <div class="dev-cost">🏆 Requis: Top ${sponsor.requirements.position}</div>
                             ${meetsRequirements ?
-                                `<button class="small-btn" onclick="signSponsor('${sponsor.name}', ${sponsor.monthlyPay}, ${sponsor.duration})">Signer</button>` :
-                                '<div style="color: #888; margin-top: 10px;">🔒 Position insuffisante</div>'
+                                `<button class="small-btn" onclick="signSponsor('${sponsor.name}', ${sponsor.monthlyPay}, ${sponsor.duration})" style="background: var(--primary-color); border: 1px solid #fff; margin-top: 10px;">Signer</button>` :
+                                '<div style="color: #888; margin-top: 10px; font-size: 0.9em;">🔒 Position insuffisante</div>'
                             }
                         </div>
                     `;

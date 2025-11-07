@@ -21,9 +21,13 @@ function getHistoryContent() {
                             <tr>
                                 <td>${result.raceName}</td>
                                 <td>${result.driver1}</td>
-                                <td class="position-${result.pos1 <= 3 ? result.pos1 : ''}">${result.pos1}</td>
+                                <td class="position-${result.pos1 <= 3 ? result.pos1 : ''}" style="font-weight: bold; color: ${result.pos1 === 1 ? '#ffd700' : result.pos1 === 2 ? '#c0c0c0' : result.pos1 === 3 ? '#cd7f32' : 'inherit'};">
+                                    ${result.pos1}
+                                </td>
                                 <td>${result.driver2}</td>
-                                <td class="position-${result.pos2 <= 3 ? result.pos2 : ''}">${result.pos2}</td>
+                                <td class="position-${result.pos2 <= 3 ? result.pos2 : ''}" style="font-weight: bold; color: ${result.pos2 === 1 ? '#ffd700' : result.pos2 === 2 ? '#c0c0c0' : result.pos2 === 3 ? '#cd7f32' : 'inherit'};">
+                                    ${result.pos2}
+                                </td>
                                 <td style="font-weight: bold; color: var(--primary-color);">${result.points}</td>
                             </tr>
                         `).join('')}
@@ -38,7 +42,7 @@ function getHistoryContent() {
                 `<table>
                     <thead>
                         <tr>
-                            <th>Date</th>
+                            <th>Semaine</th>
                             <th>Pièce</th>
                             <th>Résultat</th>
                             <th>Qualité</th>
@@ -49,8 +53,12 @@ function getHistoryContent() {
                             <tr>
                                 <td>S${entry.week}</td>
                                 <td>${entry.part}</td>
-                                <td>${entry.success ? '✅ Réussi' : '❌ Échec'}</td>
-                                <td>${entry.quality}%</td>
+                                <td style="color: ${entry.success ? '#4ecca3' : '#ff4444'}; font-weight: bold;">
+                                    ${entry.success ? '✅ Réussi' : '❌ Échec'}
+                                </td>
+                                <td style="color: ${entry.quality > 80 ? '#4ecca3' : entry.quality > 50 ? '#ffbb33' : '#ff4444'}; font-weight: bold;">
+                                    ${entry.quality}%
+                                </td>
                             </tr>
                         `).join('')}
                     </tbody>

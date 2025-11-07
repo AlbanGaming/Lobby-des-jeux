@@ -9,6 +9,12 @@ function getElectronicsContent() {
                     <div style="margin-top: 15px; color: #aaa;">
                         Temps: <span style="color: var(--primary-color); font-weight: bold;">${gameState.engineerTime} / ${gameState.maxEngineerTime}</span>
                     </div>
+                    <div class="action-selector" style="margin-top: 20px;">
+                        <select id="electronicsActionSelect" onchange="changeAction(this.value)" style="background: rgba(0, 0, 0, 0.2); border: 1px solid var(--primary-color); color: var(--text-color);">
+                            <option value="electronicsWork" selected>📡 Travail Électronique (selon dev en cours)</option>
+                            <option value="rdGeneration">🔬 Générer des points R&D (+10 points R&D | 10 temps)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="section">
@@ -35,20 +41,20 @@ function getElectronicsContent() {
                     const isLocked = dev.phase === 'locked';
                     const isCompleted = dev.phase === 'completed';
                     return `
-                        <div class="dev-item ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}">
+                        <div class="dev-item ${isLocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}" style="border: 2px solid ${isCompleted ? '#4ecca3' : isLocked ? '#555' : 'var(--primary-color)'};">
                             <h4>${part.name}</h4>
                             <div class="dev-cost">💰 ${(part.cost / 1000000).toFixed(1)}M €</div>
                             <div class="dev-cost">🔬 ${part.rd} points R&D</div>
                             <div class="dev-cost">⏱️ ${part.time} temps</div>
                             <div class="dev-cost">📈 +${part.perf} performance</div>
                             ${isCompleted ?
-                                '<div style="color: #4ecca3; margin-top: 10px;">✅ Développé</div>' :
+                                '<div style="color: #4ecca3; margin-top: 10px; font-weight: bold;">✅ Développé</div>' :
                                 isLocked ?
-                                    `<button class="small-btn" onclick="startDevelopment('electronics', '${key}')">Démarrer</button>` :
+                                    `<button class="small-btn" onclick="startDevelopment('electronics', '${key}')" style="background: var(--primary-color); border: 1px solid #fff;">Démarrer</button>` :
                                     `
-                                        <div style="margin-top: 10px; color: #aaa;">Phase: ${dev.phase}</div>
-                                        <div class="progress-bar" style="margin-top: 8px;">
-                                            <div class="progress-fill" style="width: ${dev.progress}%;">
+                                        <div style="margin-top: 10px; color: #aaa; font-size: 0.9em;">Phase: ${dev.phase}</div>
+                                        <div class="progress-bar" style="margin-top: 8px; background: rgba(0, 0, 0, 0.3);">
+                                            <div class="progress-fill" style="width: ${dev.progress}%; background: linear-gradient(90deg, var(--primary-color), #ff6b81);">
                                                 ${dev.progress}%
                                             </div>
                                         </div>
@@ -63,18 +69,15 @@ function getElectronicsContent() {
 }
 
 function generateElectronicsRankings() {
-    const rankings = gameState.constructorStandings.map(team => ({
-        team: team.team,
-        perf: team.electronicsPerf
-    }));
-    rankings.sort((a, b) => b.perf - a.perf);
+    const rankings = [...gameState.constructorStandings];
+    rankings.sort((a, b) => b.electronicsPerf - a.electronicsPerf);
     return rankings.slice(0, 11).map((team, index) => `
-        <tr style="${team.team === gameState.teamName ? 'background: rgba(233, 69, 96, 0.2);' : ''}">
+        <tr style="${team.team === gameState.teamName ? 'background: rgba(233, 69, 96, 0.1);' : ''}">
             <td class="position-${index + 1}">${index + 1}</td>
-            <td style="font-weight: ${team.team === gameState.teamName ? 'bold' : 'normal'};">
+            <td style="font-weight: ${team.team === gameState.teamName ? 'bold' : 'normal'}; color: ${team.team === gameState.teamName ? 'var(--primary-color)' : 'inherit'};">
                 ${team.team}${team.team === gameState.teamName ? ' 🏎️' : ''}
             </td>
-            <td>${Math.round(team.perf)} pts</td>
+            <td>${Math.round(team.electronicsPerf)} pts</td>
         </tr>
     `).join('');
 }
