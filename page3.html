@@ -1,18 +1,535 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Morpion</title>
-<link rel="stylesheet" href="styles/page3.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpion Dynamique</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .status {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            min-height: 30px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .cell:hover:not(:disabled) {
+            background: #f8f9fa;
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .cell:disabled {
+            cursor: not-allowed;
+        }
+
+        .cell.x {
+            color: #667eea;
+        }
+
+        .cell.o {
+            color: #f093fb;
+        }
+
+        .cell.fading {
+            animation: fadeWarning 0.6s ease-in-out;
+        }
+
+        .cell.removing {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeWarning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+        }
+
+        .turn-indicator {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        .turn-indicator.x {
+            background: #667eea;
+        }
+
+        .turn-indicator.o {
+            background: #f093fb;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        button.btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .winner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .winner-overlay.show {
+            display: flex;
+        }
+
+        .winner-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .winner-text {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .move-history {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .move-history h3 {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        .history-item.old {
+            color: #999;
+            text-decoration: line-through;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>Morpion</h1>
-  <div id="board" class="board"></div>
-  <button id="restartBtn" class="restart-btn">Recommencer</button>
-</div>
+    <div class="container">
+        <h1>⚡ Morpion Dynamique</h1>
+        <p class="subtitle">Les coups disparaissent après 2 tours !<br>Pas de match nul possible.</p>
+        
+        <div class="info-panel">
+            <div class="info-item">
+                <div class="info-label">Tour</div>
+                <div class="info-value" id="turnNumber">1</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Joueur</div>
+                <div class="info-value">
+                    <span id="currentPlayer">X</span>
+                    <span class="turn-indicator x" id="turnIndicator"></span>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Score</div>
+                <div class="info-value" id="score">0 - 0</div>
+            </div>
+        </div>
 
-<script src="scripts/page3.js"></script>
+        <div class="status" id="status">À vous de jouer !</div>
+
+        <div class="board" id="board">
+            <button class="cell" data-index="0"></button>
+            <button class="cell" data-index="1"></button>
+            <button class="cell" data-index="2"></button>
+            <button class="cell" data-index="3"></button>
+            <button class="cell" data-index="4"></button>
+            <button class="cell" data-index="5"></button>
+            <button class="cell" data-index="6"></button>
+            <button class="cell" data-index="7"></button>
+            <button class="cell" data-index="8"></button>
+        </div>
+
+        <div class="move-history">
+            <h3>📜 Historique des coups</h3>
+            <div id="historyList"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="resetGame()">Nouvelle Partie</button>
+        </div>
+    </div>
+
+    <div class="winner-overlay" id="winnerOverlay">
+        <div class="winner-content">
+            <div class="winner-text" id="winnerText"></div>
+            <button class="btn btn-primary" onclick="closeWinnerOverlay()">Continuer</button>
+        </div>
+    </div>
+
+    <script>
+        let board = Array(9).fill(null);
+        let currentPlayer = 'X';
+        let moveHistory = [];
+        let turnNumber = 1;
+        let gameActive = true;
+        let score = { X: 0, O: 0 };
+        let isAIThinking = false;
+
+        const cells = document.querySelectorAll('.cell');
+        const statusDisplay = document.getElementById('status');
+        const turnNumberDisplay = document.getElementById('turnNumber');
+        const currentPlayerDisplay = document.getElementById('currentPlayer');
+        const turnIndicator = document.getElementById('turnIndicator');
+        const historyList = document.getElementById('historyList');
+        const scoreDisplay = document.getElementById('score');
+
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        cells.forEach(cell => {
+            cell.addEventListener('click', handleCellClick);
+        });
+
+        function handleCellClick(e) {
+            const index = parseInt(e.target.dataset.index);
+            
+            if (!gameActive || board[index] !== null || currentPlayer === 'O' || isAIThinking) {
+                return;
+            }
+
+            makeMove(index, 'X');
+        }
+
+        function makeMove(index, player) {
+            board[index] = player;
+            const cell = cells[index];
+            cell.textContent = player;
+            cell.classList.add(player.toLowerCase());
+            cell.disabled = true;
+
+            moveHistory.push({ turn: turnNumber, player, index });
+            updateHistoryDisplay();
+
+            if (checkWinner(player)) {
+                endGame(`${player === 'X' ? 'Vous avez' : 'L\'IA a'} gagné ! 🎉`);
+                score[player]++;
+                updateScore();
+                return;
+            }
+
+            currentPlayer = player === 'X' ? 'O' : 'X';
+            updateDisplay();
+
+            if (player === 'X') {
+                turnNumber++;
+                turnNumberDisplay.textContent = turnNumber;
+            }
+
+            removeOldMoves();
+
+            if (currentPlayer === 'O' && gameActive) {
+                statusDisplay.textContent = 'L\'IA réfléchit...';
+                isAIThinking = true;
+                setTimeout(aiMove, 800);
+            }
+        }
+
+        function aiMove() {
+            if (!gameActive) {
+                isAIThinking = false;
+                return;
+            }
+
+            const availableMoves = board.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
+            
+            if (availableMoves.length === 0) {
+                isAIThinking = false;
+                return;
+            }
+
+            let bestMove = findBestMove();
+            
+            if (bestMove === -1) {
+                bestMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+            }
+
+            makeMove(bestMove, 'O');
+            isAIThinking = false;
+        }
+
+        function findBestMove() {
+            for (let combo of winningCombinations) {
+                const [a, b, c] = combo;
+                const values = [board[a], board[b], board[c]];
+                
+                if (values.filter(v => v === 'O').length === 2 && values.includes(null)) {
+                    return combo.find(idx => board[idx] === null);
+                }
+            }
+
+            for (let combo of winningCombinations) {
+                const [a, b, c] = combo;
+                const values = [board[a], board[b], board[c]];
+                
+                if (values.filter(v => v === 'X').length === 2 && values.includes(null)) {
+                    return combo.find(idx => board[idx] === null);
+                }
+            }
+
+            if (board[4] === null) return 4;
+
+            const corners = [0, 2, 6, 8];
+            const availableCorners = corners.filter(idx => board[idx] === null);
+            if (availableCorners.length > 0) {
+                return availableCorners[Math.floor(Math.random() * availableCorners.length)];
+            }
+
+            return -1;
+        }
+
+        function removeOldMoves() {
+            if (moveHistory.length > 4) {
+                const oldMove = moveHistory[moveHistory.length - 5];
+                const cellToRemove = cells[oldMove.index];
+                
+                cellToRemove.classList.add('fading');
+                
+                setTimeout(() => {
+                    cellToRemove.classList.remove('fading');
+                    cellToRemove.classList.add('removing');
+                    
+                    setTimeout(() => {
+                        board[oldMove.index] = null;
+                        cellToRemove.textContent = '';
+                        cellToRemove.classList.remove('removing', 'x', 'o');
+                        cellToRemove.disabled = false;
+                        updateHistoryDisplay();
+                    }, 500);
+                }, 600);
+            }
+        }
+
+        function checkWinner(player) {
+            return winningCombinations.some(combination => {
+                return combination.every(index => board[index] === player);
+            });
+        }
+
+        function endGame(message) {
+            gameActive = false;
+            statusDisplay.textContent = message;
+            cells.forEach(cell => cell.disabled = true);
+            
+            document.getElementById('winnerText').textContent = message;
+            document.getElementById('winnerOverlay').classList.add('show');
+        }
+
+        function closeWinnerOverlay() {
+            document.getElementById('winnerOverlay').classList.remove('show');
+        }
+
+        function updateDisplay() {
+            currentPlayerDisplay.textContent = currentPlayer;
+            turnIndicator.className = `turn-indicator ${currentPlayer.toLowerCase()}`;
+            
+            if (gameActive) {
+                statusDisplay.textContent = currentPlayer === 'X' ? 'À vous de jouer !' : 'Tour de l\'IA...';
+            }
+        }
+
+        function updateHistoryDisplay() {
+            historyList.innerHTML = '';
+            const displayMoves = moveHistory.slice(-5);
+            
+            displayMoves.forEach((move, index) => {
+                const isOld = moveHistory.length > 4 && index === 0;
+                const position = `${String.fromCharCode(65 + move.index % 3)}${Math.floor(move.index / 3) + 1}`;
+                const div = document.createElement('div');
+                div.className = `history-item ${isOld ? 'old' : ''}`;
+                div.innerHTML = `
+                    <span>Tour ${move.turn} - ${move.player}</span>
+                    <span>${position}${isOld ? ' (va disparaître)' : ''}</span>
+                `;
+                historyList.appendChild(div);
+            });
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `${score.X} - ${score.O}`;
+        }
+
+        function resetGame() {
+            board = Array(9).fill(null);
+            currentPlayer = 'X';
+            moveHistory = [];
+            turnNumber = 1;
+            gameActive = true;
+            isAIThinking = false;
+            
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('x', 'o', 'fading', 'removing');
+                cell.disabled = false;
+            });
+            
+            turnNumberDisplay.textContent = '1';
+            historyList.innerHTML = '';
+            updateDisplay();
+            closeWinnerOverlay();
+        }
+
+        updateDisplay();
+    </script>
 </body>
 </html>
