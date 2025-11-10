@@ -27,6 +27,7 @@
             max-width: 500px;
             width: 100%;
             text-align: center;
+            position: relative;
         }
         h1 {
             color: #667eea;
@@ -153,6 +154,12 @@
             color: #e74c3c;
             font-weight: bold;
         }
+        .disclaimer {
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #999;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -180,37 +187,41 @@
                 <button onclick="newGame()">Nouvelle Partie</button>
             </div>
         </div>
+
+        <div class="disclaimer">
+            * Les prix indiqués sont basés sur des estimations et peuvent ne pas refléter les tarifs actuels.
+        </div>
     </div>
     <script>
         const products = [
             {
-                name: "iPhone 15 Pro",
-                price: 1229.00,
+                name: "iPhone 15 Pro 128 Go",
+                price: 1329.00,
                 image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop"
             },
             {
-                name: "PlayStation 5",
-                price: 549.00,
+                name: "PlayStation 5 (Disque)",
+                price: 549.99,
                 image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop"
             },
             {
-                name: "MacBook Air M2",
-                price: 1299.00,
+                name: "MacBook Air M2 256 Go",
+                price: 1199.00,
                 image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop"
             },
             {
-                name: "Nike Air Jordan",
-                price: 189.00,
+                name: "Nike Air Jordan 1 Mid",
+                price: 139.99,
                 image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=400&fit=crop"
             },
             {
-                name: "AirPods Pro",
-                price: 279.00,
+                name: "AirPods Pro 2ème génération",
+                price: 299.00,
                 image: "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=400&h=400&fit=crop"
             },
             {
-                name: "Nintendo Switch",
-                price: 299.00,
+                name: "Nintendo Switch OLED",
+                price: 349.99,
                 image: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop"
             }
         ];
