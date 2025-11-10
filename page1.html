@@ -35,6 +35,99 @@
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
+        
+        /* Menu de démarrage */
+        #startScreen {
+            display: block;
+        }
+        #startScreen h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        .mode-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .mode-card {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            width: 200px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        .mode-card.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        .mode-card .mode-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .mode-card .mode-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .mode-card .mode-details {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .mode-card.active .mode-details {
+            opacity: 1;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Zone de jeu */
+        #gameArea {
+            display: none;
+        }
+        .mode-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .mode-badge.normal {
+            background: #d4edda;
+            color: #155724;
+        }
+        .mode-badge.expert {
+            background: #f8d7da;
+            color: #721c24;
+        }
         .product-image {
             width: 100%;
             max-width: 300px;
@@ -107,6 +200,7 @@
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+            transform: none;
         }
         .feedback {
             margin-top: 20px;
@@ -150,6 +244,7 @@
         }
         .real-price {
             margin-top: 10px;
+            margin-bottom: 15px;
             font-size: 1.3em;
             color: #e74c3c;
             font-weight: bold;
@@ -166,7 +261,36 @@
     <div class="container">
         <h1>🎯 LE JUSTE PRIX</h1>
 
+        <!-- Menu de démarrage -->
+        <div id="startScreen">
+            <h2>Choisissez votre mode de jeu</h2>
+            <div class="mode-selector">
+                <div class="mode-card active" onclick="selectMode('normal')">
+                    <div class="mode-icon">🟢</div>
+                    <div class="mode-title">NORMAL</div>
+                    <div class="mode-details">
+                        ⏱️ 1 minute<br>
+                        💶 Prix arrondis<br>
+                        😊 Facile
+                    </div>
+                </div>
+                <div class="mode-card" onclick="selectMode('expert')">
+                    <div class="mode-icon">🔴</div>
+                    <div class="mode-title">EXPERT</div>
+                    <div class="mode-details">
+                        ⏱️ 30 secondes<br>
+                        💶 Centimes inclus<br>
+                        😰 Difficile
+                    </div>
+                </div>
+            </div>
+            <button class="start-btn" onclick="startGameWithMode()">🎮 Commencer la partie</button>
+        </div>
+
+        <!-- Zone de jeu -->
         <div id="gameArea">
+            <div class="mode-badge" id="modeBadge"></div>
+            
             <img id="productImage" class="product-image" src="" alt="Produit">
             <div id="productName" class="product-name"></div>
 
@@ -184,7 +308,8 @@
 
             <div id="gameOver" class="game-over">
                 <div class="real-price" id="realPrice"></div>
-                <button onclick="newGame()">Nouvelle Partie</button>
+                <button onclick="newGame()">🔄 Rejouer (même mode)</button>
+                <button onclick="backToMenu()">🏠 Retour au menu</button>
             </div>
         </div>
 
@@ -231,10 +356,52 @@
         let timerInterval;
         let gameActive = false;
         let attempts = 0;
+        let gameMode = 'normal'; // 'normal' ou 'expert'
 
+        // Sélection du mode
+        function selectMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.target.closest('.mode-card').classList.add('active');
+        }
+
+        // Démarrer le jeu avec le mode sélectionné
+        function startGameWithMode() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            
+            // Afficher le badge du mode
+            const badge = document.getElementById('modeBadge');
+            if (gameMode === 'normal') {
+                badge.textContent = '🟢 MODE NORMAL';
+                badge.className = 'mode-badge normal';
+            } else {
+                badge.textContent = '🔴 MODE EXPERT';
+                badge.className = 'mode-badge expert';
+            }
+            
+            startGame();
+        }
+
+        // Retour au menu
+        function backToMenu() {
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('timer').classList.remove('warning');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+
+        // Démarrer une partie
         function startGame() {
             currentProduct = products[Math.floor(Math.random() * products.length)];
-            timeLeft = 60;
+            
+            // Définir le temps selon le mode
+            timeLeft = gameMode === 'expert' ? 30 : 60;
+            
             attempts = 0;
             gameActive = true;
             document.getElementById('productImage').src = currentProduct.image;
@@ -246,6 +413,16 @@
             document.getElementById('gameOver').classList.remove('show');
             document.getElementById('attempts').textContent = 'Tentatives: 0';
             document.getElementById('realPrice').textContent = '';
+            
+            // Ajuster le placeholder selon le mode
+            if (gameMode === 'expert') {
+                document.getElementById('priceInput').placeholder = 'Prix exact avec centimes (ex: 299.99)';
+                document.getElementById('priceInput').step = '0.01';
+            } else {
+                document.getElementById('priceInput').placeholder = 'Entrez votre prix en € (arrondi)';
+                document.getElementById('priceInput').step = '1';
+            }
+            
             startTimer();
         }
 
@@ -282,13 +459,35 @@
             attempts++;
             document.getElementById('attempts').textContent = `Tentatives: ${attempts}`;
 
-            // Condition stricte : le prix doit être exactement le bon
-            if (guess === currentProduct.price) {
-                endGame(true);
-            } else if (guess > currentProduct.price) {
-                showFeedback('C\'est MOINS ! 📉', 'lower');
+            let targetPrice = currentProduct.price;
+            let isCorrect = false;
+
+            if (gameMode === 'expert') {
+                // Mode expert : prix exact avec centimes
+                isCorrect = guess === targetPrice;
             } else {
-                showFeedback('C\'est PLUS ! 📈', 'higher');
+                // Mode normal : prix arrondi à l'euro près
+                targetPrice = Math.round(targetPrice);
+                const guessRounded = Math.round(guess);
+                isCorrect = guessRounded === targetPrice;
+            }
+
+            if (isCorrect) {
+                endGame(true);
+            } else if (gameMode === 'expert') {
+                // Mode expert : comparaison exacte
+                if (guess > targetPrice) {
+                    showFeedback('C\'est MOINS ! 📉', 'lower');
+                } else {
+                    showFeedback('C\'est PLUS ! 📈', 'higher');
+                }
+            } else {
+                // Mode normal : comparaison arrondie
+                if (Math.round(guess) > targetPrice) {
+                    showFeedback('C\'est MOINS ! 📉', 'lower');
+                } else {
+                    showFeedback('C\'est PLUS ! 📈', 'higher');
+                }
             }
 
             document.getElementById('priceInput').value = '';
@@ -308,10 +507,14 @@
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('timer').classList.remove('warning');
 
+            const displayPrice = gameMode === 'expert' 
+                ? currentProduct.price.toFixed(2) + '€'
+                : Math.round(currentProduct.price) + '€';
+
             if (won) {
-                showFeedback(`🎉 BRAVO ! Le prix était ${currentProduct.price}€ ! Trouvé en ${attempts} tentative(s) !`, 'win');
+                showFeedback(`🎉 BRAVO ! Le prix était ${displayPrice} ! Trouvé en ${attempts} tentative(s) !`, 'win');
             } else {
-                document.getElementById('realPrice').textContent = `Le prix exact était : ${currentProduct.price}€`;
+                document.getElementById('realPrice').textContent = `Le prix exact était : ${displayPrice}`;
                 showFeedback(`⏱️ Temps écoulé !`, 'lose');
             }
 
@@ -327,8 +530,6 @@
                 submitGuess();
             }
         });
-
-        startGame();
     </script>
 </body>
 </html>
