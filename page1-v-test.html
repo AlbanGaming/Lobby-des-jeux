@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Juste Prix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .player-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .stat-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .stat-box .stat-value {
+            font-size: 1.8em;
+            display: block;
+        }
+        .stat-box .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        .xp-progress {
+            margin-top: 5px;
+            font-size: 0.8em;
+            color: #fff;
+            opacity: 0.9;
+        }
+        #startScreen {
+            display: block;
+        }
+        #startScreen h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        .category-selection {
+            margin-bottom: 30px;
+        }
+        .category-selection h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .category-card {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .category-card:hover:not(.locked) {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        .category-card.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        .category-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #e9ecef;
+        }
+        .category-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .category-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .category-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        .category-unlock {
+            font-size: 0.8em;
+            color: #666;
+        }
+        .category-card.active .category-unlock {
+            color: #fff;
+        }
+        .lock-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+        }
+        .unlock-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 8px;
+            transition: all 0.3s;
+        }
+        .unlock-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        .unlock-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .product-count {
+            font-size: 0.85em;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+        .mode-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .mode-card {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            width: 200px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        .mode-card.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        .mode-card .mode-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .mode-card .mode-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .mode-card .mode-details {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .mode-card.active .mode-details {
+            opacity: 1;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #gameArea {
+            display: none;
+        }
+        .mode-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .mode-badge.normal {
+            background: #d4edda;
+            color: #155724;
+        }
+        .mode-badge.expert {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .product-image {
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .product-name {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .product-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        .product-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        .timer {
+            font-size: 2em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: bold;
+            padding: 10px;
+            background: #ffe6e6;
+            border-radius: 10px;
+            display: inline-block;
+            min-width: 150px;
+        }
+        .timer.warning {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input[type="number"]:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: none;
+        }
+        .feedback.show {
+            display: block;
+        }
+        .feedback.higher {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .feedback.lower {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .feedback.win {
+            background: #d4edda;
+            color: #155724;
+            font-size: 1.5em;
+        }
+        .feedback.lose {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .game-over {
+            display: none;
+            margin-top: 20px;
+        }
+        .game-over.show {
+            display: block;
+        }
+        .attempts {
+            margin-top: 15px;
+            color: #666;
+            font-size: 1.1em;
+        }
+        .real-price {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .reward-display {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .disclaimer {
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 LE JUSTE PRIX</h1>
+        <div class="player-stats">
+            <div class="stat-box">
+                <span class="stat-value" id="playerLevel">1</span>
+                <span class="stat-label">📊 Niveau</span>
+                <span class="xp-progress" id="xpProgress">0/50 XP</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="playerMoney">0€</span>
+                <span class="stat-label">💰 Argent</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="playerWins">0</span>
+                <span class="stat-label">🏆 Victoires</span>
+            </div>
+        </div>
+        <div id="startScreen">
+            <div class="category-selection">
+                <h3>Choisissez une ou plusieurs catégories</h3>
+                <div class="categories-grid" id="categoriesGrid"></div>
+            </div>
+            <h2>Choisissez votre mode de jeu</h2>
+            <div class="mode-selector">
+                <div class="mode-card active" onclick="selectMode('normal')">
+                    <div class="mode-icon">🟢</div>
+                    <div class="mode-title">NORMAL</div>
+                    <div class="mode-details">
+                        ⏱️ 1 minute<br>
+                        💶 Prix arrondis<br>
+                        💰 +500€ victoire<br>
+                        😊 Facile
+                    </div>
+                </div>
+                <div class="mode-card" onclick="selectMode('expert')">
+                    <div class="mode-icon">🔴</div>
+                    <div class="mode-title">EXPERT</div>
+                    <div class="mode-details">
+                        ⏱️ 30 secondes<br>
+                        💶 Centimes inclus<br>
+                        💰 +1500€ victoire<br>
+                        😰 Difficile
+                    </div>
+                </div>
+            </div>
+            <button class="start-btn" onclick="startGameWithMode()" id="startGameBtn">🎮 Commencer la partie</button>
+        </div>
+        <div id="gameArea">
+            <div class="mode-badge" id="modeBadge"></div>
+            <img id="productImage" class="product-image" src="" alt="Produit">
+            <div id="productName" class="product-name"></div>
+            <a id="productLink" class="product-link" href="#" target="_blank">🔗 Voir la source</a>
+            <div class="timer" id="timer">01:00</div>
+            <div class="input-group">
+                <input type="number" id="priceInput" placeholder="Entrez votre prix en €" min="0" step="0.01">
+            </div>
+            <button id="submitBtn" onclick="submitGuess()">Proposer</button>
+            <div class="attempts" id="attempts">Tentatives: 0</div>
+            <div id="feedback" class="feedback"></div>
+            <div id="gameOver" class="game-over">
+                <div class="real-price" id="realPrice"></div>
+                <div class="reward-display" id="rewardDisplay"></div>
+                <button onclick="newGame()">🔄 Rejouer (même mode)</button>
+                <button onclick="backToMenu()">🏠 Retour au menu</button>
+            </div>
+        </div>
+        <div class="disclaimer">
+            * Les prix indiqués sont basés sur des estimations et peuvent ne pas refléter les tarifs actuels.
+        </div>
+    </div>
+    <script>
+        // Système de progression
+        let playerData = {
+            level: 1,
+            money: 0,
+            wins: 0,
+            xp: 0,
+            xpToNextLevel: 50,
+            unlockedCategories: ['Électronique de base']
+        };
+        // Charger les données sauvegardées
+        if (localStorage.getItem('playerData')) {
+            playerData = JSON.parse(localStorage.getItem('playerData'));
+        }
+        // Définition des catégories avec leur coût d'achat et niveau requis
+        const categories = [
+            { name: 'Électronique de base', icon: '📱', unlockCost: 0, unlockLevel: 1 },
+            { name: 'Gaming', icon: '🎮', unlockCost: 2000, unlockLevel: 2 },
+            { name: 'Audio Premium', icon: '🎧', unlockCost: 4000, unlockLevel: 3 },
+            { name: 'Mode & Sneakers', icon: '👟', unlockCost: 1500, unlockLevel: 2 },
+            { name: 'Montres connectées', icon: '⌚', unlockCost: 3000, unlockLevel: 3 },
+            { name: 'Ordinateurs', icon: '💻', unlockCost: 5000, unlockLevel: 4 },
+            { name: 'Photo & Vidéo', icon: '📷', unlockCost: 8000, unlockLevel: 5 },
+            { name: 'Maison connectée', icon: '🏠', unlockCost: 3500, unlockLevel: 3 },
+            { name: 'Premium', icon: '💎', unlockCost: 15000, unlockLevel: 6 }
+        ];
+        // Produits par catégorie avec niveau requis
+        const productsByCategory = {
+            'Électronique de base': [
+                {
+                    name: "iPhone 15 Pro 128 Go",
+                    price: 1329.00,
+                    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/iphone-15-pro/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Samsung Galaxy S24 128 Go",
+                    price: 899.00,
+                    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
+                    link: "https://www.samsung.com/fr/smartphones/galaxy-s24/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "iPad Air M1 64 Go",
+                    price: 699.00,
+                    image: "https://images.unsplash.com/photo-1585790050230-5dd28404f8db?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/ipad-air/",
+                    requiredLevel: 2
+                },
+                {
+                    name: "AirPods Pro 2ème génération",
+                    price: 299.00,
+                    image: "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/airpods-pro/",
+                    requiredLevel: 3
+                },
+                {
+                    name: "Google Pixel 8 Pro 128 Go",
+                    price: 1099.00,
+                    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=400&fit=crop",
+                    link: "https://store.google.com/product/pixel_8_pro",
+                    requiredLevel: 4
+                },
+                {
+                    name: "Samsung Galaxy Tab S9 128 Go",
+                    price: 899.00,
+                    image: "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&h=400&fit=crop",
+                    link: "https://www.samsung.com/fr/tablets/galaxy-tab-s9/",
+                    requiredLevel: 5
+                }
+            ],
+            'Gaming': [
+                {
+                    name: "PlayStation 5 (Disque)",
+                    price: 549.99,
+                    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop",
+                    link: "https://www.playstation.com/fr-fr/ps5/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Nintendo Switch OLED",
+                    price: 349.99,
+                    image: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop",
+                    link: "https://www.nintendo.com/fr-fr/Nintendo-Switch/Nintendo-Switch-OLED/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Xbox Series X",
+                    price: 549.99,
+                    image: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=400&h=400&fit=crop",
+                    link: "https://www.xbox.com/fr-FR/consoles/xbox-series-x",
+                    requiredLevel: 2
+                },
+                {
+                    name: "Razer DeathAdder V3 Pro",
+                    price: 149.99,
+                    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
+                    link: "https://www.razer.com/gaming-mice/razer-deathadder-v3-pro",
+                    requiredLevel: 3
+                },
+                {
+                    name: "SteelSeries Arctis Nova Pro",
+                    price: 349.99,
+                    image: "https://images.unsplash.com/photo-1599669454699-248893623440?w=400&h=400&fit=crop",
+                    link: "https://steelseries.com/gaming-headsets/arctis-nova-pro",
+                    requiredLevel: 4
+                },
+                {
+                    name: "Corsair K70 RGB Pro Clavier",
+                    price: 179.99,
+                    image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&h=400&fit=crop",
+                    link: "https://www.corsair.com/fr/fr/k70-rgb-pro",
+                    requiredLevel: 5
+                },
+                {
+                    name: "Logitech G Pro X Superlight",
+                    price: 159.00,
+                    image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&h=400&fit=crop",
+                    link: "https://www.logitechg.com/fr-fr/products/gaming-mice/pro-x-superlight-wireless-mouse.html",
+                    requiredLevel: 6
+                }
+            ],
+            'Audio Premium': [
+                {
+                    name: "Sony WH-1000XM5",
+                    price: 399.00,
+                    image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop",
+                    link: "https://www.sony.fr/electronics/casque-arceau/wh-1000xm5",
+                    requiredLevel: 1
+                },
+                {
+                    name: "JBL Charge 5",
+                    price: 179.99,
+                    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop",
+                    link: "https://fr.jbl.com/enceintes-bluetooth/CHARGE5.html",
+                    requiredLevel: 2
+                },
+                {
+                    name: "Bose QuietComfort Ultra",
+                    price: 429.00,
+                    image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop",
+                    link: "https://www.bose.fr/products/headphones/noise-cancelling-headphones/quietcomfort-ultra-headphones",
+                    requiredLevel: 3
+                },
+                {
+                    name: "AirPods Max",
+                    price: 629.00,
+                    image: "https://images.unsplash.com/photo-1625498677464-43c0fb02f834?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/airpods-max/",
+                    requiredLevel: 4
+                },
+                {
+                    name: "Marshall Emberton II",
+                    price: 169.99,
+                    image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=400&h=400&fit=crop",
+                    link: "https://www.marshallheadphones.com/fr/emberton-ii",
+                    requiredLevel: 5
+                },
+                {
+                    name: "Samsung Galaxy Buds2 Pro",
+                    price: 229.00,
+                    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop",
+                    link: "https://www.samsung.com/fr/audio-devices/galaxy-buds2-pro/",
+                    requiredLevel: 6
+                }
+            ],
+            'Mode & Sneakers': [
+                {
+                    name: "Nike Air Jordan 1 Mid",
+                    price: 139.99,
+                    image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=400&fit=crop",
+                    link: "https://www.nike.com/fr/t/air-jordan-1-mid",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Converse Chuck Taylor All Star",
+                    price: 69.99,
+                    image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=400&h=400&fit=crop",
+                    link: "https://www.converse.com/fr/fr/chuck-taylor-all-star",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Nike Air Max 90",
+                    price: 149.99,
+                    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
+                    link: "https://www.nike.com/fr/t/air-max-90",
+                    requiredLevel: 2
+                },
+                {
+                    name: "Adidas Ultraboost 22",
+                    price: 189.99,
+                    image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&h=400&fit=crop",
+                    link: "https://www.adidas.fr/ultraboost",
+                    requiredLevel: 3
+                },
+                {
+                    name: "New Balance 574",
+                    price: 99.99,
+                    image: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&h=400&fit=crop",
+                    link: "https://www.newbalance.fr/574",
+                    requiredLevel: 4
+                },
+                {
+                    name: "The North Face Nuptse 1996",
+                    price: 349.00,
+                    image: "https://images.unsplash.com/photo-1544923246-77307dd654f3?w=400&h=400&fit=crop",
+                    link: "https://www.thenorthface.fr/shop/fr/tnf-fr/doudounes-nuptse",
+                    requiredLevel: 5
+                },
+                {
+                    name: "Vans Old Skool",
+                    price: 79.99,
+                    image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&h=400&fit=crop",
+                    link: "https://www.vans.fr/shop/fr/vans-fr/old-skool",
+                    requiredLevel: 6
+                }
+            ],
+            'Montres connectées': [
+                {
+                    name: "Apple Watch Series 9 GPS 45mm",
+                    price: 479.00,
+                    image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/apple-watch-series-9/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Fitbit Sense 2",
+                    price: 299.00,
+                    image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=400&fit=crop",
+                    link: "https://www.fitbit.com/global/fr/products/smartwatches/sense2",
+                    requiredLevel: 2
+                },
+                {
+                    name: "Samsung Galaxy Watch 6 Classic",
+                    price: 429.00,
+                    image: "https://images.unsplash.com/photo-1617043786394-f977fa12eddf?w=400&h=400&fit=crop",
+                    link: "https://www.samsung.com/fr/watches/galaxy-watch/galaxy-watch6-classic/",
+                    requiredLevel: 3
+                }
+            ],
+            'Ordinateurs': [
+                {
+                    name: "MacBook Air M2 256 Go",
+                    price: 1199.00,
+                    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/macbook-air-m2/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Dell XPS 15 Intel i7 512 Go",
+                    price: 1899.00,
+                    image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=400&fit=crop",
+                    link: "https://www.dell.com/fr-fr/shop/laptops/xps-15/",
+                    requiredLevel: 2
+                },
+                {
+                    name: "HP Spectre x360 14\" i7 1 To",
+                    price: 1699.00,
+                    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
+                    link: "https://www.hp.com/fr-fr/shop/product.aspx?id=spectre-x360",
+                    requiredLevel: 3
+                },
+                {
+                    name: "Asus ROG Zephyrus G14 RTX 4060",
+                    price: 1899.00,
+                    image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=400&fit=crop",
+                    link: "https://rog.asus.com/fr/laptops/rog-zephyrus/rog-zephyrus-g14/",
+                    requiredLevel: 4
+                },
+                {
+                    name: "MacBook Pro 14\" M3 512 Go",
+                    price: 2249.00,
+                    image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/macbook-pro-14-and-16/",
+                    requiredLevel: 5
+                },
+                {
+                    name: "Lenovo ThinkPad X1 Carbon i7",
+                    price: 1799.00,
+                    image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=400&fit=crop",
+                    link: "https://www.lenovo.com/fr/fr/laptops/thinkpad/thinkpad-x1/x1-carbon-gen-11/",
+                    requiredLevel: 6
+                }
+            ],
+            'Photo & Vidéo': [
+                {
+                    name: "GoPro HERO 12 Black",
+                    price: 449.99,
+                    image: "https://images.unsplash.com/photo-1533093818801-fa5d3d89b68d?w=400&h=400&fit=crop",
+                    link: "https://gopro.com/fr/fr/shop/cameras/hero12-black/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "DJI Mini 4 Pro",
+                    price: 759.00,
+                    image: "https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=400&h=400&fit=crop",
+                    link: "https://www.dji.com/fr/mini-4-pro",
+                    requiredLevel: 2
+                },
+                {
+                    name: "Fujifilm X-T5 Boîtier",
+                    price: 1899.00,
+                    image: "https://images.unsplash.com/photo-1495121553079-4c61bcce1894?w=400&h=400&fit=crop",
+                    link: "https://fujifilm-x.com/fr-fr/products/cameras/x-t5/",
+                    requiredLevel: 3
+                },
+                {
+                    name: "Canon EOS R6 Mark II Boîtier",
+                    price: 2699.00,
+                    image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&h=400&fit=crop",
+                    link: "https://www.canon.fr/cameras/eos-r6-mark-ii/",
+                    requiredLevel: 4
+                },
+                {
+                    name: "Sony Alpha 7 IV Boîtier",
+                    price: 2799.00,
+                    image: "https://images.unsplash.com/photo-1606980707577-6c8aee5f7c8a?w=400&h=400&fit=crop",
+                    link: "https://www.sony.fr/electronics/appareils-photo-objectifs-interchangeables/ilce-7m4",
+                    requiredLevel: 5
+                },
+                {
+                    name: "DJI Mavic 3 Pro",
+                    price: 2199.00,
+                    image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=400&fit=crop",
+                    link: "https://www.dji.com/fr/mavic-3-pro",
+                    requiredLevel: 6
+                }
+            ],
+            'Maison connectée': [
+                {
+                    name: "Amazon Echo Dot 5ème gen",
+                    price: 59.99,
+                    image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=400&h=400&fit=crop",
+                    link: "https://www.amazon.fr/echo-dot",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Google Nest Hub 2ème gen",
+                    price: 99.99,
+                    image: "https://images.unsplash.com/photo-1558089687-3716a1c8c8e4?w=400&h=400&fit=crop",
+                    link: "https://store.google.com/fr/product/nest_hub_2nd_gen",
+                    requiredLevel: 2
+                },
+                {
+                    name: "Philips Hue Kit 3 ampoules E27",
+                    price: 129.99,
+                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
+                    link: "https://www.philips-hue.com/fr-fr",
+                    requiredLevel: 3
+                },
+                {
+                    name: "Ring Video Doorbell Pro 2",
+                    price: 249.99,
+                    image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=400&fit=crop",
+                    link: "https://fr-fr.ring.com/products/video-doorbell-pro-2",
+                    requiredLevel: 4
+                },
+                {
+                    name: "Dyson V15 Detect Aspirateur",
+                    price: 749.00,
+                    image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=400&h=400&fit=crop",
+                    link: "https://www.dyson.fr/aspirateurs/sans-fil/v15-detect",
+                    requiredLevel: 5
+                },
+                {
+                    name: "iRobot Roomba j7+",
+                    price: 799.00,
+                    image: "https://images.unsplash.com/photo-1625048082589-298a0c962e6f?w=400&h=400&fit=crop",
+                    link: "https://www.irobot.fr/roomba/j-series",
+                    requiredLevel: 6
+                }
+            ],
+            'Premium': [
+                {
+                    name: "MacBook Pro 16\" M3 Max 1 To",
+                    price: 3999.00,
+                    image: "https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/macbook-pro-14-and-16/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Samsung OLED 55\" S90C",
+                    price: 1799.00,
+                    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop",
+                    link: "https://www.samsung.com/fr/tvs/oled-tv/",
+                    requiredLevel: 2
+                },
+                {
+                    name: "LG OLED evo 65\" C3",
+                    price: 2299.00,
+                    image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400&h=400&fit=crop",
+                    link: "https://www.lg.com/fr/televiseurs/oled-tv",
+                    requiredLevel: 3
+                },
+                {
+                    name: "Canada Goose Expedition Parka",
+                    price: 1695.00,
+                    image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=400&h=400&fit=crop",
+                    link: "https://www.canadagoose.com/fr/fr/expedition-parka/",
+                    requiredLevel: 4
+                },
+                {
+                    name: "Rimowa Essential Cabin S",
+                    price: 650.00,
+                    image: "https://images.unsplash.com/photo-1581553680321-4fffae59fccd?w=400&h=400&fit=crop",
+                    link: "https://www.rimowa.com/fr/fr/essential/cabin-s/",
+                    requiredLevel: 5
+                },
+                {
+                    name: "Samsung Odyssey G9 49\" Curved",
+                    price: 1499.00,
+                    image: "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=400&h=400&fit=crop",
+                    link: "https://www.samsung.com/fr/monitors/gaming/odyssey-g9/",
+                    requiredLevel: 6
+                }
+            ]
+        };
+        let currentProduct;
+        let timeLeft = 60;
+        let timerInterval;
+        let gameActive = false;
+        let attempts = 0;
+        let gameMode = 'normal';
+        let selectedCategories = ['Électronique de base'];
+        // Initialiser l'affichage
+        updatePlayerStats();
+        renderCategories();
+        // Mise à jour des stats du joueur
+        function updatePlayerStats() {
+            document.getElementById('playerLevel').textContent = playerData.level;
+            document.getElementById('playerMoney').textContent = playerData.money + '€';
+            document.getElementById('playerWins').textContent = playerData.wins;
+            document.getElementById('xpProgress').textContent = `${playerData.xp}/${playerData.xpToNextLevel} XP`;
+            savePlayerData();
+        }
+        // Sauvegarder les données
+        function savePlayerData() {
+            localStorage.setItem('playerData', JSON.stringify(playerData));
+        }
+        // Compter les produits disponibles dans une catégorie selon le niveau
+        function getAvailableProductsCount(categoryName) {
+            const products = productsByCategory[categoryName];
+            if (!products) return 0;
+            return products.filter(p => p.requiredLevel <= playerData.level).length;
+        }
+        // Afficher les catégories
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = '';
+            categories.forEach(cat => {
+                const isUnlocked = playerData.unlockedCategories.includes(cat.name);
+                const canUnlock = playerData.money >= cat.unlockCost && playerData.level >= cat.unlockLevel;
+                const isSelected = selectedCategories.includes(cat.name);
+                const availableProducts = getAvailableProductsCount(cat.name);
+                const totalProducts = productsByCategory[cat.name]?.length || 0;
+                const card = document.createElement('div');
+                card.className = `category-card ${isUnlocked ? (isSelected ? 'active' : '') : 'locked'}`;
+                if (isUnlocked) {
+                    card.onclick = () => toggleCategorySelection(cat.name);
+                }
+                card.innerHTML = `
+                    ${isUnlocked ? `<input type="checkbox" class="category-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleCategorySelection('${cat.name}')">` : ''}
+                    <div class="category-icon">${cat.icon}</div>
+                    <div class="category-name">${cat.name}</div>
+                    ${isUnlocked ? `
+                        <div class="product-count">📦 ${availableProducts}/${totalProducts} produits</div>
+                    ` : `
+                        <div class="lock-icon">🔒</div>
+                        <div class="category-unlock">
+                            Niveau ${cat.unlockLevel}<br>
+                            ${cat.unlockCost}€
+                        </div>
+                        ${canUnlock ? `<button class="unlock-btn" onclick="unlockCategory('${cat.name}', ${cat.unlockCost}); event.stopPropagation();">Débloquer</button>` : `<button class="unlock-btn" disabled>Débloquer</button>`}
+                    `}
+                `;
+                grid.appendChild(card);
+            });
+        }
+        // Sélectionner/désélectionner une catégorie
+        function toggleCategorySelection(categoryName) {
+            const index = selectedCategories.indexOf(categoryName);
+            if (index === -1) {
+                selectedCategories.push(categoryName);
+            } else {
+                selectedCategories.splice(index, 1);
+            }
+            if (selectedCategories.length === 0) {
+                selectedCategories.push('Électronique de base');
+            }
+            renderCategories();
+            document.getElementById('startGameBtn').disabled = false;
+        }
+        // Débloquer une catégorie
+        function unlockCategory(categoryName, cost) {
+            const cat = categories.find(c => c.name === categoryName);
+            if (playerData.money >= cost && playerData.level >= cat.unlockLevel) {
+                playerData.money -= cost;
+                playerData.unlockedCategories.push(categoryName);
+                selectedCategories.push(categoryName);
+                updatePlayerStats();
+                renderCategories();
+                alert(`🎉 Catégorie "${categoryName}" débloquée !`);
+            }
+        }
+        // Sélection du mode
+        function selectMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+        // Démarrer le jeu avec le mode sélectionné
+        function startGameWithMode() {
+            if (selectedCategories.length === 0) {
+                alert('Veuillez sélectionner au moins une catégorie !');
+                return;
+            }
+            let hasAvailableProducts = false;
+            selectedCategories.forEach(cat => {
+                if (getAvailableProductsCount(cat) > 0) {
+                    hasAvailableProducts = true;
+                }
+            });
+            if (!hasAvailableProducts) {
+                alert('⚠️ Aucune catégorie sélectionnée ne contient de produits disponibles à votre niveau !');
+                return;
+            }
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            const badge = document.getElementById('modeBadge');
+            if (gameMode === 'normal') {
+                badge.textContent = '🟢 MODE NORMAL';
+                badge.className = 'mode-badge normal';
+            } else {
+                badge.textContent = '🔴 MODE EXPERT';
+                badge.className = 'mode-badge expert';
+            }
+            startGame();
+        }
+        // Retour au menu
+        function backToMenu() {
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('timer').classList.remove('warning');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+        // Démarrer une partie
+        function startGame() {
+            let allAvailableProducts = [];
+            selectedCategories.forEach(cat => {
+                const categoryProducts = productsByCategory[cat];
+                const availableProducts = categoryProducts.filter(p => p.requiredLevel <= playerData.level);
+                allAvailableProducts = allAvailableProducts.concat(availableProducts);
+            });
+            if (allAvailableProducts.length === 0) {
+                alert('⚠️ Aucun produit disponible dans les catégories sélectionnées !');
+                backToMenu();
+                return;
+            }
+            currentProduct = allAvailableProducts[Math.floor(Math.random() * allAvailableProducts.length)];
+            timeLeft = gameMode === 'expert' ? 30 : 60;
+            attempts = 0;
+            gameActive = true;
+            document.getElementById('productImage').src = currentProduct.image;
+            document.getElementById('productName').textContent = currentProduct.name;
+            document.getElementById('productLink').href = currentProduct.link;
+            document.getElementById('priceInput').value = '';
+            document.getElementById('priceInput').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('gameOver').classList.remove('show');
+            document.getElementById('attempts').textContent = 'Tentatives: 0';
+            document.getElementById('realPrice').textContent = '';
+            document.getElementById('rewardDisplay').textContent = '';
+            if (gameMode === 'expert') {
+                document.getElementById('priceInput').placeholder = 'Prix exact avec centimes (ex: 299.99)';
+                document.getElementById('priceInput').step = '0.01';
+            } else {
+                document.getElementById('priceInput').placeholder = 'Entrez votre prix en € (arrondi)';
+                document.getElementById('priceInput').step = '1';
+            }
+            startTimer();
+        }
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').classList.add('warning');
+                }
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        function submitGuess() {
+            if (!gameActive) return;
+            const guess = parseFloat(document.getElementById('priceInput').value);
+            if (isNaN(guess) || guess <= 0) {
+                showFeedback('Veuillez entrer un prix valide !', 'higher');
+                return;
+            }
+            attempts++;
+            document.getElementById('attempts').textContent = `Tentatives: ${attempts}`;
+            let targetPrice = currentProduct.price;
+            let isCorrect = false;
+            if (gameMode === 'expert') {
+                isCorrect = guess === targetPrice;
+            } else {
+                targetPrice = Math.round(targetPrice);
+                const guessRounded = Math.round(guess);
+                isCorrect = guessRounded === targetPrice;
+            }
+            if (isCorrect) {
+                endGame(true);
+            } else if (gameMode === 'expert') {
+                if (guess > targetPrice) {
+                    showFeedback('C\'est MOINS ! 📉', 'lower');
+                } else {
+                    showFeedback('C\'est PLUS ! 📈', 'higher');
+                }
+            } else {
+                if (Math.round(guess) > targetPrice) {
+                    showFeedback('C\'est MOINS ! 📉', 'lower');
+                } else {
+                    showFeedback('C\'est PLUS ! 📈', 'higher');
+                }
+            }
+            document.getElementById('priceInput').value = '';
+            document.getElementById('priceInput').focus();
+        }
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = 'feedback show ' + type;
+        }
+        function endGame(won) {
+            gameActive = false;
+            clearInterval(timerInterval);
+            document.getElementById('priceInput').disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('timer').classList.remove('warning');
+            const displayPrice = gameMode === 'expert'
+                ? currentProduct.price.toFixed(2) + '€'
+                : Math.round(currentProduct.price) + '€';
+            if (won) {
+                let moneyReward = gameMode === 'expert' ? 1500 : 500;
+                let xpReward = gameMode === 'expert' ? 20 : 10;
+                moneyReward = Math.floor(moneyReward);
+                xpReward = Math.floor(xpReward);
+                playerData.money += moneyReward;
+                playerData.xp += xpReward;
+                playerData.wins++;
+                // Calcul du niveau (50 XP par niveau)
+                if (playerData.xp >= playerData.xpToNextLevel) {
+                    playerData.level++;
+                    playerData.xp -= playerData.xpToNextLevel;
+                    playerData.xpToNextLevel = Math.floor(playerData.xpToNextLevel * 1.5);
+                    setTimeout(() => {
+                        alert(`🎊 NIVEAU SUPÉRIEUR ! Vous êtes maintenant niveau ${playerData.level} !`);
+                    }, 500);
+                }
+                updatePlayerStats();
+                renderCategories();
+                showFeedback(`🎉 BRAVO ! Le prix était ${displayPrice} ! Trouvé en ${attempts} tentative(s) !`, 'win');
+                document.getElementById('rewardDisplay').textContent = `💰 +${moneyReward}€ | ⭐ +${xpReward} XP`;
+            } else {
+                document.getElementById('realPrice').textContent = `Le prix exact était : ${displayPrice}`;
+                showFeedback(`⏱️ Temps écoulé !`, 'lose');
+            }
+            document.getElementById('gameOver').classList.add('show');
+        }
+        function newGame() {
+            startGame();
+        }
+        document.getElementById('priceInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitGuess();
+            }
+        });
+    </script>
+</body>
+</html>
