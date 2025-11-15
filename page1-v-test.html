@@ -491,400 +491,238 @@
             { name: 'Ordinateurs', icon: '💻', unlockCost: 5000, unlockLevel: 4 },
             { name: 'Photo & Vidéo', icon: '📷', unlockCost: 8000, unlockLevel: 5 },
             { name: 'Maison connectée', icon: '🏠', unlockCost: 3500, unlockLevel: 3 },
-            { name: 'Premium', icon: '💎', unlockCost: 15000, unlockLevel: 6 }
+            { name: 'Premium', icon: '💎', unlockCost: 15000, unlockLevel: 6 },
+            { name: 'Équipements de Fitness', icon: '🏋️', unlockCost: 2500, unlockLevel: 2 },
+            { name: 'Cuisine High-Tech', icon: '🍳', unlockCost: 4500, unlockLevel: 3 },
+            { name: 'Instruments de musique', icon: '🎹', unlockCost: 3000, unlockLevel: 3 },
+            { name: 'Luxury Fashion', icon: '👜', unlockCost: 20000, unlockLevel: 7 },
+            { name: 'Objets Rétro & Vintage', icon: '📼', unlockCost: 5000, unlockLevel: 4 },
+            { name: 'Figurines & Collectibles', icon: '🧸', unlockCost: 4000, unlockLevel: 3 },
+            { name: 'Décoration Artistique', icon: '🎨', unlockCost: 3500, unlockLevel: 3 },
+            { name: 'Produits Insolites', icon: '🤖', unlockCost: 6000, unlockLevel: 5 },
+            { name: 'Artisanat & Fait-main', icon: '✂️', unlockCost: 2000, unlockLevel: 2 }
         ];
+
         // Produits par catégorie avec niveau requis
         const productsByCategory = {
-            'Électronique de base': [
-                {
-                    name: "iPhone 15 Pro 128 Go",
-                    price: 1329.00,
-                    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop",
-                    link: "https://www.apple.com/fr/iphone-15-pro/",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Samsung Galaxy S24 128 Go",
-                    price: 899.00,
-                    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
-                    link: "https://www.samsung.com/fr/smartphones/galaxy-s24/",
-                    requiredLevel: 1
-                },
-                {
-                    name: "iPad Air M1 64 Go",
-                    price: 699.00,
-                    image: "https://images.unsplash.com/photo-1585790050230-5dd28404f8db?w=400&h=400&fit=crop",
-                    link: "https://www.apple.com/fr/ipad-air/",
-                    requiredLevel: 2
-                },
-                {
-                    name: "AirPods Pro 2ème génération",
-                    price: 299.00,
-                    image: "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=400&h=400&fit=crop",
-                    link: "https://www.apple.com/fr/airpods-pro/",
-                    requiredLevel: 3
-                },
-                {
-                    name: "Google Pixel 8 Pro 128 Go",
-                    price: 1099.00,
-                    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=400&fit=crop",
-                    link: "https://store.google.com/product/pixel_8_pro",
-                    requiredLevel: 4
-                },
-                {
-                    name: "Samsung Galaxy Tab S9 128 Go",
-                    price: 899.00,
-                    image: "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&h=400&fit=crop",
-                    link: "https://www.samsung.com/fr/tablets/galaxy-tab-s9/",
-                    requiredLevel: 5
-                }
-            ],
-            'Gaming': [
-                {
-                    name: "PlayStation 5 (Disque)",
-                    price: 549.99,
-                    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop",
-                    link: "https://www.playstation.com/fr-fr/ps5/",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Nintendo Switch OLED",
-                    price: 349.99,
-                    image: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop",
-                    link: "https://www.nintendo.com/fr-fr/Nintendo-Switch/Nintendo-Switch-OLED/",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Xbox Series X",
-                    price: 549.99,
-                    image: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=400&h=400&fit=crop",
-                    link: "https://www.xbox.com/fr-FR/consoles/xbox-series-x",
-                    requiredLevel: 2
-                },
-                {
-                    name: "Razer DeathAdder V3 Pro",
-                    price: 149.99,
-                    image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
-                    link: "https://www.razer.com/gaming-mice/razer-deathadder-v3-pro",
-                    requiredLevel: 3
-                },
-                {
-                    name: "SteelSeries Arctis Nova Pro",
-                    price: 349.99,
-                    image: "https://images.unsplash.com/photo-1599669454699-248893623440?w=400&h=400&fit=crop",
-                    link: "https://steelseries.com/gaming-headsets/arctis-nova-pro",
-                    requiredLevel: 4
-                },
-                {
-                    name: "Corsair K70 RGB Pro Clavier",
-                    price: 179.99,
-                    image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&h=400&fit=crop",
-                    link: "https://www.corsair.com/fr/fr/k70-rgb-pro",
-                    requiredLevel: 5
-                },
-                {
-                    name: "Logitech G Pro X Superlight",
-                    price: 159.00,
-                    image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&h=400&fit=crop",
-                    link: "https://www.logitechg.com/fr-fr/products/gaming-mice/pro-x-superlight-wireless-mouse.html",
-                    requiredLevel: 6
-                }
+            'Artisanat & Fait-main': [
+                { name: "Arteza Ensemble Peinture Acrylique", price: 89.99, image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop", link: "https://www.arteza.com/", requiredLevel: 4 },
+                { name: "Bernina 770 QE Machine à Coudre", price: 8999.00, image: "https://images.unsplash.com/photo-1597215554337-203e4f6ee10c?w=400&h=400&fit=crop", link: "https://www.bernina.com/fr-FR/Machines-FR/Machines-a-coudre-et-a-broder-FR/BERNINA-7-Series-FR/BERNINA-770-QE-FR", requiredLevel: 6 },
+                { name: "Brother CS7000X Machine à Coudre", price: 399.00, image: "https://images.unsplash.com/photo-1597215554337-203e4f6ee10c?w=400&h=400&fit=crop", link: "https://www.brother.fr/machines-a-coudre/cs7000x", requiredLevel: 1 },
+                { name: "Cricut Maker 3", price: 429.99, image: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=400&fit=crop", link: "https://cricut.com/en-us/machines/cricut-maker-family/cricut-maker-3", requiredLevel: 1 },
+                { name: "Dremel 3D45 Imprimante 3D", price: 1799.00, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop", link: "https://www.dremel.com/us/en/p/3d45-01-26153d45ja", requiredLevel: 5 },
+                { name: "EasySublim Presse à Chaud", price: 399.00, image: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=400&fit=crop", link: "https://www.easysublim.com/", requiredLevel: 4 },
+                { name: "Glowforge Plus Laser Cutter", price: 4995.00, image: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=400&fit=crop", link: "https://glowforge.com/products/glowforge-plus", requiredLevel: 3 },
+                { name: "Janome Memory Craft 6700P", price: 2099.00, image: "https://images.unsplash.com/photo-1597215554337-203e4f6ee10c?w=400&h=400&fit=crop", link: "https://www.janome.com/machines/sewing/memory-craft-6700-professional/", requiredLevel: 3 },
+                { name: "Silhouette Cameo 4", price: 349.99, image: "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=400&fit=crop", link: "https://www.silhouetteamerica.com/shop/machines/cameo-4", requiredLevel: 2 },
+                { name: "Singer Heavy Duty 4452", price: 279.00, image: "https://images.unsplash.com/photo-1597215554337-203e4f6ee10c?w=400&h=400&fit=crop", link: "https://www.singer.com/heavy-duty-4452-sewing-machine", requiredLevel: 2 }
             ],
             'Audio Premium': [
-                {
-                    name: "Sony WH-1000XM5",
-                    price: 399.00,
-                    image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop",
-                    link: "https://www.sony.fr/electronics/casque-arceau/wh-1000xm5",
-                    requiredLevel: 1
-                },
-                {
-                    name: "JBL Charge 5",
-                    price: 179.99,
-                    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop",
-                    link: "https://fr.jbl.com/enceintes-bluetooth/CHARGE5.html",
-                    requiredLevel: 2
-                },
-                {
-                    name: "Bose QuietComfort Ultra",
-                    price: 429.00,
-                    image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop",
-                    link: "https://www.bose.fr/products/headphones/noise-cancelling-headphones/quietcomfort-ultra-headphones",
-                    requiredLevel: 3
-                },
-                {
-                    name: "AirPods Max",
-                    price: 629.00,
-                    image: "https://images.unsplash.com/photo-1625498677464-43c0fb02f834?w=400&h=400&fit=crop",
-                    link: "https://www.apple.com/fr/airpods-max/",
-                    requiredLevel: 4
-                },
-                {
-                    name: "Marshall Emberton II",
-                    price: 169.99,
-                    image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=400&h=400&fit=crop",
-                    link: "https://www.marshallheadphones.com/fr/emberton-ii",
-                    requiredLevel: 5
-                },
-                {
-                    name: "Samsung Galaxy Buds2 Pro",
-                    price: 229.00,
-                    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop",
-                    link: "https://www.samsung.com/fr/audio-devices/galaxy-buds2-pro/",
-                    requiredLevel: 6
-                }
+                { name: "AirPods Max", price: 629.00, image: "https://images.unsplash.com/photo-1625498677464-43c0fb02f834?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/airpods-max/", requiredLevel: 2 },
+                { name: "Bang & Olufsen Beoplay H95", price: 799.00, image: "https://images.unsplash.com/photo-1590658165737-15a047b7a03e?w=400&h=400&fit=crop", link: "https://www.bang-olufsen.com/fr/fr/speakers/beosound-theatre", requiredLevel: 4 },
+                { name: "Bose QuietComfort Ultra", price: 429.00, image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop", link: "https://www.bose.fr/products/headphones/noise-cancelling-headphones/quietcomfort-ultra-headphones", requiredLevel: 2 },
+                { name: "Bowers & Wilkins PX8", price: 699.00, image: "https://images.unsplash.com/photo-1545127398-14699f92334b?w=400&h=400&fit=crop", link: "https://www.bowerswilkins.com/fr-fr/product/headphones/px8", requiredLevel: 6 },
+                { name: "JBL Charge 5", price: 179.99, image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop", link: "https://fr.jbl.com/enceintes-bluetooth/CHARGE5.html", requiredLevel: 1 },
+                { name: "Marshall Emberton II", price: 169.99, image: "https://images.unsplash.com/photo-1545454675-3531b543be5d?w=400&h=400&fit=crop", link: "https://www.marshallheadphones.com/fr/emberton-ii", requiredLevel: 3 },
+                { name: "Samsung Galaxy Buds2 Pro", price: 229.00, image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop", link: "https://www.samsung.com/fr/audio-devices/galaxy-buds2-pro/", requiredLevel: 3 },
+                { name: "Sennheiser Momentum 4", price: 379.00, image: "https://images.unsplash.com/photo-1613040809024-b4ef7ba99bc3?w=400&h=400&fit=crop", link: "https://www.sennheiser.com/fr-fr/momentum-4-wireless", requiredLevel: 4 },
+                { name: "Sonos Era 300", price: 499.00, image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop", link: "https://www.sonos.com/fr-fr/shop/era-300", requiredLevel: 5 },
+                { name: "Sony WH-1000XM5", price: 399.00, image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop", link: "https://www.sony.fr/electronics/casque-arceau/wh-1000xm5", requiredLevel: 1 }
             ],
-            'Mode & Sneakers': [
-                {
-                    name: "Nike Air Jordan 1 Mid",
-                    price: 139.99,
-                    image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=400&fit=crop",
-                    link: "https://www.nike.com/fr/t/air-jordan-1-mid",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Converse Chuck Taylor All Star",
-                    price: 69.99,
-                    image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=400&h=400&fit=crop",
-                    link: "https://www.converse.com/fr/fr/chuck-taylor-all-star",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Nike Air Max 90",
-                    price: 149.99,
-                    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
-                    link: "https://www.nike.com/fr/t/air-max-90",
-                    requiredLevel: 2
-                },
-                {
-                    name: "Adidas Ultraboost 22",
-                    price: 189.99,
-                    image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&h=400&fit=crop",
-                    link: "https://www.adidas.fr/ultraboost",
-                    requiredLevel: 3
-                },
-                {
-                    name: "New Balance 574",
-                    price: 99.99,
-                    image: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&h=400&fit=crop",
-                    link: "https://www.newbalance.fr/574",
-                    requiredLevel: 4
-                },
-                {
-                    name: "The North Face Nuptse 1996",
-                    price: 349.00,
-                    image: "https://images.unsplash.com/photo-1544923246-77307dd654f3?w=400&h=400&fit=crop",
-                    link: "https://www.thenorthface.fr/shop/fr/tnf-fr/doudounes-nuptse",
-                    requiredLevel: 5
-                },
-                {
-                    name: "Vans Old Skool",
-                    price: 79.99,
-                    image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&h=400&fit=crop",
-                    link: "https://www.vans.fr/shop/fr/vans-fr/old-skool",
-                    requiredLevel: 6
-                }
+            'Cuisine High-Tech': [
+                { name: "Anova Precision Cooker Pro", price: 399.00, image: "https://images.unsplash.com/photo-1556909212-d5b604d0c90d?w=400&h=400&fit=crop", link: "https://anovaculinary.com/anova-precision-cooker-pro/", requiredLevel: 4 },
+                { name: "Breville the Oracle Touch", price: 2499.00, image: "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=400&h=400&fit=crop", link: "https://www.brevilleusa.com/products/the-oracle-touch", requiredLevel: 6 },
+                { name: "KitchenAid Artisan 5KSM175", price: 699.00, image: "https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400&h=400&fit=crop", link: "https://www.kitchenaid.fr/", requiredLevel: 1 },
+                { name: "KitchenAid Artisan Blender", price: 399.00, image: "https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=400&h=400&fit=crop", link: "https://www.kitchenaid.fr/blenders", requiredLevel: 3 },
+                { name: "Meater+ Thermomètre Connecté", price: 119.00, image: "https://images.unsplash.com/photo-1556909212-d5b604d0c90d?w=400&h=400&fit=crop", link: "https://meater.com/products/meater-plus", requiredLevel: 4 },
+                { name: "Ninja Foodi MAX", price: 299.99, image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=400&h=400&fit=crop", link: "https://www.ninjakitchen.fr/products/ninja-foodi-max", requiredLevel: 2 },
+                { name: "Sage the Barista Express", price: 699.00, image: "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=400&h=400&fit=crop", link: "https://www.sageappliances.com/fr/fr/products/espresso/bes870.html", requiredLevel: 2 },
+                { name: "Smeg FAB28 Réfrigérateur", price: 1499.00, image: "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=400&h=400&fit=crop", link: "https://www.smeg.fr/refrigerateurs/fab28", requiredLevel: 3 },
+                { name: "Thermomix TM6", price: 1399.00, image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=400&h=400&fit=crop", link: "https://www.vorwerk.fr/thermomix/", requiredLevel: 1 },
+                { name: "Vitamix A3500i Ascent", price: 749.00, image: "https://images.unsplash.com/photo-1585515320310-259814833e62?w=400&h=400&fit=crop", link: "https://www.vitamix.com/fr/fr-fr/shop/a3500i", requiredLevel: 5 }
             ],
-            'Montres connectées': [
-                {
-                    name: "Apple Watch Series 9 GPS 45mm",
-                    price: 479.00,
-                    image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=400&fit=crop",
-                    link: "https://www.apple.com/fr/apple-watch-series-9/",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Fitbit Sense 2",
-                    price: 299.00,
-                    image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=400&fit=crop",
-                    link: "https://www.fitbit.com/global/fr/products/smartwatches/sense2",
-                    requiredLevel: 2
-                },
-                {
-                    name: "Samsung Galaxy Watch 6 Classic",
-                    price: 429.00,
-                    image: "https://images.unsplash.com/photo-1617043786394-f977fa12eddf?w=400&h=400&fit=crop",
-                    link: "https://www.samsung.com/fr/watches/galaxy-watch/galaxy-watch6-classic/",
-                    requiredLevel: 3
-                }
+            'Décoration Artistique': [
+                { name: "Artiphon Orba 2", price: 149.00, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://artiphon.com/products/orba-2", requiredLevel: 4 },
+                { name: "Govee DreamView T1 TV Backlight", price: 89.99, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://govee.com/products/govee-dreamview-t1-tv-backlight", requiredLevel: 2 },
+                { name: "IKEA SYMFONISK Cadre Sonos", price: 219.00, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://www.ikea.com/fr/fr/p/symfonisk-cadre-avec-enceinte-wifi-noir-50487996/", requiredLevel: 2 },
+                { name: "Lume Cube Cordless Ring Light", price: 99.95, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://lumecube.com/products/cordless-ring-light", requiredLevel: 6 },
+                { name: "Meural Canvas II Digital Art", price: 599.00, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://meural.com/products/meural-canvas-ii", requiredLevel: 3 },
+                { name: "Nanoleaf Shapes Triangles", price: 199.99, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://nanoleaf.me/fr-FR/products/shapes/", requiredLevel: 1 },
+                { name: "Philips Hue Play Gradient Lightstrip", price: 239.99, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://www.philips-hue.com/fr-fr/p/hue-white-and-color-ambiance-play-gradient-lightstrip/046677560423", requiredLevel: 1 },
+                { name: "Samsung The Frame 55\"", price: 1499.00, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://www.samsung.com/fr/tvs/the-frame/", requiredLevel: 5 },
+                { name: "Twinkly Smart LED String 250", price: 179.99, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://www.twinkly.com/products/strings/", requiredLevel: 4 },
+                { name: "Yeelight Aurora Lightstrip Plus", price: 119.99, image: "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&h=400&fit=crop", link: "https://www.yeelight.com/en_US/product/yeelight-aurora", requiredLevel: 3 }
             ],
-            'Ordinateurs': [
-                {
-                    name: "MacBook Air M2 256 Go",
-                    price: 1199.00,
-                    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
-                    link: "https://www.apple.com/fr/macbook-air-m2/",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Dell XPS 15 Intel i7 512 Go",
-                    price: 1899.00,
-                    image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=400&fit=crop",
-                    link: "https://www.dell.com/fr-fr/shop/laptops/xps-15/",
-                    requiredLevel: 2
-                },
-                {
-                    name: "HP Spectre x360 14\" i7 1 To",
-                    price: 1699.00,
-                    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
-                    link: "https://www.hp.com/fr-fr/shop/product.aspx?id=spectre-x360",
-                    requiredLevel: 3
-                },
-                {
-                    name: "Asus ROG Zephyrus G14 RTX 4060",
-                    price: 1899.00,
-                    image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=400&fit=crop",
-                    link: "https://rog.asus.com/fr/laptops/rog-zephyrus/rog-zephyrus-g14/",
-                    requiredLevel: 4
-                },
-                {
-                    name: "MacBook Pro 14\" M3 512 Go",
-                    price: 2249.00,
-                    image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&h=400&fit=crop",
-                    link: "https://www.apple.com/fr/macbook-pro-14-and-16/",
-                    requiredLevel: 5
-                },
-                {
-                    name: "Lenovo ThinkPad X1 Carbon i7",
-                    price: 1799.00,
-                    image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=400&fit=crop",
-                    link: "https://www.lenovo.com/fr/fr/laptops/thinkpad/thinkpad-x1/x1-carbon-gen-11/",
-                    requiredLevel: 6
-                }
+            'Électronique de base': [
+                { name: "AirPods Pro 2ème génération", price: 299.00, image: "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/airpods-pro/", requiredLevel: 2 },
+                { name: "Google Pixel 8 Pro 256 Go", price: 1099.00, image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=400&fit=crop", link: "https://store.google.com/product/pixel_8_pro", requiredLevel: 3 },
+                { name: "iPad Air M2 128 Go", price: 699.00, image: "https://images.unsplash.com/photo-1585790050230-5dd28404f8db?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/ipad-air/", requiredLevel: 2 },
+                { name: "iPhone 15 Pro 128 Go", price: 1329.00, image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/iphone-15-pro/", requiredLevel: 1 },
+                { name: "Motorola Edge 40 Pro", price: 899.00, image: "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&h=400&fit=crop", link: "https://www.motorola.fr/smartphones-motorola-edge-40-pro/", requiredLevel: 6 },
+                { name: "Nothing Phone (2) 256 Go", price: 699.00, image: "https://images.unsplash.com/photo-1592286927505-b165b2e6b0c7?w=400&h=400&fit=crop", link: "https://eu.nothing.tech/products/phone-2", requiredLevel: 5 },
+                { name: "OnePlus 11 256 Go", price: 799.00, image: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&h=400&fit=crop", link: "https://www.oneplus.com/fr/11", requiredLevel: 4 },
+                { name: "Samsung Galaxy S24 128 Go", price: 899.00, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop", link: "https://www.samsung.com/fr/smartphones/galaxy-s24/", requiredLevel: 1 },
+                { name: "Samsung Galaxy Tab S9 256 Go", price: 999.00, image: "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&h=400&fit=crop", link: "https://www.samsung.com/fr/tablets/galaxy-tab-s9/", requiredLevel: 3 },
+                { name: "Xiaomi 13T Pro 512 Go", price: 649.00, image: "https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=400&h=400&fit=crop", link: "https://www.mi.com/fr/product/xiaomi-13t-pro/", requiredLevel: 4 }
             ],
-            'Photo & Vidéo': [
-                {
-                    name: "GoPro HERO 12 Black",
-                    price: 449.99,
-                    image: "https://images.unsplash.com/photo-1533093818801-fa5d3d89b68d?w=400&h=400&fit=crop",
-                    link: "https://gopro.com/fr/fr/shop/cameras/hero12-black/",
-                    requiredLevel: 1
-                },
-                {
-                    name: "DJI Mini 4 Pro",
-                    price: 759.00,
-                    image: "https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=400&h=400&fit=crop",
-                    link: "https://www.dji.com/fr/mini-4-pro",
-                    requiredLevel: 2
-                },
-                {
-                    name: "Fujifilm X-T5 Boîtier",
-                    price: 1899.00,
-                    image: "https://images.unsplash.com/photo-1495121553079-4c61bcce1894?w=400&h=400&fit=crop",
-                    link: "https://fujifilm-x.com/fr-fr/products/cameras/x-t5/",
-                    requiredLevel: 3
-                },
-                {
-                    name: "Canon EOS R6 Mark II Boîtier",
-                    price: 2699.00,
-                    image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&h=400&fit=crop",
-                    link: "https://www.canon.fr/cameras/eos-r6-mark-ii/",
-                    requiredLevel: 4
-                },
-                {
-                    name: "Sony Alpha 7 IV Boîtier",
-                    price: 2799.00,
-                    image: "https://images.unsplash.com/photo-1606980707577-6c8aee5f7c8a?w=400&h=400&fit=crop",
-                    link: "https://www.sony.fr/electronics/appareils-photo-objectifs-interchangeables/ilce-7m4",
-                    requiredLevel: 5
-                },
-                {
-                    name: "DJI Mavic 3 Pro",
-                    price: 2199.00,
-                    image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=400&fit=crop",
-                    link: "https://www.dji.com/fr/mavic-3-pro",
-                    requiredLevel: 6
-                }
+            'Équipements de Fitness': [
+                { name: "Bowflex SelectTech 552i", price: 549.00, image: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400&h=400&fit=crop", link: "https://www.bowflex.com/selecttech/552i/100318.html", requiredLevel: 2 },
+                { name: "Concept2 Model D Rower", price: 1015.00, image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=400&fit=crop", link: "https://www.concept2.com/indoor-rowers/model-d", requiredLevel: 3 },
+                { name: "Hydrow Rower", price: 2495.00, image: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=400&fit=crop", link: "https://www.hydrow.com/", requiredLevel: 6 },
+                { name: "Hyperice Hypervolt 2 Pro", price: 399.00, image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop", link: "https://hyperice.com/hypervolt-2-pro", requiredLevel: 4 },
+                { name: "NordicTrack T Series Treadmill", price: 999.00, image: "https://images.unsplash.com/photo-1576678927484-cc907957088c?w=400&h=400&fit=crop", link: "https://www.nordictrack.fr/treadmills", requiredLevel: 2 },
+                { name: "Peloton Bike+", price: 2495.00, image: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400&h=400&fit=crop", link: "https://www.onepeloton.fr/shop/bike-plus", requiredLevel: 1 },
+                { name: "Technogym Bench", price: 1590.00, image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop", link: "https://www.technogym.com/fr/bench.html", requiredLevel: 1 },
+                { name: "Theragun Elite", price: 399.00, image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=400&fit=crop", link: "https://www.therabody.com/fr/fr/theragun-elite.html", requiredLevel: 4 },
+                { name: "Tonal Smart Home Gym", price: 2995.00, image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop", link: "https://www.tonal.com/", requiredLevel: 5 },
+                { name: "TRX Pro4 System", price: 199.95, image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=400&h=400&fit=crop", link: "https://www.trxtraining.com/products/trx-pro4-system", requiredLevel: 3 }
+            ],
+            'Figurines & Collectibles': [
+                { name: "Banpresto Dragon Ball Z Figure", price: 89.99, image: "https://images.unsplash.com/photo-1601814933824-fd0b574dd592?w=400&h=400&fit=crop", link: "https://bandainamco-am.co.jp/am/prize/banpresto/", requiredLevel: 3 },
+                { name: "First 4 Figures Sonic Statue", price: 399.99, image: "https://images.unsplash.com/photo-1601814933824-fd0b574dd592?w=400&h=400&fit=crop", link: "https://www.first4figures.com/", requiredLevel: 4 },
+                { name: "Funko Pop! Marvel Avengers Set", price: 49.99, image: "https://images.unsplash.com/photo-1601814933824-fd0b574dd592?w=400&h=400&fit=crop", link: "https://www.funko.com/", requiredLevel: 1 },
+                { name: "Hot Toys Iron Man Mark 85", price: 429.00, image: "https://images.unsplash.com/photo-1601814933824-fd0b574dd592?w=400&h=400&fit=crop", link: "https://www.hottoys.com.hk/", requiredLevel: 2 },
+                { name: "LEGO Creator Expert Taj Mahal", price: 369.99, image: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&h=400&fit=crop", link: "https://www.lego.com/fr-fr/product/taj-mahal-10256", requiredLevel: 6 },
+                { name: "LEGO Ideas NASA Apollo Saturn V", price: 139.99, image: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&h=400&fit=crop", link: "https://www.lego.com/fr-fr/product/lego-nasa-apollo-saturn-v-92176", requiredLevel: 2 },
+                { name: "LEGO Star Wars UCS Millennium Falcon", price: 849.99, image: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&h=400&fit=crop", link: "https://www.lego.com/fr-fr/product/millennium-falcon-75192", requiredLevel: 1 },
+                { name: "LEGO Technic Bugatti Chiron", price: 379.99, image: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&h=400&fit=crop", link: "https://www.lego.com/fr-fr/product/bugatti-chiron-42083", requiredLevel: 4 },
+                { name: "Prime 1 Studio Batman Statue", price: 1199.00, image: "https://images.unsplash.com/photo-1601814933824-fd0b574dd592?w=400&h=400&fit=crop", link: "https://www.prime1studio.com/", requiredLevel: 5 },
+                { name: "Sideshow Premium Format Darth Vader", price: 649.00, image: "https://images.unsplash.com/photo-1601814933824-fd0b574dd592?w=400&h=400&fit=crop", link: "https://www.sideshow.com/", requiredLevel: 3 }
+            ],
+            'Gaming': [
+                { name: "ASUS ROG Ally", price: 799.99, image: "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=400&h=400&fit=crop", link: "https://rog.asus.com/fr/gaming-handhelds/rog-ally/", requiredLevel: 5 },
+                { name: "Corsair K70 RGB Pro", price: 179.99, image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&h=400&fit=crop", link: "https://www.corsair.com/fr/fr/k70-rgb-pro", requiredLevel: 3 },
+                { name: "HyperX Cloud III Wireless", price: 189.99, image: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=400&h=400&fit=crop", link: "https://www.hyperx.com/products/hyperx-cloud-iii-wireless", requiredLevel: 6 },
+                { name: "Logitech G Pro X Superlight", price: 159.00, image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=400&h=400&fit=crop", link: "https://www.logitechg.com/fr-fr/products/gaming-mice/pro-x-superlight-wireless-mouse.html", requiredLevel: 4 },
+                { name: "Nintendo Switch OLED", price: 349.99, image: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop", link: "https://www.nintendo.com/fr-fr/Nintendo-Switch/Nintendo-Switch-OLED/", requiredLevel: 1 },
+                { name: "PlayStation 5 (Disque)", price: 549.99, image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop", link: "https://www.playstation.com/fr-fr/ps5/", requiredLevel: 1 },
+                { name: "Razer DeathAdder V3 Pro", price: 149.99, image: "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop", link: "https://www.razer.com/gaming-mice/razer-deathadder-v3-pro", requiredLevel: 2 },
+                { name: "SteelSeries Arctis Nova Pro", price: 349.99, image: "https://images.unsplash.com/photo-1599669454699-248893623440?w=400&h=400&fit=crop", link: "https://steelseries.com/gaming-headsets/arctis-nova-pro", requiredLevel: 3 },
+                { name: "Valve Steam Deck 512 Go", price: 679.00, image: "https://images.unsplash.com/photo-1625805866449-3589fe3f71a3?w=400&h=400&fit=crop", link: "https://store.steampowered.com/steamdeck", requiredLevel: 4 },
+                { name: "Xbox Series X", price: 549.99, image: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=400&h=400&fit=crop", link: "https://www.xbox.com/fr-FR/consoles/xbox-series-x", requiredLevel: 2 }
+            ],
+            'Instruments de musique': [
+                { name: "Akai Professional MPK Mini MK3", price: 119.00, image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=400&fit=crop", link: "https://www.akaipro.com/mpk-mini-mk3", requiredLevel: 4 },
+                { name: "Arturia KeyLab Essential 61", price: 279.00, image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400&h=400&fit=crop", link: "https://www.arturia.com/products/hybrid-synths/keylab-essential/overview", requiredLevel: 5 },
+                { name: "Fender Player Stratocaster", price: 849.00, image: "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=400&h=400&fit=crop", link: "https://www.fender.com/fr-FR/electric-guitars/stratocaster/player-stratocaster/", requiredLevel: 1 },
+                { name: "Gibson Les Paul Standard", price: 2799.00, image: "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=400&h=400&fit=crop", link: "https://www.gibson.com/fr-FR/Guitar/USA5F4228/Les-Paul-Standard-50s", requiredLevel: 3 },
+                { name: "Korg MicroKorg Synthé", price: 399.00, image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=400&fit=crop", link: "https://www.korg.com/fr/products/synthesizers/microkorg/", requiredLevel: 2 },
+                { name: "Moog Subsequent 25", price: 799.00, image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=400&fit=crop", link: "https://www.moogmusic.com/products/subsequent-25", requiredLevel: 6 },
+                { name: "Native Instruments Maschine+", price: 1349.00, image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400&h=400&fit=crop", link: "https://www.native-instruments.com/fr/products/maschine/production-systems/maschine-plus/", requiredLevel: 3 },
+                { name: "Roland TD-17KVX V-Drums", price: 1999.00, image: "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=400&h=400&fit=crop", link: "https://www.roland.com/fr/products/td-17kvx/", requiredLevel: 2 },
+                { name: "Teenage Engineering OP-1", price: 1399.00, image: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=400&h=400&fit=crop", link: "https://teenage.engineering/products/op-1", requiredLevel: 4 },
+                { name: "Yamaha P-125 Piano Numérique", price: 699.00, image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400&h=400&fit=crop", link: "https://fr.yamaha.com/fr/products/musical_instruments/pianos/p_series/p-125/", requiredLevel: 1 }
+            ],
+            'Luxury Fashion': [
+                { name: "Audemars Piguet Royal Oak", price: 29800.00, image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop", link: "https://www.audemarspiguet.com/com/fr/", requiredLevel: 6 },
+                { name: "Balenciaga Triple S Sneakers", price: 1050.00, image: "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=400&h=400&fit=crop", link: "https://www.balenciaga.com/fr-fr", requiredLevel: 4 },
+                { name: "Cartier Love Bracelet Or Blanc", price: 7550.00, image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&h=400&fit=crop", link: "https://www.cartier.com/fr-fr/", requiredLevel: 3 },
+                { name: "Chanel Classic Flap Bag Medium", price: 9900.00, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop", link: "https://www.chanel.com/fr/", requiredLevel: 3 },
+                { name: "Gucci GG Marmont Matelassé", price: 1890.00, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop", link: "https://www.gucci.com/fr/fr/", requiredLevel: 1 },
+                { name: "Hermès Birkin 30", price: 12500.00, image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop", link: "https://www.hermes.com/fr/fr/", requiredLevel: 2 },
+                { name: "Louis Vuitton Keepall Bandoulière 55", price: 2450.00, image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop", link: "https://fr.louisvuitton.com/", requiredLevel: 1 },
+                { name: "Omega Speedmaster Professional", price: 6800.00, image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop", link: "https://www.omegawatches.com/fr/", requiredLevel: 4 },
+                { name: "Prada Re-Edition 2005 Nylon Bag", price: 950.00, image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop", link: "https://www.prada.com/fr/fr.html", requiredLevel: 5 },
+                { name: "Rolex Oyster Perpetual 41", price: 6550.00, image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop", link: "https://www.rolex.com/fr", requiredLevel: 2 }
             ],
             'Maison connectée': [
-                {
-                    name: "Amazon Echo Dot 5ème gen",
-                    price: 59.99,
-                    image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=400&h=400&fit=crop",
-                    link: "https://www.amazon.fr/echo-dot",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Google Nest Hub 2ème gen",
-                    price: 99.99,
-                    image: "https://images.unsplash.com/photo-1558089687-3716a1c8c8e4?w=400&h=400&fit=crop",
-                    link: "https://store.google.com/fr/product/nest_hub_2nd_gen",
-                    requiredLevel: 2
-                },
-                {
-                    name: "Philips Hue Kit 3 ampoules E27",
-                    price: 129.99,
-                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop",
-                    link: "https://www.philips-hue.com/fr-fr",
-                    requiredLevel: 3
-                },
-                {
-                    name: "Ring Video Doorbell Pro 2",
-                    price: 249.99,
-                    image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=400&fit=crop",
-                    link: "https://fr-fr.ring.com/products/video-doorbell-pro-2",
-                    requiredLevel: 4
-                },
-                {
-                    name: "Dyson V15 Detect Aspirateur",
-                    price: 749.00,
-                    image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=400&h=400&fit=crop",
-                    link: "https://www.dyson.fr/aspirateurs/sans-fil/v15-detect",
-                    requiredLevel: 5
-                },
-                {
-                    name: "iRobot Roomba j7+",
-                    price: 799.00,
-                    image: "https://images.unsplash.com/photo-1625048082589-298a0c962e6f?w=400&h=400&fit=crop",
-                    link: "https://www.irobot.fr/roomba/j-series",
-                    requiredLevel: 6
-                }
+                { name: "Amazon Echo Dot 5ème gen", price: 59.99, image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=400&h=400&fit=crop", link: "https://www.amazon.fr/echo-dot", requiredLevel: 1 },
+                { name: "Arlo Pro 4 Caméra", price: 219.99, image: "https://images.unsplash.com/photo-1557324232-b89e63c1f3de?w=400&h=400&fit=crop", link: "https://www.arlo.com/fr/products/arlo-pro-4", requiredLevel: 4 },
+                { name: "August Smart Lock Pro", price: 279.00, image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=400&fit=crop", link: "https://august.com/products/august-smart-lock-pro-connect", requiredLevel: 6 },
+                { name: "Dyson V15 Detect Aspirateur", price: 749.00, image: "https://images.unsplash.com/photo-1558317374-067fb5f30001?w=400&h=400&fit=crop", link: "https://www.dyson.fr/aspirateurs/sans-fil/v15-detect", requiredLevel: 3 },
+                { name: "Google Nest Hub 2ème gen", price: 99.99, image: "https://images.unsplash.com/photo-1558089687-3716a1c8c8e4?w=400&h=400&fit=crop", link: "https://store.google.com/fr/product/nest_hub_2nd_gen", requiredLevel: 1 },
+                { name: "iRobot Roomba j7+", price: 799.00, image: "https://images.unsplash.com/photo-1625048082589-298a0c962e6f?w=400&h=400&fit=crop", link: "https://www.irobot.fr/roomba/j-series", requiredLevel: 3 },
+                { name: "Netatmo Station Météo", price: 179.99, image: "https://images.unsplash.com/photo-1592294612811-9d951ff6f3e0?w=400&h=400&fit=crop", link: "https://www.netatmo.com/fr-fr/weather", requiredLevel: 4 },
+                { name: "Nest Learning Thermostat", price: 249.00, image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop", link: "https://store.google.com/fr/product/nest_learning_thermostat_3rd_gen", requiredLevel: 5 },
+                { name: "Philips Hue Kit 3 ampoules E27", price: 129.99, image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop", link: "https://www.philips-hue.com/fr-fr", requiredLevel: 2 },
+                { name: "Ring Video Doorbell Pro 2", price: 249.99, image: "https://images.unsplash.com/photo-1558002038-1055907df827?w=400&h=400&fit=crop", link: "https://fr-fr.ring.com/products/video-doorbell-pro-2", requiredLevel: 2 }
+            ],
+            'Montres connectées': [
+                { name: "Amazfit GTR 4", price: 229.00, image: "https://images.unsplash.com/photo-1579721840641-7d0e67f1204e?w=400&h=400&fit=crop", link: "https://www.amazfit.com/fr/products/amazfit-gtr-4", requiredLevel: 4 },
+                { name: "Apple Watch Series 9 GPS 45mm", price: 479.00, image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/apple-watch-series-9/", requiredLevel: 1 },
+                { name: "Apple Watch Ultra 2", price: 899.00, image: "https://images.unsplash.com/photo-1663748872025-47a5f3f06fa1?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/apple-watch-ultra-2/", requiredLevel: 6 },
+                { name: "Fitbit Sense 2", price: 299.00, image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=400&fit=crop", link: "https://www.fitbit.com/global/fr/products/smartwatches/sense2", requiredLevel: 1 },
+                { name: "Garmin Forerunner 965", price: 649.00, image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400&h=400&fit=crop", link: "https://www.garmin.com/fr-FR/p/780139", requiredLevel: 2 },
+                { name: "Huawei Watch GT 4", price: 299.00, image: "https://images.unsplash.com/photo-1557438159-51eec7a6c9e8?w=400&h=400&fit=crop", link: "https://consumer.huawei.com/fr/wearables/watch-gt4/", requiredLevel: 4 },
+                { name: "Polar Vantage V3", price: 599.00, image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400&h=400&fit=crop", link: "https://www.polar.com/fr-fr/products/vantage-v3", requiredLevel: 3 },
+                { name: "Samsung Galaxy Watch 6 Classic", price: 429.00, image: "https://images.unsplash.com/photo-1617043786394-f977fa12eddf?w=400&h=400&fit=crop", link: "https://www.samsung.com/fr/watches/galaxy-watch/galaxy-watch6-classic/", requiredLevel: 2 },
+                { name: "Suunto 9 Peak Pro", price: 569.00, image: "https://images.unsplash.com/photo-1633460459798-23e937df638a?w=400&h=400&fit=crop", link: "https://www.suunto.com/fr-fr/Products/sports-watches/suunto-9-peak-pro/", requiredLevel: 5 },
+                { name: "Withings ScanWatch 2", price: 349.00, image: "https://images.unsplash.com/photo-1523395243881-1c2b3e7e8a2f?w=400&h=400&fit=crop", link: "https://www.withings.com/fr/fr/scanwatch-2", requiredLevel: 3 }
+            ],
+            'Objets Rétro & Vintage': [
+                { name: "Audio-Technica AT-LP120X", price: 349.00, image: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400&h=400&fit=crop", link: "https://www.audio-technica.com/fr-fr/at-lp120xusb", requiredLevel: 3 },
+                { name: "Crosley Cruiser Deluxe", price: 89.99, image: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400&h=400&fit=crop", link: "https://www.crosleyradio.com/turntables/product-details?productkey=CR8005D", requiredLevel: 1 },
+                { name: "Fujifilm Instax Mini 12", price: 79.99, image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=400&fit=crop", link: "https://instax.com/mini12/fr/", requiredLevel: 2 },
+                { name: "Leica M-A Film Camera", price: 5295.00, image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=400&fit=crop", link: "https://leica-camera.com/fr-FR/photographie/appareils-photo/m/m-a-type-127-silver", requiredLevel: 6 },
+                { name: "Lomography LC-A 120", price: 349.00, image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=400&fit=crop", link: "https://shop.lomography.com/en/lc-a-120", requiredLevel: 4 },
+                { name: "Polaroid Now+ Gen 2", price: 149.99, image: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400&h=400&fit=crop", link: "https://www.polaroid.com/products/polaroid-now-plus-gen-2", requiredLevel: 1 },
+                { name: "Pro-Ject Debut Carbon EVO", price: 599.00, image: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400&h=400&fit=crop", link: "https://www.project-audio.com/fr/product/debut-carbon-evo/", requiredLevel: 5 },
+                { name: "Roberts Revival RD70", price: 249.00, image: "https://images.unsplash.com/photo-1585760905981-28ca36430012?w=400&h=400&fit=crop", link: "https://www.robertsradio.com/products/revival-rd70", requiredLevel: 3 },
+                { name: "SMEG TSF01 Grille-pain", price: 189.00, image: "https://images.unsplash.com/photo-1585760905981-28ca36430012?w=400&h=400&fit=crop", link: "https://www.smeg.fr/petit-electromenager/tsf01", requiredLevel: 4 },
+                { name: "Victrola Vintage 3-Speed", price: 79.99, image: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400&h=400&fit=crop", link: "https://www.victrola.com/products/bluetooth-suitcase-turntable", requiredLevel: 2 }
+            ],
+            'Ordinateurs': [
+                { name: "Acer Predator Helios 16", price: 1999.00, image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=400&fit=crop", link: "https://www.acer.com/fr-fr/predator/laptops/helios", requiredLevel: 5 },
+                { name: "Asus ROG Zephyrus G14 RTX 4060", price: 1899.00, image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=400&fit=crop", link: "https://rog.asus.com/fr/laptops/rog-zephyrus/rog-zephyrus-g14/", requiredLevel: 2 },
+                { name: "Dell XPS 15 Intel i7 512 Go", price: 1899.00, image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=400&fit=crop", link: "https://www.dell.com/fr-fr/shop/laptops/xps-15/", requiredLevel: 1 },
+                { name: "HP Spectre x360 14\" i7 1 To", price: 1699.00, image: "https://images.unsplash.com/photo-1496181133206-80ce9b83add3?w=400&h=400&fit=crop", link: "https://www.hp.com/fr-fr/shop/product.aspx?id=spectre-x360", requiredLevel: 2 },
+                { name: "LG Gram 17 Intel i7", price: 1699.00, image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=400&fit=crop", link: "https://www.lg.com/fr/televiseurs/lg-gram", requiredLevel: 6 },
+                { name: "Lenovo ThinkPad X1 Carbon i7", price: 1799.00, image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=400&fit=crop", link: "https://www.lenovo.com/fr/fr/laptops/thinkpad/thinkpad-x1/x1-carbon-gen-11/", requiredLevel: 3 },
+                { name: "MacBook Air M2 256 Go", price: 1199.00, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/macbook-air-m2/", requiredLevel: 1 },
+                { name: "MacBook Pro 14\" M3 512 Go", price: 2249.00, image: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/macbook-pro-14-and-16/", requiredLevel: 3 },
+                { name: "Microsoft Surface Laptop 5", price: 1429.00, image: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&h=400&fit=crop", link: "https://www.microsoft.com/fr-fr/surface/devices/surface-laptop-5", requiredLevel: 4 },
+                { name: "Razer Blade 15 RTX 4070", price: 2399.00, image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&h=400&fit=crop", link: "https://www.razer.com/gaming-laptops/razer-blade-15", requiredLevel: 4 }
+            ],
+            'Photo & Vidéo': [
+                { name: "Canon EOS R6 Mark II Boîtier", price: 2699.00, image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&h=400&fit=crop", link: "https://www.canon.fr/cameras/eos-r6-mark-ii/", requiredLevel: 2 },
+                { name: "DJI Mini 4 Pro", price: 759.00, image: "https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=400&h=400&fit=crop", link: "https://www.dji.com/fr/mini-4-pro", requiredLevel: 1 },
+                { name: "DJI Mavic 3 Pro", price: 2199.00, image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=400&fit=crop", link: "https://www.dji.com/fr/mavic-3-pro", requiredLevel: 3 },
+                { name: "DJI Osmo Action 4", price: 399.00, image: "https://images.unsplash.com/photo-1606979283836-3e510b9b8e04?w=400&h=400&fit=crop", link: "https://www.dji.com/fr/osmo-action-4", requiredLevel: 6 },
+                { name: "Fujifilm X-T5 Boîtier", price: 1899.00, image: "https://images.unsplash.com/photo-1495121553079-4c61bcce1894?w=400&h=400&fit=crop", link: "https://fujifilm-x.com/fr-fr/products/cameras/x-t5/", requiredLevel: 2 },
+                { name: "GoPro HERO 12 Black", price: 449.99, image: "https://images.unsplash.com/photo-1533093818801-fa5d3d89b68d?w=400&h=400&fit=crop", link: "https://gopro.com/fr/fr/shop/cameras/hero12-black/", requiredLevel: 1 },
+                { name: "Insta360 X3", price: 469.99, image: "https://images.unsplash.com/photo-1606925191677-5e1d46fe9a1e?w=400&h=400&fit=crop", link: "https://www.insta360.com/fr/product/insta360-x3", requiredLevel: 5 },
+                { name: "Nikon Z8 Boîtier", price: 4499.00, image: "https://images.unsplash.com/photo-1606979280099-23e937df638a?w=400&h=400&fit=crop", link: "https://www.nikon.fr/fr_FR/product/digital-cameras/mirrorless/professional/z-8", requiredLevel: 4 },
+                { name: "Panasonic Lumix GH6", price: 2199.00, image: "https://images.unsplash.com/photo-1606980817431-c31c1e8f48a8?w=400&h=400&fit=crop", link: "https://www.panasonic.com/fr/consumer/photo-video/lumix-appareils-photo-hybrides/lumix-gh6.html", requiredLevel: 4 },
+                { name: "Sony Alpha 7 IV Boîtier", price: 2799.00, image: "https://images.unsplash.com/photo-1606980707577-6c8aee5f7c8a?w=400&h=400&fit=crop", link: "https://www.sony.fr/electronics/appareils-photo-objectifs-interchangeables/ilce-7m4", requiredLevel: 3 }
             ],
             'Premium': [
-                {
-                    name: "MacBook Pro 16\" M3 Max 1 To",
-                    price: 3999.00,
-                    image: "https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=400&h=400&fit=crop",
-                    link: "https://www.apple.com/fr/macbook-pro-14-and-16/",
-                    requiredLevel: 1
-                },
-                {
-                    name: "Samsung OLED 55\" S90C",
-                    price: 1799.00,
-                    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop",
-                    link: "https://www.samsung.com/fr/tvs/oled-tv/",
-                    requiredLevel: 2
-                },
-                {
-                    name: "LG OLED evo 65\" C3",
-                    price: 2299.00,
-                    image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400&h=400&fit=crop",
-                    link: "https://www.lg.com/fr/televiseurs/oled-tv",
-                    requiredLevel: 3
-                },
-                {
-                    name: "Canada Goose Expedition Parka",
-                    price: 1695.00,
-                    image: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=400&h=400&fit=crop",
-                    link: "https://www.canadagoose.com/fr/fr/expedition-parka/",
-                    requiredLevel: 4
-                },
-                {
-                    name: "Rimowa Essential Cabin S",
-                    price: 650.00,
-                    image: "https://images.unsplash.com/photo-1581553680321-4fffae59fccd?w=400&h=400&fit=crop",
-                    link: "https://www.rimowa.com/fr/fr/essential/cabin-s/",
-                    requiredLevel: 5
-                },
-                {
-                    name: "Samsung Odyssey G9 49\" Curved",
-                    price: 1499.00,
-                    image: "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=400&h=400&fit=crop",
-                    link: "https://www.samsung.com/fr/monitors/gaming/odyssey-g9/",
-                    requiredLevel: 6
-                }
+                { name: "Apple Mac Studio M2 Ultra", price: 4749.00, image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/mac-studio/", requiredLevel: 4 },
+                { name: "Bang & Olufsen Beosound Theatre", price: 8990.00, image: "https://images.unsplash.com/photo-1545127398-14699f92334b?w=400&h=400&fit=crop", link: "https://www.bang-olufsen.com/fr/fr/speakers/beosound-theatre", requiredLevel: 3 },
+                { name: "Bose Lifestyle 650", price: 3999.00, image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop", link: "https://www.bose.fr/products/speakers/home-theater/lifestyle-650", requiredLevel: 3 },
+                { name: "LG OLED evo 77\" G3", price: 4999.00, image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400&h=400&fit=crop", link: "https://www.lg.com/fr/televiseurs/oled-tv", requiredLevel: 2 },
+                { name: "LG StanbyME Go 27\"", price: 1099.00, image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400&h=400&fit=crop", link: "https://www.lg.com/fr/televiseurs/lg-27lx5qkna", requiredLevel: 6 },
+                { name: "MacBook Pro 16\" M3 Max 1 To", price: 3999.00, image: "https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=400&h=400&fit=crop", link: "https://www.apple.com/fr/macbook-pro-14-and-16/", requiredLevel: 1 },
+                { name: "Samsung OLED 77\" S95C", price: 3999.00, image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop", link: "https://www.samsung.com/fr/tvs/oled-tv/", requiredLevel: 1 },
+                { name: "Samsung Odyssey Ark 55\"", price: 2999.00, image: "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=400&h=400&fit=crop", link: "https://www.samsung.com/fr/monitors/gaming/odyssey-ark/", requiredLevel: 4 },
+                { name: "Sonos Arc Ultra Soundbar", price: 999.00, image: "https://images.unsplash.com/photo-1545127398-14699f92334b?w=400&h=400&fit=crop", link: "https://www.sonos.com/fr-fr/shop/arc-ultra", requiredLevel: 5 },
+                { name: "Sony A95K OLED 65\"", price: 3299.00, image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop", link: "https://www.sony.fr/electronics/televiseurs/a95k-series", requiredLevel: 2 }
+            ],
+            'Produits Insolites': [
+                { name: "Anker 3D Printing Pen", price: 79.99, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop", link: "https://www.anker.com/", requiredLevel: 2 },
+                { name: "Anycubic Kobra 2 3D Printer", price: 349.00, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop", link: "https://www.anycubic.com/products/kobra-2", requiredLevel: 3 },
+                { name: "Creality Ender-3 V3 SE", price: 299.00, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop", link: "https://www.creality.com/products/ender-3-v3-se-3d-printer", requiredLevel: 5 },
+                { name: "DJI Avata FPV Drone", price: 579.00, image: "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=400&fit=crop", link: "https://www.dji.com/fr/avata", requiredLevel: 4 },
+                { name: "Ember Temperature Control Mug", price: 129.95, image: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400&h=400&fit=crop", link: "https://ember.com/products/ember-mug-2", requiredLevel: 1 },
+                { name: "Flipper Zero Multi-Tool", price: 169.00, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop", link: "https://flipperzero.one/", requiredLevel: 1 },
+                { name: "Framework Laptop DIY Edition", price: 1449.00, image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=400&fit=crop", link: "https://frame.work/", requiredLevel: 6 },
+                { name: "Miniware MDS Lite Soldering Iron", price: 139.00, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop", link: "https://miniware.com.cn/product/mds-lite/", requiredLevel: 3 },
+                { name: "Remarkable 2 Paper Tablet", price: 399.00, image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=400&fit=crop", link: "https://remarkable.com/store/remarkable-2", requiredLevel: 4 },
+                { name: "Sphero BOLT+ Robot", price: 179.99, image: "https://images.unsplash.com/photo-1561144257-e32e347d5834?w=400&h=400&fit=crop", link: "https://sphero.com/products/sphero-bolt-plus", requiredLevel: 2 }
+            ],
+            'Mode & Sneakers': [
+                { name: "Adidas Ultraboost 22", price: 189.99, image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&h=400&fit=crop", link: "https://www.adidas.fr/ultraboost", requiredLevel: 2 },
+                { name: "Converse Chuck Taylor All Star", price: 69.99, image: "https://images.unsplash.com/photo-1514989940723-e8e51635b782?w=400&h=400&fit=crop", link: "https://www.converse.com/fr/fr/chuck-taylor-all-star", requiredLevel: 1 },
+                { name: "Dr. Martens 1460", price: 169.00, image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&h=400&fit=crop", link: "https://www.drmartens.com/fr/fr/1460", requiredLevel: 5 },
+                { name: "Lacoste Polo Classique", price: 99.00, image: "https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?w=400&h=400&fit=crop", link: "https://www.lacoste.com/fr/", requiredLevel: 6 },
+                { name: "Nike Air Jordan 1 Mid", price: 139.99, image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=400&fit=crop", link: "https://www.nike.com/fr/t/air-jordan-1-mid", requiredLevel: 1 },
+                { name: "Nike Air Max 90", price: 149.99, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop", link: "https://www.nike.com/fr/t/air-max-90", requiredLevel: 2 },
+                { name: "New Balance 574", price: 99.99, image: "https://images.unsplash.com/photo-1539185443880-49e1d25b2bc5?w=400&h=400&fit=crop", link: "https://www.newbalance.fr/574", requiredLevel: 3 },
+                { name: "The North Face Nuptse 1996", price: 349.00, image: "https://images.unsplash.com/photo-1544923246-77307dd654f3?w=400&h=400&fit=crop", link: "https://www.thenorthface.fr/shop/fr/tnf-fr/doudounes-nuptse", requiredLevel: 3 },
+                { name: "Timberland 6-Inch Premium", price: 189.99, image: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=400&h=400&fit=crop", link: "https://www.timberland.fr/shop/fr/tbl-fr/chaussures-homme-6-inch-premium", requiredLevel: 4 },
+                { name: "Vans Old Skool", price: 79.99, image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&h=400&fit=crop", link: "https://www.vans.fr/shop/fr/vans-fr/old-skool", requiredLevel: 4 }
             ]
         };
+
         let currentProduct;
         let timeLeft = 60;
         let timerInterval;
