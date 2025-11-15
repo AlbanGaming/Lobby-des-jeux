@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Juste Prix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Menu de démarrage */
+        #startScreen {
+            display: block;
+        }
+        #startScreen h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+        .mode-selector {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        .mode-card {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            width: 200px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+        }
+        .mode-card.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        .mode-card .mode-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .mode-card .mode-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .mode-card .mode-details {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .mode-card.active .mode-details {
+            opacity: 1;
+        }
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.3em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .start-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Zone de jeu */
+        #gameArea {
+            display: none;
+        }
+        .mode-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .mode-badge.normal {
+            background: #d4edda;
+            color: #155724;
+        }
+        .mode-badge.expert {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .product-image {
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        .product-name {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .timer {
+            font-size: 2em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: bold;
+            padding: 10px;
+            background: #ffe6e6;
+            border-radius: 10px;
+            display: inline-block;
+            min-width: 150px;
+        }
+        .timer.warning {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input[type="number"]:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: none;
+        }
+        .feedback.show {
+            display: block;
+        }
+        .feedback.higher {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .feedback.lower {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .feedback.win {
+            background: #d4edda;
+            color: #155724;
+            font-size: 1.5em;
+        }
+        .feedback.lose {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .game-over {
+            display: none;
+            margin-top: 20px;
+        }
+        .game-over.show {
+            display: block;
+        }
+        .attempts {
+            margin-top: 15px;
+            color: #666;
+            font-size: 1.1em;
+        }
+        .real-price {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .disclaimer {
+            margin-top: 30px;
+            font-size: 0.8em;
+            color: #999;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 LE JUSTE PRIX</h1>
+
+        <!-- Menu de démarrage -->
+        <div id="startScreen">
+            <h2>Choisissez votre mode de jeu</h2>
+            <div class="mode-selector">
+                <div class="mode-card active" onclick="selectMode('normal')">
+                    <div class="mode-icon">🟢</div>
+                    <div class="mode-title">NORMAL</div>
+                    <div class="mode-details">
+                        ⏱️ 1 minute<br>
+                        💶 Prix arrondis<br>
+                        😊 Facile
+                    </div>
+                </div>
+                <div class="mode-card" onclick="selectMode('expert')">
+                    <div class="mode-icon">🔴</div>
+                    <div class="mode-title">EXPERT</div>
+                    <div class="mode-details">
+                        ⏱️ 30 secondes<br>
+                        💶 Centimes inclus<br>
+                        😰 Difficile
+                    </div>
+                </div>
+            </div>
+            <button class="start-btn" onclick="startGameWithMode()">🎮 Commencer la partie</button>
+        </div>
+
+        <!-- Zone de jeu -->
+        <div id="gameArea">
+            <div class="mode-badge" id="modeBadge"></div>
+            
+            <img id="productImage" class="product-image" src="" alt="Produit">
+            <div id="productName" class="product-name"></div>
+
+            <div class="timer" id="timer">01:00</div>
+
+            <div class="input-group">
+                <input type="number" id="priceInput" placeholder="Entrez votre prix en €" min="0" step="0.01">
+            </div>
+
+            <button id="submitBtn" onclick="submitGuess()">Proposer</button>
+
+            <div class="attempts" id="attempts">Tentatives: 0</div>
+
+            <div id="feedback" class="feedback"></div>
+
+            <div id="gameOver" class="game-over">
+                <div class="real-price" id="realPrice"></div>
+                <button onclick="newGame()">🔄 Rejouer (même mode)</button>
+                <button onclick="backToMenu()">🏠 Retour au menu</button>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            * Les prix indiqués sont basés sur des estimations et peuvent ne pas refléter les tarifs actuels.
+        </div>
+    </div>
+    <script>
+        const products = [
+            {
+                name: "iPhone 15 Pro 128 Go",
+                price: 1329.00,
+                image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop"
+            },
+            {
+                name: "PlayStation 5 (Disque)",
+                price: 549.99,
+                image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop"
+            },
+            {
+                name: "MacBook Air M2 256 Go",
+                price: 1199.00,
+                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop"
+            },
+            {
+                name: "Nike Air Jordan 1 Mid",
+                price: 139.99,
+                image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=400&fit=crop"
+            },
+            {
+                name: "AirPods Pro 2ème génération",
+                price: 299.00,
+                image: "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=400&h=400&fit=crop"
+            },
+            {
+                name: "Nintendo Switch OLED",
+                price: 349.99,
+                image: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop"
+            }
+        ];
+
+        let currentProduct;
+        let timeLeft = 60;
+        let timerInterval;
+        let gameActive = false;
+        let attempts = 0;
+        let gameMode = 'normal'; // 'normal' ou 'expert'
+
+        // Sélection du mode
+        function selectMode(mode) {
+            gameMode = mode;
+            document.querySelectorAll('.mode-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.target.closest('.mode-card').classList.add('active');
+        }
+
+        // Démarrer le jeu avec le mode sélectionné
+        function startGameWithMode() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            
+            // Afficher le badge du mode
+            const badge = document.getElementById('modeBadge');
+            if (gameMode === 'normal') {
+                badge.textContent = '🟢 MODE NORMAL';
+                badge.className = 'mode-badge normal';
+            } else {
+                badge.textContent = '🔴 MODE EXPERT';
+                badge.className = 'mode-badge expert';
+            }
+            
+            startGame();
+        }
+
+        // Retour au menu
+        function backToMenu() {
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('gameArea').style.display = 'none';
+            document.getElementById('timer').classList.remove('warning');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        }
+
+        // Démarrer une partie
+        function startGame() {
+            currentProduct = products[Math.floor(Math.random() * products.length)];
+            
+            // Définir le temps selon le mode
+            timeLeft = gameMode === 'expert' ? 30 : 60;
+            
+            attempts = 0;
+            gameActive = true;
+            document.getElementById('productImage').src = currentProduct.image;
+            document.getElementById('productName').textContent = currentProduct.name;
+            document.getElementById('priceInput').value = '';
+            document.getElementById('priceInput').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('gameOver').classList.remove('show');
+            document.getElementById('attempts').textContent = 'Tentatives: 0';
+            document.getElementById('realPrice').textContent = '';
+            
+            // Ajuster le placeholder selon le mode
+            if (gameMode === 'expert') {
+                document.getElementById('priceInput').placeholder = 'Prix exact avec centimes (ex: 299.99)';
+                document.getElementById('priceInput').step = '0.01';
+            } else {
+                document.getElementById('priceInput').placeholder = 'Entrez votre prix en € (arrondi)';
+                document.getElementById('priceInput').step = '1';
+            }
+            
+            startTimer();
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').classList.add('warning');
+                }
+                if (timeLeft <= 0) {
+                    endGame(false);
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent =
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function submitGuess() {
+            if (!gameActive) return;
+            const guess = parseFloat(document.getElementById('priceInput').value);
+
+            if (isNaN(guess) || guess <= 0) {
+                showFeedback('Veuillez entrer un prix valide !', 'higher');
+                return;
+            }
+
+            attempts++;
+            document.getElementById('attempts').textContent = `Tentatives: ${attempts}`;
+
+            let targetPrice = currentProduct.price;
+            let isCorrect = false;
+
+            if (gameMode === 'expert') {
+                // Mode expert : prix exact avec centimes
+                isCorrect = guess === targetPrice;
+            } else {
+                // Mode normal : prix arrondi à l'euro près
+                targetPrice = Math.round(targetPrice);
+                const guessRounded = Math.round(guess);
+                isCorrect = guessRounded === targetPrice;
+            }
+
+            if (isCorrect) {
+                endGame(true);
+            } else if (gameMode === 'expert') {
+                // Mode expert : comparaison exacte
+                if (guess > targetPrice) {
+                    showFeedback('C\'est MOINS ! 📉', 'lower');
+                } else {
+                    showFeedback('C\'est PLUS ! 📈', 'higher');
+                }
+            } else {
+                // Mode normal : comparaison arrondie
+                if (Math.round(guess) > targetPrice) {
+                    showFeedback('C\'est MOINS ! 📉', 'lower');
+                } else {
+                    showFeedback('C\'est PLUS ! 📈', 'higher');
+                }
+            }
+
+            document.getElementById('priceInput').value = '';
+            document.getElementById('priceInput').focus();
+        }
+
+        function showFeedback(message, type) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = 'feedback show ' + type;
+        }
+
+        function endGame(won) {
+            gameActive = false;
+            clearInterval(timerInterval);
+            document.getElementById('priceInput').disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('timer').classList.remove('warning');
+
+            const displayPrice = gameMode === 'expert' 
+                ? currentProduct.price.toFixed(2) + '€'
+                : Math.round(currentProduct.price) + '€';
+
+            if (won) {
+                showFeedback(`🎉 BRAVO ! Le prix était ${displayPrice} ! Trouvé en ${attempts} tentative(s) !`, 'win');
+            } else {
+                document.getElementById('realPrice').textContent = `Le prix exact était : ${displayPrice}`;
+                showFeedback(`⏱️ Temps écoulé !`, 'lose');
+            }
+
+            document.getElementById('gameOver').classList.add('show');
+        }
+
+        function newGame() {
+            startGame();
+        }
+
+        document.getElementById('priceInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitGuess();
+            }
+        });
+    </script>
+</body>
+</html>

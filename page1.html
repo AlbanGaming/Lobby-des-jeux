@@ -5,264 +5,827 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le Juste Prix</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@300;400;600;700;800&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --success: #06ffa5;
+            --warning: #ffbe0b;
+            --danger: #ff006e;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+            overflow-x: hidden;
         }
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(240, 147, 251, 0.2) 0%, transparent 50%);
+            animation: bgShift 15s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 
+                0 30px 90px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header avec effet néon */
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+            animation: titleGlow 3s ease-in-out infinite;
+            letter-spacing: 2px;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
+        }
+
+        /* Stats du joueur modernisées */
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .stat-value {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.2em;
+            display: block;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.95;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .xp-progress {
+            margin-top: 10px;
+            font-size: 0.85em;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Écran de démarrage amélioré */
+        #startScreen h2 {
+            color: var(--dark);
+            margin-bottom: 35px;
+            font-size: 1.9em;
+            font-weight: 800;
             text-align: center;
             position: relative;
         }
-        h1 {
-            color: #667eea;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+
+        #startScreen h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
         }
-        
-        /* Menu de démarrage */
-        #startScreen {
-            display: block;
+
+        .category-selection h3 {
+            color: var(--dark);
+            margin-bottom: 25px;
+            font-size: 1.4em;
+            font-weight: 700;
+            text-align: center;
         }
-        #startScreen h2 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 1.8em;
-        }
-        .mode-selector {
-            display: flex;
+
+        /* Grille de catégories modernisée */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            justify-content: center;
             margin-bottom: 40px;
-            flex-wrap: wrap;
         }
-        .mode-card {
-            background: #f8f9fa;
-            border: 3px solid #e0e0e0;
-            border-radius: 15px;
-            padding: 20px;
-            width: 200px;
+
+        .category-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border: 3px solid transparent;
+            border-radius: 20px;
+            padding: 25px 20px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
         }
-        .mode-card:hover {
-            transform: translateY(-5px);
-            border-color: #667eea;
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
         }
-        .mode-card.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .category-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .category-card:hover:not(.locked) {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .category-card.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            border-color: #667eea;
-            transform: translateY(-5px);
+            border-color: var(--accent);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
         }
-        .mode-card .mode-icon {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
-        .mode-card .mode-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .mode-card .mode-details {
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
-        .mode-card.active .mode-details {
+
+        .category-card.active::before {
             opacity: 1;
         }
-        .start-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .category-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: linear-gradient(135deg, #e9ecef, #f8f9fa);
+        }
+
+        .category-checkbox {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .category-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .category-name {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .category-unlock {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.8em;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .unlock-btn {
+            background: linear-gradient(135deg, var(--success), #04d98b);
             color: white;
             border: none;
-            padding: 18px 50px;
-            font-size: 1.3em;
-            border-radius: 10px;
+            padding: 10px 20px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(6, 255, 165, 0.3);
         }
-        .start-btn:hover {
+
+        .unlock-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(6, 255, 165, 0.4);
         }
+
+        .unlock-btn:disabled {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .product-count {
+            font-size: 0.85em;
+            margin-top: 8px;
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        .category-card.active .product-count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Sélecteur de mode amélioré */
+        .mode-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .mode-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border: 3px solid transparent;
+            border-radius: 25px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .mode-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mode-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .mode-card.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-color: var(--accent);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .mode-card.active::before {
+            opacity: 1;
+        }
+
+        .mode-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        .mode-title {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .mode-details {
+            font-size: 0.95em;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        /* Bouton de démarrage premium */
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.4em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .start-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .start-btn:active {
+            transform: translateY(-1px);
+        }
+
         .start-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
-        
-        /* Zone de jeu */
+
+        /* Zone de jeu améliorée */
         #gameArea {
             display: none;
+            text-align: center;
         }
+
         .mode-badge {
             display: inline-block;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-            margin-bottom: 20px;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 0.95em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
         .mode-badge.normal {
-            background: #d4edda;
-            color: #155724;
+            background: linear-gradient(135deg, var(--success), #04d98b);
+            color: white;
         }
+
         .mode-badge.expert {
-            background: #f8d7da;
-            color: #721c24;
+            background: linear-gradient(135deg, var(--danger), #f5576c);
+            color: white;
         }
+
+        /* Image produit avec effet */
         .product-image {
             width: 100%;
-            max-width: 300px;
-            height: 300px;
+            max-width: 400px;
+            height: 400px;
             object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+            margin: 0 auto 25px;
+            display: block;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 5px solid white;
         }
+
+        .product-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        }
+
         .product-name {
-            font-size: 1.5em;
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: bold;
+            font-size: 1.8em;
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-weight: 800;
+            text-align: center;
         }
-        .timer {
-            font-size: 2em;
-            color: #e74c3c;
-            margin-bottom: 20px;
-            font-weight: bold;
-            padding: 10px;
-            background: #ffe6e6;
-            border-radius: 10px;
+
+        .product-link {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 12px 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid var(--primary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .product-link.show {
             display: inline-block;
-            min-width: 150px;
         }
+
+        .product-link:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Timer premium avec animation */
+        .timer {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, var(--danger), #f5576c);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 25px;
+            display: inline-block;
+            min-width: 200px;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .timer:hover::before {
+            left: 100%;
+        }
+
         .timer.warning {
-            animation: pulse 1s infinite;
+            animation: timerPulse 0.8s infinite;
         }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+        @keyframes timerPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 10px 30px rgba(255, 0, 110, 0.3);
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 15px 40px rgba(255, 0, 110, 0.5);
+            }
         }
+
+        /* Input amélioré */
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
+
         input[type="number"] {
             width: 100%;
-            padding: 15px;
-            font-size: 1.2em;
-            border: 3px solid #667eea;
-            border-radius: 10px;
+            max-width: 500px;
+            padding: 20px 30px;
+            font-size: 1.4em;
+            font-weight: 600;
+            border: 3px solid var(--primary);
+            border-radius: 20px;
             text-align: center;
             outline: none;
             transition: all 0.3s;
+            background: white;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
         }
+
         input[type="number"]:focus {
-            border-color: #764ba2;
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+            border-color: var(--secondary);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
         }
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        /* Boutons améliorés */
+        button:not(.unlock-btn):not(.start-btn) {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            padding: 15px 40px;
+            padding: 18px 45px;
             font-size: 1.2em;
-            border-radius: 10px;
+            font-weight: 700;
+            border-radius: 15px;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            font-weight: bold;
-            margin: 5px;
+            transition: all 0.3s ease;
+            margin: 8px;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
         }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+
+        button:not(.unlock-btn):not(.start-btn)::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
-        button:active {
-            transform: translateY(0);
+
+        button:not(.unlock-btn):not(.start-btn):hover::before {
+            width: 300px;
+            height: 300px;
         }
+
+        button:not(.unlock-btn):not(.start-btn):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        button:not(.unlock-btn):not(.start-btn):active {
+            transform: translateY(-1px);
+        }
+
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
+            transform: none !important;
         }
+
+        /* Feedback amélioré */
         .feedback {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
+            margin-top: 25px;
+            padding: 20px 30px;
+            border-radius: 20px;
+            font-size: 1.3em;
+            font-weight: 700;
             display: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            animation: feedbackSlide 0.4s ease;
         }
+
+        @keyframes feedbackSlide {
+            from { 
+                opacity: 0; 
+                transform: translateY(-20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
         .feedback.show {
             display: block;
         }
+
         .feedback.higher {
-            background: #fff3cd;
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
             color: #856404;
+            border: 3px solid #ffd93d;
         }
+
         .feedback.lower {
-            background: #d1ecf1;
+            background: linear-gradient(135deg, #d1ecf1, #74b9ff);
             color: #0c5460;
+            border: 3px solid #00b4d8;
         }
+
         .feedback.win {
-            background: #d4edda;
-            color: #155724;
-            font-size: 1.5em;
+            background: linear-gradient(135deg, var(--success), #04d98b);
+            color: white;
+            font-size: 1.6em;
+            border: 3px solid #00ff9f;
         }
+
         .feedback.lose {
-            background: #f8d7da;
-            color: #721c24;
+            background: linear-gradient(135deg, var(--danger), #f5576c);
+            color: white;
+            border: 3px solid #ff1744;
         }
+
+        .attempts {
+            margin-top: 20px;
+            color: var(--dark);
+            font-size: 1.2em;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .real-price {
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: var(--danger);
+            font-weight: 800;
+            text-align: center;
+        }
+
+        .reward-display {
+            background: linear-gradient(135deg, var(--accent), #f5576c);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            margin: 20px auto;
+            font-size: 1.3em;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
+            max-width: 400px;
+            text-align: center;
+        }
+
         .game-over {
             display: none;
-            margin-top: 20px;
+            text-align: center;
         }
+
         .game-over.show {
             display: block;
+            animation: fadeInUp 0.5s ease;
         }
-        .attempts {
-            margin-top: 15px;
-            color: #666;
-            font-size: 1.1em;
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .real-price {
-            margin-top: 10px;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-            color: #e74c3c;
-            font-weight: bold;
-        }
+
         .disclaimer {
-            margin-top: 30px;
-            font-size: 0.8em;
+            margin-top: 40px;
+            font-size: 0.85em;
             color: #999;
             text-align: center;
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .stat-value {
+                font-size: 1.8em;
+            }
+
+            .mode-icon {
+                font-size: 2.5em;
+            }
+
+            .product-image {
+                max-width: 100%;
+                height: 300px;
+            }
+
+            .timer {
+                font-size: 1.8em;
+                padding: 15px 30px;
+            }
+
+            input[type="number"] {
+                font-size: 1.2em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎯 LE JUSTE PRIX</h1>
+        
+        <div class="player-stats">
+            <div class="stat-box">
+                <span class="stat-value" id="playerLevel">1</span>
+                <span class="stat-label">📊 Niveau</span>
+                <span class="xp-progress" id="xpProgress">0/50 XP</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="playerMoney">0€</span>
+                <span class="stat-label">💰 Argent</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-value" id="playerWins">0</span>
+                <span class="stat-label">🏆 Victoires</span>
+            </div>
+        </div>
 
-        <!-- Menu de démarrage -->
         <div id="startScreen">
+            <div class="category-selection">
+                <h3>Choisissez une ou plusieurs catégories</h3>
+                <div class="categories-grid" id="categoriesGrid"></div>
+            </div>
+
             <h2>Choisissez votre mode de jeu</h2>
             <div class="mode-selector">
                 <div class="mode-card active" onclick="selectMode('normal')">
@@ -271,6 +834,7 @@
                     <div class="mode-details">
                         ⏱️ 1 minute<br>
                         💶 Prix arrondis<br>
+                        💰 +500€ victoire<br>
                         😊 Facile
                     </div>
                 </div>
@@ -280,36 +844,45 @@
                     <div class="mode-details">
                         ⏱️ 30 secondes<br>
                         💶 Centimes inclus<br>
+                        💰 +1500€ victoire<br>
                         😰 Difficile
                     </div>
                 </div>
             </div>
-            <button class="start-btn" onclick="startGameWithMode()">🎮 Commencer la partie</button>
+
+            <button class="start-btn" onclick="startGameWithMode()" id="startGameBtn">
+                <span style="position: relative; z-index: 1;">🎮 Commencer la partie</span>
+            </button>
         </div>
 
-        <!-- Zone de jeu -->
         <div id="gameArea">
             <div class="mode-badge" id="modeBadge"></div>
-            
             <img id="productImage" class="product-image" src="" alt="Produit">
             <div id="productName" class="product-name"></div>
-
+            <a id="productLink" class="product-link" href="#" target="_blank">🔗 Voir la source</a>
+            
             <div class="timer" id="timer">01:00</div>
-
+            
             <div class="input-group">
                 <input type="number" id="priceInput" placeholder="Entrez votre prix en €" min="0" step="0.01">
             </div>
-
-            <button id="submitBtn" onclick="submitGuess()">Proposer</button>
-
+            
+            <button id="submitBtn" onclick="submitGuess()">
+                <span style="position: relative; z-index: 1;">Proposer</span>
+            </button>
+            
             <div class="attempts" id="attempts">Tentatives: 0</div>
-
             <div id="feedback" class="feedback"></div>
-
+            
             <div id="gameOver" class="game-over">
                 <div class="real-price" id="realPrice"></div>
-                <button onclick="newGame()">🔄 Rejouer (même mode)</button>
-                <button onclick="backToMenu()">🏠 Retour au menu</button>
+                <div class="reward-display" id="rewardDisplay"></div>
+                <button onclick="newGame()">
+                    <span style="position: relative; z-index: 1;">🔄 Rejouer (même mode)</span>
+                </button>
+                <button onclick="backToMenu()">
+                    <span style="position: relative; z-index: 1;">🏠 Retour au menu</span>
+                </button>
             </div>
         </div>
 
@@ -317,62 +890,311 @@
             * Les prix indiqués sont basés sur des estimations et peuvent ne pas refléter les tarifs actuels.
         </div>
     </div>
+
     <script>
-        const products = [
-            {
-                name: "iPhone 15 Pro 128 Go",
-                price: 1329.00,
-                image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop"
-            },
-            {
-                name: "PlayStation 5 (Disque)",
-                price: 549.99,
-                image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop"
-            },
-            {
-                name: "MacBook Air M2 256 Go",
-                price: 1199.00,
-                image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop"
-            },
-            {
-                name: "Nike Air Jordan 1 Mid",
-                price: 139.99,
-                image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=400&fit=crop"
-            },
-            {
-                name: "AirPods Pro 2ème génération",
-                price: 299.00,
-                image: "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=400&h=400&fit=crop"
-            },
-            {
-                name: "Nintendo Switch OLED",
-                price: 349.99,
-                image: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop"
-            }
+        // Le JavaScript reste identique à votre code original
+        let playerData = {
+            level: 1,
+            money: 0,
+            wins: 0,
+            xp: 0,
+            xpToNextLevel: 50,
+            unlockedCategories: ['Électronique de base']
+        };
+        
+        if (localStorage.getItem('playerData')) {
+            playerData = JSON.parse(localStorage.getItem('playerData'));
+        }
+
+        const categories = [
+            { name: 'Électronique de base', icon: '📱', unlockCost: 0, unlockLevel: 1 },
+            { name: 'Gaming', icon: '🎮', unlockCost: 2000, unlockLevel: 2 },
+            { name: 'Audio Premium', icon: '🎧', unlockCost: 4000, unlockLevel: 3 },
+            { name: 'Mode & Sneakers', icon: '👟', unlockCost: 1500, unlockLevel: 2 },
+            { name: 'Montres connectées', icon: '⌚', unlockCost: 3000, unlockLevel: 3 },
+            { name: 'Ordinateurs', icon: '💻', unlockCost: 5000, unlockLevel: 4 },
+            { name: 'Photo & Vidéo', icon: '📷', unlockCost: 8000, unlockLevel: 5 },
+            { name: 'Maison connectée', icon: '🏠', unlockCost: 3500, unlockLevel: 3 },
+            { name: 'Premium', icon: '💎', unlockCost: 15000, unlockLevel: 6 }
         ];
+
+        const productsByCategory = {
+            'Électronique de base': [
+                {
+                    name: "iPhone 15 Pro 128 Go",
+                    price: 1329.00,
+                    image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/iphone-15-pro/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Samsung Galaxy S24 128 Go",
+                    price: 899.00,
+                    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
+                    link: "https://www.samsung.com/fr/smartphones/galaxy-s24/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "iPad Air M1 64 Go",
+                    price: 699.00,
+                    image: "https://images.unsplash.com/photo-1585790050230-5dd28404f8db?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/ipad-air/",
+                    requiredLevel: 2
+                },
+                {
+                    name: "AirPods Pro 2ème génération",
+                    price: 299.00,
+                    image: "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/airpods-pro/",
+                    requiredLevel: 3
+                }
+            ],
+            'Gaming': [
+                {
+                    name: "PlayStation 5 (Disque)",
+                    price: 549.99,
+                    image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop",
+                    link: "https://www.playstation.com/fr-fr/ps5/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Nintendo Switch OLED",
+                    price: 349.99,
+                    image: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=400&fit=crop",
+                    link: "https://www.nintendo.com/fr-fr/Nintendo-Switch/Nintendo-Switch-OLED/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Xbox Series X",
+                    price: 549.99,
+                    image: "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=400&h=400&fit=crop",
+                    link: "https://www.xbox.com/fr-FR/consoles/xbox-series-x",
+                    requiredLevel: 2
+                }
+            ],
+            'Audio Premium': [
+                {
+                    name: "Sony WH-1000XM5",
+                    price: 399.00,
+                    image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop",
+                    link: "https://www.sony.fr/electronics/casque-arceau/wh-1000xm5",
+                    requiredLevel: 1
+                },
+                {
+                    name: "JBL Charge 5",
+                    price: 179.99,
+                    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop",
+                    link: "https://fr.jbl.com/enceintes-bluetooth/CHARGE5.html",
+                    requiredLevel: 2
+                }
+            ],
+            'Mode & Sneakers': [
+                {
+                    name: "Nike Air Jordan 1 Mid",
+                    price: 139.99,
+                    image: "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=400&h=400&fit=crop",
+                    link: "https://www.nike.com/fr/t/air-jordan-1-mid",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Nike Air Max 90",
+                    price: 149.99,
+                    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
+                    link: "https://www.nike.com/fr/t/air-max-90",
+                    requiredLevel: 2
+                }
+            ],
+            'Montres connectées': [
+                {
+                    name: "Apple Watch Series 9 GPS 45mm",
+                    price: 479.00,
+                    image: "https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/apple-watch-series-9/",
+                    requiredLevel: 1
+                }
+            ],
+            'Ordinateurs': [
+                {
+                    name: "MacBook Air M2 256 Go",
+                    price: 1199.00,
+                    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/macbook-air-m2/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Dell XPS 15 Intel i7 512 Go",
+                    price: 1899.00,
+                    image: "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=400&h=400&fit=crop",
+                    link: "https://www.dell.com/fr-fr/shop/laptops/xps-15/",
+                    requiredLevel: 2
+                }
+            ],
+            'Photo & Vidéo': [
+                {
+                    name: "GoPro HERO 12 Black",
+                    price: 449.99,
+                    image: "https://images.unsplash.com/photo-1533093818801-fa5d3d89b68d?w=400&h=400&fit=crop",
+                    link: "https://gopro.com/fr/fr/shop/cameras/hero12-black/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "DJI Mini 4 Pro",
+                    price: 759.00,
+                    image: "https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=400&h=400&fit=crop",
+                    link: "https://www.dji.com/fr/mini-4-pro",
+                    requiredLevel: 2
+                }
+            ],
+            'Maison connectée': [
+                {
+                    name: "Amazon Echo Dot 5ème gen",
+                    price: 59.99,
+                    image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=400&h=400&fit=crop",
+                    link: "https://www.amazon.fr/echo-dot",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Google Nest Hub 2ème gen",
+                    price: 99.99,
+                    image: "https://images.unsplash.com/photo-1558089687-3716a1c8c8e4?w=400&h=400&fit=crop",
+                    link: "https://store.google.com/fr/product/nest_hub_2nd_gen",
+                    requiredLevel: 2
+                }
+            ],
+            'Premium': [
+                {
+                    name: "MacBook Pro 16\" M3 Max 1 To",
+                    price: 3999.00,
+                    image: "https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=400&h=400&fit=crop",
+                    link: "https://www.apple.com/fr/macbook-pro-14-and-16/",
+                    requiredLevel: 1
+                },
+                {
+                    name: "Samsung OLED 55\" S90C",
+                    price: 1799.00,
+                    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop",
+                    link: "https://www.samsung.com/fr/tvs/oled-tv/",
+                    requiredLevel: 2
+                }
+            ]
+        };
 
         let currentProduct;
         let timeLeft = 60;
         let timerInterval;
         let gameActive = false;
         let attempts = 0;
-        let gameMode = 'normal'; // 'normal' ou 'expert'
+        let gameMode = 'normal';
+        let selectedCategories = ['Électronique de base'];
 
-        // Sélection du mode
+        updatePlayerStats();
+        renderCategories();
+
+        function updatePlayerStats() {
+            document.getElementById('playerLevel').textContent = playerData.level;
+            document.getElementById('playerMoney').textContent = playerData.money + '€';
+            document.getElementById('playerWins').textContent = playerData.wins;
+            document.getElementById('xpProgress').textContent = `${playerData.xp}/${playerData.xpToNextLevel} XP`;
+            savePlayerData();
+        }
+
+        function savePlayerData() {
+            localStorage.setItem('playerData', JSON.stringify(playerData));
+        }
+
+        function getAvailableProductsCount(categoryName) {
+            const products = productsByCategory[categoryName];
+            if (!products) return 0;
+            return products.filter(p => p.requiredLevel <= playerData.level).length;
+        }
+
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = '';
+            categories.forEach(cat => {
+                const isUnlocked = playerData.unlockedCategories.includes(cat.name);
+                const canUnlock = playerData.money >= cat.unlockCost && playerData.level >= cat.unlockLevel;
+                const isSelected = selectedCategories.includes(cat.name);
+                const availableProducts = getAvailableProductsCount(cat.name);
+                const totalProducts = productsByCategory[cat.name]?.length || 0;
+                
+                const card = document.createElement('div');
+                card.className = `category-card ${isUnlocked ? (isSelected ? 'active' : '') : 'locked'}`;
+                if (isUnlocked) {
+                    card.onclick = () => toggleCategorySelection(cat.name);
+                }
+                
+                card.innerHTML = `
+                    ${isUnlocked ? `<input type="checkbox" class="category-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleCategorySelection('${cat.name}')">` : ''}
+                    <div class="category-icon">${cat.icon}</div>
+                    <div class="category-name">${cat.name}</div>
+                    ${isUnlocked ? `
+                        <div class="product-count">📦 ${availableProducts}/${totalProducts} produits</div>
+                    ` : `
+                        <div class="lock-icon">🔒</div>
+                        <div class="category-unlock">
+                            Niveau ${cat.unlockLevel}<br>
+                            ${cat.unlockCost}€
+                        </div>
+                        ${canUnlock ? `<button class="unlock-btn" onclick="unlockCategory('${cat.name}', ${cat.unlockCost}); event.stopPropagation();">Débloquer</button>` : `<button class="unlock-btn" disabled>Débloquer</button>`}
+                    `}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleCategorySelection(categoryName) {
+            const index = selectedCategories.indexOf(categoryName);
+            if (index === -1) {
+                selectedCategories.push(categoryName);
+            } else {
+                selectedCategories.splice(index, 1);
+            }
+            if (selectedCategories.length === 0) {
+                selectedCategories.push('Électronique de base');
+            }
+            renderCategories();
+            document.getElementById('startGameBtn').disabled = false;
+        }
+
+        function unlockCategory(categoryName, cost) {
+            const cat = categories.find(c => c.name === categoryName);
+            if (playerData.money >= cost && playerData.level >= cat.unlockLevel) {
+                playerData.money -= cost;
+                playerData.unlockedCategories.push(categoryName);
+                selectedCategories.push(categoryName);
+                updatePlayerStats();
+                renderCategories();
+                alert(`🎉 Catégorie "${categoryName}" débloquée !`);
+            }
+        }
+
         function selectMode(mode) {
             gameMode = mode;
             document.querySelectorAll('.mode-card').forEach(card => {
                 card.classList.remove('active');
             });
-            event.target.closest('.mode-card').classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
-        // Démarrer le jeu avec le mode sélectionné
         function startGameWithMode() {
+            if (selectedCategories.length === 0) {
+                alert('Veuillez sélectionner au moins une catégorie !');
+                return;
+            }
+            let hasAvailableProducts = false;
+            selectedCategories.forEach(cat => {
+                if (getAvailableProductsCount(cat) > 0) {
+                    hasAvailableProducts = true;
+                }
+            });
+            if (!hasAvailableProducts) {
+                alert('⚠️ Aucune catégorie sélectionnée ne contient de produits disponibles à votre niveau !');
+                return;
+            }
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameArea').style.display = 'block';
             
-            // Afficher le badge du mode
             const badge = document.getElementById('modeBadge');
             if (gameMode === 'normal') {
                 badge.textContent = '🟢 MODE NORMAL';
@@ -381,31 +1203,42 @@
                 badge.textContent = '🔴 MODE EXPERT';
                 badge.className = 'mode-badge expert';
             }
-            
             startGame();
         }
 
-        // Retour au menu
         function backToMenu() {
             document.getElementById('startScreen').style.display = 'block';
             document.getElementById('gameArea').style.display = 'none';
             document.getElementById('timer').classList.remove('warning');
+            document.getElementById('productLink').classList.remove('show');
             if (timerInterval) {
                 clearInterval(timerInterval);
             }
         }
 
-        // Démarrer une partie
         function startGame() {
-            currentProduct = products[Math.floor(Math.random() * products.length)];
+            let allAvailableProducts = [];
+            selectedCategories.forEach(cat => {
+                const categoryProducts = productsByCategory[cat];
+                const availableProducts = categoryProducts.filter(p => p.requiredLevel <= playerData.level);
+                allAvailableProducts = allAvailableProducts.concat(availableProducts);
+            });
             
-            // Définir le temps selon le mode
+            if (allAvailableProducts.length === 0) {
+                alert('⚠️ Aucun produit disponible dans les catégories sélectionnées !');
+                backToMenu();
+                return;
+            }
+            
+            currentProduct = allAvailableProducts[Math.floor(Math.random() * allAvailableProducts.length)];
             timeLeft = gameMode === 'expert' ? 30 : 60;
-            
             attempts = 0;
             gameActive = true;
+            
             document.getElementById('productImage').src = currentProduct.image;
             document.getElementById('productName').textContent = currentProduct.name;
+            document.getElementById('productLink').href = currentProduct.link;
+            document.getElementById('productLink').classList.remove('show');
             document.getElementById('priceInput').value = '';
             document.getElementById('priceInput').disabled = false;
             document.getElementById('submitBtn').disabled = false;
@@ -413,8 +1246,8 @@
             document.getElementById('gameOver').classList.remove('show');
             document.getElementById('attempts').textContent = 'Tentatives: 0';
             document.getElementById('realPrice').textContent = '';
+            document.getElementById('rewardDisplay').textContent = '';
             
-            // Ajuster le placeholder selon le mode
             if (gameMode === 'expert') {
                 document.getElementById('priceInput').placeholder = 'Prix exact avec centimes (ex: 299.99)';
                 document.getElementById('priceInput').step = '0.01';
@@ -449,47 +1282,43 @@
 
         function submitGuess() {
             if (!gameActive) return;
+            
             const guess = parseFloat(document.getElementById('priceInput').value);
-
             if (isNaN(guess) || guess <= 0) {
                 showFeedback('Veuillez entrer un prix valide !', 'higher');
                 return;
             }
-
+            
             attempts++;
             document.getElementById('attempts').textContent = `Tentatives: ${attempts}`;
-
+            
             let targetPrice = currentProduct.price;
             let isCorrect = false;
-
+            
             if (gameMode === 'expert') {
-                // Mode expert : prix exact avec centimes
                 isCorrect = guess === targetPrice;
             } else {
-                // Mode normal : prix arrondi à l'euro près
                 targetPrice = Math.round(targetPrice);
                 const guessRounded = Math.round(guess);
                 isCorrect = guessRounded === targetPrice;
             }
-
+            
             if (isCorrect) {
                 endGame(true);
             } else if (gameMode === 'expert') {
-                // Mode expert : comparaison exacte
                 if (guess > targetPrice) {
                     showFeedback('C\'est MOINS ! 📉', 'lower');
                 } else {
                     showFeedback('C\'est PLUS ! 📈', 'higher');
                 }
             } else {
-                // Mode normal : comparaison arrondie
                 if (Math.round(guess) > targetPrice) {
                     showFeedback('C\'est MOINS ! 📉', 'lower');
                 } else {
                     showFeedback('C\'est PLUS ! 📈', 'higher');
                 }
             }
-
+            
             document.getElementById('priceInput').value = '';
             document.getElementById('priceInput').focus();
         }
@@ -506,18 +1335,41 @@
             document.getElementById('priceInput').disabled = true;
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('timer').classList.remove('warning');
-
-            const displayPrice = gameMode === 'expert' 
+            document.getElementById('productLink').classList.add('show');
+            
+            const displayPrice = gameMode === 'expert'
                 ? currentProduct.price.toFixed(2) + '€'
                 : Math.round(currentProduct.price) + '€';
-
+            
             if (won) {
+                let moneyReward = gameMode === 'expert' ? 1500 : 500;
+                let xpReward = gameMode === 'expert' ? 20 : 10;
+                
+                moneyReward = Math.floor(moneyReward);
+                xpReward = Math.floor(xpReward);
+                
+                playerData.money += moneyReward;
+                playerData.xp += xpReward;
+                playerData.wins++;
+                
+                if (playerData.xp >= playerData.xpToNextLevel) {
+                    playerData.level++;
+                    playerData.xp -= playerData.xpToNextLevel;
+                    playerData.xpToNextLevel = Math.floor(playerData.xpToNextLevel * 1.5);
+                    setTimeout(() => {
+                        alert(`🎊 NIVEAU SUPÉRIEUR ! Vous êtes maintenant niveau ${playerData.level} !`);
+                    }, 500);
+                }
+                
+                updatePlayerStats();
+                renderCategories();
                 showFeedback(`🎉 BRAVO ! Le prix était ${displayPrice} ! Trouvé en ${attempts} tentative(s) !`, 'win');
+                document.getElementById('rewardDisplay').textContent = `💰 +${moneyReward}€ | ⭐ +${xpReward} XP`;
             } else {
                 document.getElementById('realPrice').textContent = `Le prix exact était : ${displayPrice}`;
                 showFeedback(`⏱️ Temps écoulé !`, 'lose');
             }
-
+            
             document.getElementById('gameOver').classList.add('show');
         }
 
