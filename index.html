@@ -28,7 +28,6 @@
             overflow-x: hidden;
             min-height: 100vh;
         }
-        /* Grille rétro animée en fond */
         .retro-grid {
             position: fixed;
             top: 0;
@@ -67,7 +66,6 @@
             0%, 100% { opacity: 0.3; }
             50% { opacity: 1; }
         }
-        /* Sidebar arcade style */
         .sidebar {
             position: fixed;
             left: 0;
@@ -150,7 +148,6 @@
         .nav-icon:hover::after {
             opacity: 1;
         }
-        /* Header avec scanlines rétro */
         .header {
             position: fixed;
             top: 0;
@@ -183,7 +180,6 @@
             );
             pointer-events: none;
         }
-        /* Profil utilisateur arcade */
         .user-profile {
             display: flex;
             align-items: center;
@@ -212,6 +208,7 @@
             font-size: 28px;
             box-shadow: 0 0 20px rgba(255, 0, 110, 0.5);
             animation: pulse 2s infinite;
+            overflow: hidden;
         }
         @keyframes pulse {
             0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.5); }
@@ -227,7 +224,6 @@
             font-size: 11px;
             color: var(--neon-yellow);
         }
-        /* Barre de recherche néon */
         .search-wrapper {
             flex: 1;
             max-width: 500px;
@@ -258,7 +254,6 @@
             font-size: 20px;
             color: var(--neon-blue);
         }
-        /* Stats du joueur style arcade */
         .player-stats {
             display: flex;
             gap: 25px;
@@ -288,7 +283,6 @@
             color: var(--neon-green);
             text-transform: uppercase;
         }
-        /* Contenu principal */
         .main-content {
             margin-left: 90px;
             margin-top: 90px;
@@ -296,7 +290,6 @@
             position: relative;
             z-index: 1;
         }
-        /* Bannière arcade "INSERT COIN" */
         .arcade-banner {
             background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(131, 56, 236, 0.2));
             border: 3px solid var(--neon-pink);
@@ -372,7 +365,6 @@
             transform: translateY(0px);
             box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
         }
-        /* Filtres et contrôles */
         .controls-bar {
             display: flex;
             justify-content: space-between;
@@ -429,7 +421,6 @@
             background: var(--neon-purple);
             box-shadow: 0 0 15px rgba(131, 56, 236, 0.5);
         }
-        /* Section title avec effet glitch */
         .section-title {
             font-family: 'Press Start 2P', cursive;
             font-size: 24px;
@@ -448,12 +439,52 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-        /* Grille de jeux rétro */
+        /* Vue en grille */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 30px;
             margin-bottom: 50px;
+        }
+        /* Vue en liste */
+        .games-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+        .games-list .game-card {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            height: auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+        }
+        .games-list .game-thumbnail {
+            width: 150px;
+            height: 150px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .games-list .game-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .games-list .game-overlay {
+            display: none;
+        }
+        .games-list .quick-actions {
+            position: static;
+            margin-top: 10px;
+        }
+        .games-list .game-stats {
+            margin-top: 15px;
         }
         .game-card {
             background: var(--card-bg);
@@ -648,7 +679,6 @@
             padding-top: 15px;
             border-top: 2px solid rgba(255, 255, 255, 0.1);
         }
-        /* Animation pour l'indicateur "JOUÉ" */
         .game-played-indicator {
             display: flex;
             align-items: center;
@@ -677,7 +707,6 @@
             border: 2px solid var(--neon-green);
             color: var(--neon-green);
         }
-        /* Publicité rétro style arcade */
         .ad-arcade {
             grid-column: span 1;
             background: linear-gradient(135deg, rgba(255, 190, 11, 0.15), rgba(255, 0, 110, 0.15));
@@ -736,7 +765,6 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 0 rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 190, 11, 0.8);
         }
-        /* Score Board / Leaderboard */
         .scoreboard {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -788,7 +816,6 @@
             font-size: 14px;
             color: var(--neon-pink);
         }
-        /* Modal Settings Arcade */
         .modal {
             display: none;
             position: fixed;
@@ -919,7 +946,6 @@
         .toggle-switch.active::after {
             left: 32px;
         }
-        /* Avatar Selector */
         .avatar-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
@@ -938,6 +964,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
         }
         .avatar-option:hover {
             border-color: var(--neon-blue);
@@ -949,7 +976,11 @@
             background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
             box-shadow: 0 0 25px rgba(255, 0, 110, 0.8);
         }
-        /* Credits Section */
+        .avatar-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         .credits-section {
             background: var(--card-bg);
             backdrop-filter: blur(20px);
@@ -1009,13 +1040,11 @@
             color: var(--neon-blue);
             text-transform: uppercase;
         }
-        /* Recommendations Section */
         .recommendations {
             margin-top: 50px;
         }
-        /* Stats Dashboard */
         .stats-dashboard {
-            display: none;
+            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
@@ -1059,7 +1088,6 @@
             color: var(--neon-blue);
             text-transform: uppercase;
         }
-        /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
                 width: 70px;
@@ -1095,7 +1123,6 @@
                 padding: 25px;
             }
         }
-        /* Scrollbar personnalisée */
         ::-webkit-scrollbar {
             width: 12px;
         }
@@ -1111,67 +1138,12 @@
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, var(--neon-pink), var(--neon-purple));
         }
-        /* Loading Animation */
-        .loading-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 30px;
-        }
-        .loading-screen.active {
-            display: flex;
-        }
-        .loading-text {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 20px;
-            color: var(--neon-blue);
-            text-shadow: 0 0 20px var(--neon-blue);
-            animation: loadingBlink 1s infinite;
-        }
-        @keyframes loadingBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        .loading-bar {
-            width: 300px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 3px solid var(--neon-blue);
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        .loading-progress {
-            height: 100%;
-            background: linear-gradient(90deg, var(--neon-pink), var(--neon-purple), var(--neon-blue));
-            border-radius: 12px;
-            animation: loadingProgress 2s ease-in-out infinite;
-        }
-        @keyframes loadingProgress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
     </style>
 </head>
 <body>
     <!-- Background Effects -->
     <div class="retro-grid"></div>
     <div class="stars-layer" id="starsLayer"></div>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-text">LOADING...</div>
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
-    </div>
     <!-- Sidebar Navigation -->
     <div class="sidebar">
         <div class="logo-container">
@@ -1223,29 +1195,29 @@
                 </div>
             </div>
         </div>
-    <div class="stats-dashboard">
-        <div class="stat-card-large">
-            <div class="stat-icon-large">🎯</div>
-            <div class="stat-info">
-                <h4 id="gamesPlayed">0</h4>
-                <p>Jeux disponibles</p>
+        <div class="stats-dashboard">
+            <div class="stat-card-large">
+                <div class="stat-icon-large">🎯</div>
+                <div class="stat-info">
+                    <h4 id="gamesPlayed">0</h4>
+                    <p>Jeux disponibles</p>
+                </div>
+            </div>
+            <div class="stat-card-large">
+                <div class="stat-icon-large">⚡</div>
+                <div class="stat-info">
+                    <h4 id="bestStreak">0</h4>
+                    <p>Favoris</p>
+                </div>
+            </div>
+            <div class="stat-card-large">
+                <div class="stat-icon-large">🏆</div>
+                <div class="stat-info">
+                    <h4 id="achievements">0</h4>
+                    <p>Succès</p>
+                </div>
             </div>
         </div>
-        <div class="stat-card-large">
-            <div class="stat-icon-large">⚡</div>
-            <div class="stat-info">
-                <h4 id="bestStreak">0</h4>
-                <p>Favoris</p>
-            </div>
-        </div>
-        <div class="stat-card-large">
-            <div class="stat-icon-large">🏆</div>
-            <div class="stat-info">
-                <h4 id="achievements">0</h4>
-                <p>Succès</p>
-            </div>
-        </div>
-    </div>
         <!-- Controls Bar -->
         <div class="controls-bar">
             <div class="filter-pills">
@@ -1374,6 +1346,15 @@
                 <div class="avatar-grid" id="avatarGrid"></div>
             </div>
             <div class="settings-group">
+                <h3>📷 Importer mon avatar</h3>
+                <div class="setting-item" style="display: block;">
+                    <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
+                    <button class="arcade-btn" style="width: 100%; margin-top: 15px;" onclick="document.getElementById('avatarUpload').click()">
+                        Choisir une image
+                    </button>
+                </div>
+            </div>
+            <div class="settings-group">
                 <h3>✏️ Pseudo</h3>
                 <div class="setting-item" style="display: block;">
                     <input type="text" id="usernameInput" class="search-input"
@@ -1402,7 +1383,21 @@
             { id: 10, name: 'Code Secret', category: 'strategy', image: 'images/interface10.jpg', page: 'page10.html', badge: '', plays: 0, time: 0 },
             { id: 11, name: 'F1 Manager', category: 'strategy', image: 'images/interface11.jpg', page: 'page-11/page11.html', badge: 'new', plays: 0, time: 0 }
         ];
-        const avatars = ['🎮', '👾', '🕹️', '🎯', '🏆', '⚡', '🔥', '💎', '🌟', '🎪', '🎨', '🎭', '🎬', '🎸', '🎺'];
+        // Avatars disponibles (emojis + images)
+        const defaultAvatars = [
+            { type: 'emoji', value: '🎮' },
+            { type: 'emoji', value: '👾' },
+            { type: 'emoji', value: '🕹️' },
+            { type: 'emoji', value: '🎯' },
+            { type: 'emoji', value: '🏆' },
+            { type: 'emoji', value: '⚡' },
+            { type: 'emoji', value: '🔥' },
+            { type: 'emoji', value: '💎' },
+            { type: 'emoji', value: '🌟' },
+            { type: 'image', value: 'images/avatars/avatar1.png' },
+            { type: 'image', value: 'images/avatars/avatar2.png' },
+            { type: 'image', value: 'images/avatars/avatar3.png' },
+        ];
         // Data object
         let userData = {
             username: 'PLAYER_1',
@@ -1432,10 +1427,8 @@
             updateUI();
             setupSearch();
             setupEventListeners();
-
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.remove('active');
-            }, 1500);
+            // Gestion de l'upload d'avatar
+            document.getElementById('avatarUpload').addEventListener('change', handleAvatarUpload);
         }
         // Create stars background
         function createStars() {
@@ -1449,17 +1442,88 @@
                 starsLayer.appendChild(star);
             }
         }
+        // Gestion de l'upload d'avatar
+        function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                alert('L\'image est trop lourde (max 2 Mo) !');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                userData.avatar = event.target.result;
+                saveUserData();
+                updateUI();
+                renderAvatarGrid();
+                alert('Avatar importé avec succès ! 🎉');
+            };
+            reader.readAsDataURL(file);
+        }
+        // Render avatar grid
+        function renderAvatarGrid() {
+            const grid = document.getElementById('avatarGrid');
+            grid.innerHTML = '';
+            defaultAvatars.forEach(avatar => {
+                const option = document.createElement('div');
+                option.className = 'avatar-option' + (userData.avatar === avatar.value ? ' selected' : '');
+                if (avatar.type === 'emoji') {
+                    option.textContent = avatar.value;
+                } else {
+                    option.innerHTML = `<img src="${avatar.value}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
+                option.onclick = () => selectAvatar(avatar.value);
+                grid.appendChild(option);
+            });
+            // Ajoute l'avatar personnalisé si présent
+            if (userData.avatar && !defaultAvatars.some(a => a.value === userData.avatar) && userData.avatar.startsWith('data:image/')) {
+                const option = document.createElement('div');
+                option.className = 'avatar-option selected';
+                option.innerHTML = `<img src="${userData.avatar}" alt="Mon avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                option.onclick = () => selectAvatar(userData.avatar);
+                grid.appendChild(option);
+            }
+        }
+        // Select avatar
+        function selectAvatar(avatar) {
+            userData.avatar = avatar;
+            saveUserData();
+            updateUI();
+            renderAvatarGrid();
+        }
+        // Update UI
+        function updateUI() {
+            document.getElementById('username').textContent = userData.username;
+            const avatarElement = document.getElementById('userAvatar');
+            if (userData.avatar.startsWith('data:image/')) {
+                avatarElement.innerHTML = `<img src="${userData.avatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else if (userData.avatar.startsWith('images/')) {
+                avatarElement.innerHTML = `<img src="${userData.avatar}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+            } else {
+                avatarElement.textContent = userData.avatar;
+            }
+            document.getElementById('userLevel').textContent = userData.level;
+            document.getElementById('totalGames').textContent = gamesData.length;
+            document.getElementById('totalFavorites').textContent = userData.favorites.length;
+            const totalTimePlayed = Object.values(userData.gamesStats).reduce((sum, stat) => sum + stat.time, 0);
+            document.getElementById('totalTime').textContent = Math.floor(totalTimePlayed / 3600);
+            document.getElementById('gamesPlayed').textContent = gamesData.length;
+            document.getElementById('bestStreak').textContent = userData.favorites.length;
+            document.getElementById('achievements').textContent = Math.floor(userData.totalPlays / 10);
+            document.getElementById('usernameInput').value = userData.username;
+        }
         // Render games
         function renderGames(filter = 'all') {
             const grid = document.getElementById('gamesGrid');
             grid.innerHTML = '';
             let filteredGames = filter === 'all' ? gamesData : gamesData.filter(g => g.category === filter);
-            // Add games
+
             filteredGames.forEach((game, index) => {
                 const isFavorited = userData.favorites.includes(game.id);
                 const gameStats = userData.gamesStats[game.id] || { plays: 0, time: 0 };
                 const gameCard = document.createElement('div');
                 gameCard.className = 'game-card';
+
                 gameCard.innerHTML = `
                     <div class="game-thumbnail">
                         <img src="${game.image}" alt="${game.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23${['667eea', '764ba2', '5e72e4', 'f093fb'][index % 4]}%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3E${game.name}%3C/text%3E%3C/svg%3E'">
@@ -1490,7 +1554,7 @@
                 `;
                 grid.appendChild(gameCard);
             });
-            // Add ad card every 6 games
+
             if (filteredGames.length > 5) {
                 const adIndex = Math.floor(filteredGames.length / 2);
                 const adCard = document.createElement('div');
@@ -1503,7 +1567,6 @@
                         <button class="ad-cta" onclick="alert('Jeu bientôt disponible !')">Être notifié</button>
                     </div>
                 `;
-
                 const gridChildren = Array.from(grid.children);
                 if (gridChildren[adIndex]) {
                     grid.insertBefore(adCard, gridChildren[adIndex]);
@@ -1511,14 +1574,26 @@
                     grid.appendChild(adCard);
                 }
             }
-            // Render recommended games
+
             renderRecommendedGames();
         }
-        // Render recommended games based on most played category
+        // Change View
+        function changeView(view) {
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            const gamesGrid = document.getElementById('gamesGrid');
+            if (view === 'grid') {
+                gamesGrid.classList.remove('games-list');
+                gamesGrid.classList.add('games-grid');
+            } else if (view === 'list') {
+                gamesGrid.classList.remove('games-grid');
+                gamesGrid.classList.add('games-list');
+            }
+        }
+        // Render recommended games
         function renderRecommendedGames() {
             const recommendedGrid = document.getElementById('recommendedGames');
             recommendedGrid.innerHTML = '';
-            // Find most played category
             const categoryPlays = {};
             Object.keys(userData.gamesStats).forEach(gameId => {
                 const game = gamesData.find(g => g.id === parseInt(gameId));
@@ -1527,7 +1602,6 @@
                 }
             });
             const mostPlayedCategory = Object.keys(categoryPlays).sort((a, b) => categoryPlays[b] - categoryPlays[a])[0];
-
             const recommended = mostPlayedCategory
                 ? gamesData.filter(g => g.category === mostPlayedCategory).slice(0, 3)
                 : gamesData.slice(0, 3);
@@ -1570,25 +1644,19 @@
         }
         // Navigate to game
         function navigateToGame(page, gameId) {
-            const loading = document.getElementById('loadingScreen');
-            loading.classList.add('active');
-            // Update game stats
             if (!userData.gamesStats[gameId]) {
                 userData.gamesStats[gameId] = { plays: 0, time: 0 };
             }
             userData.gamesStats[gameId].plays++;
-            userData.gamesStats[gameId].time += Math.floor(Math.random() * 300) + 60; // Simulate time
+            userData.gamesStats[gameId].time += Math.floor(Math.random() * 300) + 60;
             userData.totalPlays++;
             saveUserData();
-            setTimeout(() => {
-                window.location.href = page;
-            }, 500);
+            window.location.href = page;
         }
         // Toggle favorite
         function toggleFavorite(gameId, event) {
             event.stopPropagation();
             const index = userData.favorites.indexOf(gameId);
-
             if (index > -1) {
                 userData.favorites.splice(index, 1);
             } else {
@@ -1619,12 +1687,6 @@
             const activePill = document.querySelector('.filter-pill.active');
             return activePill ? activePill.dataset.filter : 'all';
         }
-        // Change view
-        function changeView(view) {
-            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            // Could implement list view here
-        }
         // Show section
         function showSection(section) {
             document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
@@ -1635,7 +1697,6 @@
                 if (favoriteGames.length === 0) {
                     alert('Aucun jeu favori pour le moment ! ⭐');
                 } else {
-                    // Filter to show only favorites
                     const grid = document.getElementById('gamesGrid');
                     grid.innerHTML = '';
                     favoriteGames.forEach(game => {
@@ -1675,7 +1736,6 @@
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase();
                 const cards = document.querySelectorAll('.game-card');
-
                 cards.forEach(card => {
                     const gameName = card.querySelector('.game-name')?.textContent.toLowerCase();
                     if (gameName && gameName.includes(query)) {
@@ -1686,31 +1746,10 @@
                 });
             });
         }
-        // Render avatar grid
-        function renderAvatarGrid() {
-            const grid = document.getElementById('avatarGrid');
-            grid.innerHTML = '';
-
-            avatars.forEach(avatar => {
-                const option = document.createElement('div');
-                option.className = 'avatar-option' + (userData.avatar === avatar ? ' selected' : '');
-                option.textContent = avatar;
-                option.onclick = () => selectAvatar(avatar);
-                grid.appendChild(option);
-            });
-        }
-        // Select avatar
-        function selectAvatar(avatar) {
-            userData.avatar = avatar;
-            saveUserData();
-            updateUI();
-            renderAvatarGrid();
-        }
         // Save username
         function saveUsername() {
             const input = document.getElementById('usernameInput');
             const username = input.value.trim();
-
             if (username && username.length >= 3) {
                 userData.username = username.toUpperCase();
                 saveUserData();
@@ -1720,45 +1759,25 @@
                 alert('Le pseudo doit contenir au moins 3 caractères !');
             }
         }
-        // Update UI
-        function updateUI() {
-            document.getElementById('username').textContent = userData.username;
-            document.getElementById('userAvatar').textContent = userData.avatar;
-            document.getElementById('userLevel').textContent = userData.level;
-            document.getElementById('totalGames').textContent = gamesData.length;
-            document.getElementById('totalFavorites').textContent = userData.favorites.length;
-
-            const totalTimePlayed = Object.values(userData.gamesStats).reduce((sum, stat) => sum + stat.time, 0);
-            document.getElementById('totalTime').textContent = Math.floor(totalTimePlayed / 3600);
-
-            document.getElementById('gamesPlayed').textContent = gamesData.length;  // Nombre total de jeux
-            document.getElementById('bestStreak').textContent = userData.favorites.length;  // Nombre de favoris
-            document.getElementById('achievements').textContent = Math.floor(userData.totalPlays / 10);
-            document.getElementById('usernameInput').value = userData.username;
+        // Save user data
+        function saveUserData() {
+            try {
+                localStorage.setItem('gameverse_user_data', JSON.stringify(userData));
+            } catch (e) {
+                console.error('Erreur de sauvegarde:', e);
+                alert('Erreur lors de la sauvegarde des données !');
+            }
         }
-        // Update scoreboard
-        function updateScoreboard() {
-            const scoreEntries = document.getElementById('scoreEntries');
-            scoreEntries.innerHTML = '';
-            const topGames = Object.entries(userData.gamesStats)
-                .sort((a, b) => b[1].plays - a[1].plays)
-                .slice(0, 5);
-            topGames.forEach((entry, index) => {
-                const gameId = parseInt(entry[0]);
-                const game = gamesData.find(g => g.id === gameId);
-                if (game) {
-                    const scoreEntry = document.createElement('div');
-                    scoreEntry.className = 'score-entry';
-                    scoreEntry.innerHTML = `
-                        <div class="score-rank">#${index + 1}</div>
-                        <div class="score-game">${game.name}</div>
-                        <div class="score-value">${entry[1].plays} parties</div>
-                    `;
-                    scoreEntries.appendChild(scoreEntry);
+        // Load user data
+        function loadUserData() {
+            try {
+                const saved = localStorage.getItem('gameverse_user_data');
+                if (saved) {
+                    userData = JSON.parse(saved);
                 }
-            });
-            if (topGames.length === 0) {
-                scoreEntries.innerHTML = '<div style="text-align: center; color: var(--neon-blue); padding: 20px;">Joue à des jeux pour voir ton classement ici ! 🎮</div>';
+            } catch (e) {
+                console.error('Erreur de chargement:', e);
+                alert('Erreur lors du chargement des données !');
             }
         }
         // Modal functions
@@ -1809,40 +1828,8 @@
         function scrollToGames() {
             document.querySelector('.games-grid').scrollIntoView({ behavior: 'smooth' });
         }
-        // Save user data
-        function saveUserData() {
-            try {
-                localStorage.setItem('gameverse_user_data', JSON.stringify(userData));
-                console.log('✅ Données sauvegardées !', userData);
-            } catch (e) {
-                console.error('❌ Erreur de sauvegarde:', e);
-                alert('Erreur lors de la sauvegarde des données !');
-            }
-        }
-        // Load user data
-        function loadUserData() {
-            try {
-                const saved = localStorage.getItem('gameverse_user_data');
-                if (saved) {
-                    const loaded = JSON.parse(saved);
-                    // Merge avec les données par défaut pour éviter les erreurs
-                    userData = {
-                        ...userData,
-                        ...loaded,
-                        settings: { ...userData.settings, ...(loaded.settings || {}) }
-                    };
-                    console.log('✅ Données chargées !', userData);
-                } else {
-                    console.log('ℹ️ Aucune sauvegarde trouvée, utilisation des données par défaut');
-                }
-            } catch (e) {
-                console.error('❌ Erreur de chargement:', e);
-                alert('Erreur lors du chargement des données !');
-            }
-        }
         // Setup event listeners
         function setupEventListeners() {
-            // Close modals on outside click
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.addEventListener('click', (e) => {
                     if (e.target === modal) {
@@ -1850,12 +1837,11 @@
                     }
                 });
             });
-            // Update stats periodically
             setInterval(() => {
                 if (userData.settings.autoSave) {
                     saveUserData();
                 }
-            }, 30000); // Every 30 seconds
+            }, 30000);
         }
         // Initialize on load
         window.addEventListener('load', init);
