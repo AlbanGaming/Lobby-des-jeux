@@ -463,6 +463,12 @@
             align-items: center;
             gap: 20px;
             padding: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .games-list .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         .games-list .game-thumbnail {
             width: 150px;
@@ -1228,8 +1234,8 @@
                 <div class="filter-pill" data-filter="arcade" onclick="filterGames('arcade')">Arcade</div>
             </div>
             <div class="view-controls">
-                <div class="view-btn active" onclick="changeView('grid')">⊞</div>
-                <div class="view-btn" onclick="changeView('list')">☰</div>
+                <div class="view-btn active" onclick="changeView('grid', event)">⊞</div>
+                <div class="view-btn" onclick="changeView('list', event)">☰</div>
             </div>
         </div>
         <!-- Section Title -->
@@ -1394,9 +1400,9 @@
             { type: 'emoji', value: '🔥' },
             { type: 'emoji', value: '💎' },
             { type: 'emoji', value: '🌟' },
-            { type: 'image', value: 'images/avatars/avatar1.png' },
-            { type: 'image', value: 'images/avatars/avatar2.png' },
-            { type: 'image', value: 'images/avatars/avatar3.png' },
+            // { type: 'image', value: 'images/avatars/avatar1.png' },
+            // { type: 'image', value: 'images/avatars/avatar2.png' },
+            // { type: 'image', value: 'images/avatars/avatar3.png' },
         ];
         // Data object
         let userData = {
@@ -1531,16 +1537,16 @@
                             ${game.badge ? `<div class="badge ${game.badge}">${game.badge}</div>` : ''}
                         </div>
                         <div class="quick-actions">
-                            <div class="action-icon ${isFavorited ? 'favorited' : ''}" onclick="toggleFavorite(${game.id}, event)">
+                            <div class="action-icon ${isFavorited ? 'favorited' : ''}" onclick="event.stopPropagation(); toggleFavorite(${game.id}, event)">
                                 ${isFavorited ? '❤️' : '🤍'}
                             </div>
-                            <div class="action-icon" onclick="shareGame(${game.id}, event)">📤</div>
+                            <div class="action-icon" onclick="event.stopPropagation(); shareGame(${game.id}, event)">📤</div>
                         </div>
                         <div class="game-overlay" onclick="navigateToGame('${game.page}', ${game.id})">
                             <div class="play-btn-arcade">▶</div>
                         </div>
                     </div>
-                    <div class="game-details">
+                    <div class="game-details" onclick="navigateToGame('${game.page}', ${game.id})">
                         <div class="game-name">${game.name}</div>
                         <div class="game-category-tag">
                             ${getCategoryIcon(game.category)} ${game.category}
@@ -1552,6 +1558,20 @@
                         </div>
                     </div>
                 `;
+
+                // Ajoute un événement clic sur toute la carte
+                gameCard.addEventListener('click', () => {
+                    navigateToGame(game.page, game.id);
+                });
+
+                // Empêche la propagation du clic pour les actions rapides
+                const actionIcons = gameCard.querySelectorAll('.action-icon');
+                actionIcons.forEach(icon => {
+                    icon.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                });
+
                 grid.appendChild(gameCard);
             });
 
@@ -1578,7 +1598,7 @@
             renderRecommendedGames();
         }
         // Change View
-        function changeView(view) {
+        function changeView(view, event) {
             document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             const gamesGrid = document.getElementById('gamesGrid');
@@ -1614,7 +1634,7 @@
                     <div class="game-thumbnail">
                         <img src="${game.image}" alt="${game.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23667eea%22 width=%22400%22 height=%22300%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-size=%2224%22 fill=%22white%22 text-anchor=%22middle%22 dy=%22.3em%22%3E${game.name}%3C/text%3E%3C/svg%3E'">
                         <div class="quick-actions">
-                            <div class="action-icon ${isFavorited ? 'favorited' : ''}" onclick="toggleFavorite(${game.id}, event)">
+                            <div class="action-icon ${isFavorited ? 'favorited' : ''}" onclick="event.stopPropagation(); toggleFavorite(${game.id}, event)">
                                 ${isFavorited ? '❤️' : '🤍'}
                             </div>
                         </div>
@@ -1622,13 +1642,27 @@
                             <div class="play-btn-arcade">▶</div>
                         </div>
                     </div>
-                    <div class="game-details">
+                    <div class="game-details" onclick="navigateToGame('${game.page}', ${game.id})">
                         <div class="game-name">${game.name}</div>
                         <div class="game-category-tag">
                             ${getCategoryIcon(game.category)} ${game.category}
                         </div>
                     </div>
                 `;
+
+                // Ajoute un événement clic sur toute la carte
+                gameCard.addEventListener('click', () => {
+                    navigateToGame(game.page, game.id);
+                });
+
+                // Empêche la propagation du clic pour les actions rapides
+                const actionIcons = gameCard.querySelectorAll('.action-icon');
+                actionIcons.forEach(icon => {
+                    icon.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                });
+
                 recommendedGrid.appendChild(gameCard);
             });
         }
@@ -1707,13 +1741,13 @@
                             <div class="game-thumbnail">
                                 <img src="${game.image}" alt="${game.name}">
                                 <div class="quick-actions">
-                                    <div class="action-icon favorited" onclick="toggleFavorite(${game.id}, event)">❤️</div>
+                                    <div class="action-icon favorited" onclick="event.stopPropagation(); toggleFavorite(${game.id}, event)">❤️</div>
                                 </div>
                                 <div class="game-overlay" onclick="navigateToGame('${game.page}', ${game.id})">
                                     <div class="play-btn-arcade">▶</div>
                                 </div>
                             </div>
-                            <div class="game-details">
+                            <div class="game-details" onclick="navigateToGame('${game.page}', ${game.id})">
                                 <div class="game-name">${game.name}</div>
                                 <div class="game-category-tag">${getCategoryIcon(game.category)} ${game.category}</div>
                                 <div class="game-stats">
@@ -1723,6 +1757,12 @@
                                 </div>
                             </div>
                         `;
+
+                        // Ajoute un événement clic sur toute la carte
+                        gameCard.addEventListener('click', () => {
+                            navigateToGame(game.page, game.id);
+                        });
+
                         grid.appendChild(gameCard);
                     });
                 }
