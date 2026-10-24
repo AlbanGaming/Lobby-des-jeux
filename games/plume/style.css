@@ -1,0 +1,75 @@
+/* Plume — atelier de l'écran d'accueil (modes et papiers) */
+
+.gv-stage { background: #ffc59c; }
+
+.pl-atelier {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--ink-950);
+  text-align: left;
+}
+.pl-row { display: grid; gap: var(--s-2); }
+.pl-label {
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.pl-modes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+.pl-mode {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  min-height: 48px;
+  padding: 6px 12px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--border);
+  text-align: left;
+  font-weight: 700;
+  transition: box-shadow var(--dur-2), background-color var(--dur-2), transform var(--dur-1);
+}
+.pl-mode .icon { width: 18px; height: 18px; grid-row: span 2; }
+.pl-mode small { grid-column: 2; font-size: var(--fs-2xs); font-weight: 500; color: var(--text-3); }
+.pl-mode:active { transform: scale(0.97); }
+.pl-mode[aria-checked='true'] { box-shadow: inset 0 0 0 2px #ff8a5b; background: rgb(255 138 91 / 0.12); }
+.pl-mode[aria-checked='true'] .icon { color: #ff8a5b; }
+.pl-mode[aria-disabled='true'] { color: var(--text-3); cursor: not-allowed; }
+
+.pl-skins { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.pl-skin {
+  position: relative;
+  width: 52px;
+  height: 46px;
+  padding: 3px;
+  border-radius: var(--r-md);
+  background: #ffe3c4;
+  box-shadow: inset 0 0 0 2px var(--border);
+  transition: transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2);
+}
+.pl-skin svg { width: 100%; height: 100%; }
+.pl-skin:hover { transform: translateY(-3px) rotate(-3deg); }
+.pl-skin[aria-checked='true'] { box-shadow: 0 0 0 3px #ff8a5b; }
+.pl-skin[aria-disabled='true'] { cursor: not-allowed; }
+.pl-skin[aria-disabled='true']:hover { transform: none; }
+.pl-skin__lock {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ink-700);
+  color: var(--text-2);
+}
+.pl-skin__lock .icon { width: 12px; height: 12px; }
+.pl-atelier__hint { font-size: var(--fs-xs); color: var(--text-2); }
+.pl-atelier__hint:empty { display: none; }

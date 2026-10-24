@@ -2,16 +2,8 @@
 
 import { createRng } from '../../shared/js/core/rng.js';
 import { TAU, clamp, lerp } from '../../shared/js/core/math.js';
+import { mixHex } from '../../shared/js/core/color.js';
 import { SKY, WORLD_H, PLAYER } from './config.js';
-
-// ---------- Couleurs ----------
-const hexToRgb = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-const rgbStr = ([r, g, b]) => `rgb(${r | 0},${g | 0},${b | 0})`;
-const mixHex = (a, b, t) => {
-  const A = hexToRgb(a);
-  const B = hexToRgb(b);
-  return rgbStr([lerp(A[0], B[0], t), lerp(A[1], B[1], t), lerp(A[2], B[2], t)]);
-};
 
 /** Palette du ciel interpolée selon la distance parcourue (m). */
 export function skyPalette(meters) {
@@ -507,5 +499,3 @@ export function drawVolt(ctx, p, skin, time) {
   }
   ctx.restore();
 }
-
-export { mixHex };
