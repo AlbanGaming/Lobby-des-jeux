@@ -4,9 +4,12 @@
 //  - 'height'  : hauteur logique fixe, la largeur suit l'écran (runners, défilants)
 //  - 'width'   : largeur logique fixe, la hauteur suit l'écran
 //  - 'contain' : largeur ET hauteur logiques fixes, letterbox centré
+//  - 'stage'   : au moins `height` unités de haut ET `minWidth` de large visibles (nombre ou
+//                fonction (largeurCSS, hauteurCSS) → nombre) ; l'écran
+//                remplit le reste (plus de ciel en portrait, plus d'horizon en paysage)
 //  - 'fill'    : 1 unité = 1 px CSS
 
-export function createCanvas(container, { mode = 'fill', width = 800, height = 450, maxDpr = 2, minAspect = 0, maxAspect = Infinity, onResize, alpha = false } = {}) {
+export function createCanvas(container, { mode = 'fill', width = 800, height = 450, minWidth = 0, maxDpr = 2, minAspect = 0, maxAspect = Infinity, onResize, alpha = false } = {}) {
   const canvas = document.createElement('canvas');
   canvas.className = 'gv-canvas';
   canvas.setAttribute('aria-hidden', 'true');
@@ -68,6 +71,11 @@ export function createCanvas(container, { mode = 'fill', width = 800, height = 4
       view.scale = 1;
       view.width = cw;
       view.height = ch;
+    } else if (mode === 'stage') {
+      const mw = typeof minWidth === 'function' ? minWidth(cw, ch) : minWidth;
+      view.scale = mw ? Math.min(ch / height, cw / mw) : ch / height;
+      view.width = cw / view.scale;
+      view.height = ch / view.scale;
     } else if (mode === 'height') {
       aspect = Math.min(Math.max(aspect, minAspect), maxAspect);
       view.height = height;

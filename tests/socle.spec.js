@@ -109,11 +109,15 @@ test.describe('socle', () => {
     const legacy = await page.evaluate(() => ['gameverse_user_data', 'flappyBestScore', 'dinoHighScore', 'playerData', 'artEmpireSave'].map((k) => localStorage.getItem(k) !== null));
     expect(legacy).toEqual([true, true, true, true, true]);
 
-    // Un record battu plus tard sur une ancienne page remonte au rechargement
+    // Un record battu plus tard sur une ancienne page encore en ligne remonte au rechargement…
+    await page.evaluate(() => localStorage.setItem('flappyBestScore', '40'));
+    // …mais un jeu déjà refait ne relit plus son ancienne clé
     await page.evaluate(() => localStorage.setItem('dinoHighScore', '2000'));
     await page.reload();
     await expect(page.locator('[data-screen="start"]')).toHaveClass(/is-open/);
-    expect((await readStore(page, 'gv:meta')).data.games['volt-rush'].best).toBe(2000);
+    const after = (await readStore(page, 'gv:meta')).data.games;
+    expect(after.plume.best).toBe(40);
+    expect(after['volt-rush'].best).toBe(1543);
     w.expectClean();
   });
 

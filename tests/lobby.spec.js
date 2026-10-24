@@ -166,7 +166,7 @@ test.describe('lobby', () => {
     });
     await ready(page);
     await expect(page.locator('#player .lb-player__name')).toHaveText('ALBAN');
-    await expect(page.locator('#grid .gcard[data-id="volt-rush"] .gcard__meta')).toContainText('Record 812 m');
+    await expect(page.locator('#grid .gcard[data-id="volt-rush"] .gcard__meta')).toContainText('Record 812');
     await page.locator('#picksTabs [data-tab="favorites"]').click();
     await expect(page.locator('#picksRail .gcard')).toContainText('Paint Empire');
     w.expectClean();

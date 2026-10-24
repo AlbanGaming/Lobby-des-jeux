@@ -74,7 +74,11 @@ export function createInput({ surface, view, bindings = {}, preventKeys = true }
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     if (e.target.closest('button, a, input, select, textarea, [data-gv-ui]')) return;
     e.preventDefault();
-    surface.setPointerCapture?.(e.pointerId);
+    try {
+      surface.setPointerCapture?.(e.pointerId);
+    } catch {
+      /* pointeur déjà relâché ou synthétique : la capture n'est qu'un confort */
+    }
     updatePointer(e);
     touches.set(e.pointerId, { x: pointer.x, y: pointer.y });
     pointer.type = e.pointerType;

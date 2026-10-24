@@ -200,8 +200,10 @@ export function createShell({
       }
       return;
     }
-    if (onButton || e.repeat) return;
+    if (e.repeat) return;
     const go = e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter';
+    // Espace / Entrée appartiennent au bouton focalisé ; R reste un raccourci partout
+    if (onButton && go) return;
     if (shell.state === 'start' && go && openScreen === startEl) {
       e.preventDefault();
       listeners.start?.();
