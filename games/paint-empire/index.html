@@ -26,11 +26,20 @@
 <body class="gv-game">
   <main class="gv-stage" id="stage">
     <div class="pe-wrap" id="wrap">
-      <section class="pe-studio" aria-label="Atelier">
-        <header class="pe-purse">
+      <header class="pe-head">
+        <div class="pe-purse">
           <p class="pe-money" id="money" aria-live="off">0 €</p>
           <p class="pe-rate" id="rate">0 € par seconde</p>
-        </header>
+        </div>
+        <div class="pe-switch" role="tablist" aria-label="Vue">
+          <button type="button" role="tab" data-view="atelier" aria-selected="true" aria-controls="paneAtelier">Atelier</button>
+          <button type="button" role="tab" data-view="ville" aria-selected="false" aria-controls="paneVille">Ville <b class="pe-dot" id="villeDot" hidden></b></button>
+        </div>
+      </header>
+      <p class="pe-notice" id="notice" aria-live="polite"></p>
+      <div class="pe-strip" id="strip" aria-label="Commandes en cours"></div>
+      <div class="pe-pane pe-pane--atelier" id="paneAtelier" role="tabpanel">
+      <section class="pe-studio" aria-label="Atelier">
         <div class="pe-easel">
           <button class="pe-canvas" id="canvasBtn" type="button" aria-label="Peindre la toile">
             <span class="pe-frame" id="frame"><canvas id="canvas" aria-hidden="true"></canvas></span>
@@ -39,6 +48,7 @@
         </div>
         <div class="pe-progress" aria-hidden="true"><i id="progress"></i></div>
         <p class="pe-caption" id="caption"></p>
+        <div class="pe-easel-ctl" id="easelCtl" role="group" aria-label="Réglages du chevalet"></div>
         <div class="pe-buffs" id="buffs" aria-live="polite"></div>
         <div class="pe-gallery" id="gallery" aria-label="Galerie : tes dernières toiles"></div>
       </section>
@@ -56,6 +66,11 @@
         </div>
         <div class="pe-list" id="list" role="tabpanel"></div>
       </section>
+      </div>
+      <div class="pe-pane pe-pane--ville" id="paneVille" role="tabpanel" hidden>
+        <div class="pe-mapbox"><p class="pe-map-hint">Fais glisser la carte pour explorer la ville, touche un bâtiment pour le détail.</p><div class="pe-map" id="map"></div></div>
+        <aside class="pe-board" id="board" aria-label="Tableau de commandes"></aside>
+      </div>
     </div>
     <button class="pe-collector" id="collector" type="button" hidden aria-label="Un collectionneur passe : clique vite !"></button>
   </main>

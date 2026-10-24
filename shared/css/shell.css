@@ -403,6 +403,13 @@ body.gv-game > .gv-stage { grid-row: 2; }
   pointer-events: none;
   animation: gv-banner var(--dur-5) var(--ease-out) both;
 }
+/* Texte long : plus petit, centré, deux lignes au plus */
+.gv-banner--long {
+  width: min(90%, 760px);
+  font-size: clamp(2rem, 6vw, 3.6rem);
+  text-align: center;
+  text-wrap: balance;
+}
 @keyframes gv-banner {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
   25% { opacity: 1; transform: translate(-50%, -50%) scale(1); }

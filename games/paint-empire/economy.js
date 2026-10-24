@@ -81,19 +81,114 @@ export const renownMult = (renown) => 1 + renown * RENOWN_BONUS;
 export function assistantRate(a, owned, renown) {
   return a.rate * owned * milestoneMult(owned) * renownMult(renown);
 }
+/**
+ * Bonus de la ville : +10 % par atelier en plus du garage, +2 % par trophée de galerie,
+ * +10 % par contrat de galerie en cours.
+ */
+export function cityMult(s) {
+  const ateliers = ATELIERS.filter((b) => b.id !== 'garage' && s.buildings?.[b.id]).length;
+  return 1 + 0.1 * ateliers + 0.02 * (s.trophies ?? 0) + 0.1 * (s.contracts?.length ?? 0);
+}
+
 /** Revenu passif total (€/s) hors bonus temporaires. */
 export function incomePerSecond(s) {
-  return ASSISTANTS.reduce((sum, a) => sum + assistantRate(a, s.assistants[a.id] ?? 0, s.renown), 0);
+  return ASSISTANTS.reduce((sum, a) => sum + assistantRate(a, s.assistants[a.id] ?? 0, s.renown), 0) * cityMult(s);
 }
 
 export const styleIndex = (runEarned) => STYLES.reduce((k, st, i) => (runEarned >= st.unlock ? i : k), 0);
 
 /** Valeur d'une toile terminée : suit le revenu passif pour rester intéressante à tout moment. */
-export function paintingValue(s, rarity, styleIdx) {
+export function paintingValue(s, rarity, styleIdx, formatId = 'moyen') {
   const base = 12 + incomePerSecond(s) * 4;
   const pigments = 1 + 0.5 * (s.tools.pigments ?? 0);
-  return base * pigments * STYLES[styleIdx].mult * rarity.mult * renownMult(s.renown);
+  return base * pigments * STYLES[styleIdx].mult * rarity.mult * formatOf(formatId).mult * renownMult(s.renown);
 }
+
+// ---------- Formats de toile ----------
+export const FORMATS = [
+  { id: 'petit', name: 'Petit', strokes: 8, mult: 0.6 },
+  { id: 'moyen', name: 'Moyen', strokes: 12, mult: 1 },
+  { id: 'grand', name: 'Grand', strokes: 22, mult: 2.2 },
+];
+export const formatOf = (id) => FORMATS.find((f) => f.id === id) ?? FORMATS[1];
+
+// ---------- Couleurs dominantes (une par palette, voir art.js) ----------
+export const FAMILIES = [
+  { id: 'bleu', name: 'Bleu', swatch: '#457b9d' },
+  { id: 'ocre', name: 'Ocre', swatch: '#e9c46a' },
+  { id: 'rouge', name: 'Rouge', swatch: '#e63946' },
+  { id: 'vert', name: 'Vert', swatch: '#40916c' },
+  { id: 'violet', name: 'Violet', swatch: '#7b2cbf' },
+  { id: 'terre', name: 'Terre', swatch: '#936639' },
+  { id: 'nuit', name: 'Nuit', swatch: '#1c2541' },
+  { id: 'brume', name: 'Brume', swatch: '#c9ada7' },
+];
+export const familyOf = (id) => FAMILIES.find((f) => f.id === id) ?? null;
+
+// ---------- Production de toiles des assistants (pour les commandes et le stock) ----------
+// Toiles par seconde et par assistant : leurs toiles alimentent les commandes et l'entrepôt.
+export const ASSISTANT_PAINTINGS = { apprenti: 0.012, eleve: 0.03, rue: 0.07, portraitiste: 0.16, atelier: 0.4, galerie: 1, fondation: 2.4, musee: 6 };
+export function assistantPaintingRate(s) {
+  const base = ASSISTANTS.reduce((sum, a) => {
+    const owned = s.assistants[a.id] ?? 0;
+    return sum + (ASSISTANT_PAINTINGS[a.id] ?? 0) * owned * Math.sqrt(milestoneMult(owned));
+  }, 0);
+  const ateliers = ATELIERS.filter((b) => s.buildings?.[b.id] || b.id === 'garage').length;
+  return base * (1 + 0.5 * (ateliers - 1));
+}
+
+// ---------- Ville : quartiers, bâtiments, clients ----------
+// Les quartiers se débloquent avec la réputation, qui n'est jamais remise à zéro.
+export const DISTRICTS = [
+  { id: 'lilas', name: 'Rue des Lilas', rep: 0, phase: 'Le garage' },
+  { id: 'centre', name: 'Centre-ville', rep: 30, phase: 'L’atelier en ville' },
+  { id: 'arts', name: 'Quartier des arts', rep: 120, phase: 'Le loft d’artiste' },
+  { id: 'colline', name: 'La Colline', rep: 400, phase: 'La manufacture' },
+];
+export const districtOpen = (s, id) => (s.rep ?? 0) >= (DISTRICTS.find((d) => d.id === id)?.rep ?? Infinity) || (s.districts ?? []).includes(id);
+
+// Ateliers et entrepôt : achetés sur la carte, remis à zéro à chaque exposition (sauf le garage)
+export const ATELIERS = [
+  { id: 'garage', name: 'Ton garage', district: 'lilas', cost: 0, desc: 'Là où tout commence : un chevalet entre l’établi et le vélo.' },
+  { id: 'atelier', name: 'Atelier du centre', district: 'centre', cost: 25000, desc: '+1 commande à la fois, +50 % de toiles d’assistants, +10 % de revenus.' },
+  { id: 'loft', name: 'Loft des arts', district: 'arts', cost: 2.5e6, desc: '+1 commande à la fois, +50 % de toiles d’assistants, +10 % de revenus.' },
+  { id: 'manufacture', name: 'Manufacture', district: 'colline', cost: 3e8, desc: '+1 commande à la fois, +50 % de toiles d’assistants, +10 % de revenus.' },
+];
+export const WAREHOUSE = { id: 'entrepot', name: 'Entrepôt', district: 'centre', cost: 60000, growth: 6, max: 5, desc: 'Stock de toiles : +40 places par niveau.' };
+export const warehouseCost = (level) => Math.ceil(WAREHOUSE.cost * WAREHOUSE.growth ** level);
+export const stockCapacity = (s) => 6 + 40 * (s.buildings?.entrepot ?? 0);
+export const atelierCount = (s) => ATELIERS.filter((b) => b.id === 'garage' || s.buildings?.[b.id]).length;
+/** Commandes en cours à la fois : une par atelier, +1 avec un contrat de galerie, +1 à 300 de réputation. */
+export const orderSlots = (s) => atelierCount(s) + Math.min(1, s.contracts?.length ?? 0) + ((s.rep ?? 0) >= 300 ? 1 : 0);
+
+// Clients de la ville. kind : voisin, commerce, entreprise, hotel, musee, celebrite, galerie.
+export const CLIENTS = [
+  { id: 'roux', name: 'Mme Roux', title: 'ta voisine', district: 'lilas', kind: 'voisin', building: 'house', color: '#7fb3d5' },
+  { id: 'bernard', name: 'Les Bernard', title: 'voisins du 12', district: 'lilas', kind: 'voisin', building: 'house', color: '#e59866' },
+  { id: 'fournil', name: 'Le Fournil d’Élise', title: 'boulangerie', district: 'lilas', kind: 'commerce', building: 'shop', color: '#f5b041' },
+  { id: 'arcades', name: 'Café des Arcades', title: 'café', district: 'centre', kind: 'commerce', building: 'shop', color: '#58d68d' },
+  { id: 'nova', name: 'Agence Nova', title: 'bureaux', district: 'centre', kind: 'entreprise', building: 'office', color: '#5dade2' },
+  { id: 'lys', name: 'Hôtel Le Grand Lys', title: 'hôtel', district: 'centre', kind: 'hotel', building: 'hotel', color: '#c39bd3' },
+  { id: 'musee', name: 'Musée de la Ville', title: 'musée', district: 'arts', kind: 'musee', building: 'museum', color: '#f4efe4' },
+  { id: 'blanche', name: 'Galerie Blanche', title: 'galerie', district: 'arts', kind: 'galerie', building: 'gallery', color: '#ecf0f1', styles: ['rayures', 'points', 'vitrail'] },
+  { id: 'port', name: 'Galerie du Port', title: 'galerie', district: 'arts', kind: 'galerie', building: 'gallery', color: '#85c1e9', styles: ['vagues', 'couchant', 'collines'] },
+  { id: 'vega', name: 'Inès Vega', title: 'chanteuse', district: 'colline', kind: 'celebrite', building: 'villa', color: '#f1948a' },
+  { id: 'solal', name: 'Fondation Solal', title: 'fondation', district: 'colline', kind: 'entreprise', building: 'foundation', color: '#d4ac0d' },
+  { id: 'aurore', name: 'Galerie Aurore', title: 'galerie', district: 'colline', kind: 'galerie', building: 'gallery', color: '#f8c471', styles: ['etoiles', 'vitrail', 'couchant'] },
+];
+export const clientOf = (id) => CLIENTS.find((c) => c.id === id) ?? null;
+
+// ---------- Réputation ----------
+export const REP_LEVELS = [
+  { at: 0, name: 'Inconnu' },
+  { at: 30, name: 'Prometteur' },
+  { at: 120, name: 'Reconnu' },
+  { at: 400, name: 'Célèbre' },
+  { at: 1200, name: 'Légende' },
+];
+export const repLevel = (rep) => [...REP_LEVELS].reverse().find((l) => rep >= l.at) ?? REP_LEVELS[0];
+/** Les commandes paient plus avec la réputation : +0,2 % par point, jusqu'à +100 %. */
+export const repPayMult = (rep) => 1 + Math.min(1, rep * 0.002);
 
 export const strokesPerClick = (s) => 1 + (s.tools.pinceaux ?? 0);
 export const autoStrokes = (s) => s.tools.chevalet ?? 0;

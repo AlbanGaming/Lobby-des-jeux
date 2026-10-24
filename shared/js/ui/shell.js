@@ -330,8 +330,10 @@ export function createShell({
     },
 
     banner(text, { color } = {}) {
+      // Une seule bannière à la fois : la nouvelle remplace la précédente
+      stage.querySelectorAll('.gv-banner').forEach((b) => b.remove());
       const el = document.createElement('div');
-      el.className = 'gv-banner';
+      el.className = text.length > 14 ? 'gv-banner gv-banner--long' : 'gv-banner';
       el.textContent = text;
       if (color) el.style.color = color;
       stage.appendChild(el);

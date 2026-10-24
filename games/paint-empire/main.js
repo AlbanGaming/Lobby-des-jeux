@@ -1,7 +1,8 @@
 // Paint Empire — atelier de peinture incrémental. Cliquer sur le chevalet peint la toile, coup de
-// pinceau par coup de pinceau ; terminée, elle se vend selon sa rareté et rejoint la galerie.
-// Assistants (revenu passif), matériel, mouvements picturaux, collectionneur de passage,
-// expositions (prestige : renommée permanente + jetons pour les mécènes) et gains hors ligne.
+// pinceau par coup de pinceau ; terminée, elle part vers une commande, un contrat de galerie, le
+// stock… ou se vend selon sa rareté, et rejoint la galerie. Assistants (revenu passif), matériel,
+// mouvements picturaux, collectionneur de passage, expositions (prestige) et gains hors ligne.
+// La ville (town.js) : carte, clients et commandes chronométrées, contrats, bâtiments, réputation.
 
 import { bootGame } from '../../shared/js/gameverse.js';
 import { createLoop } from '../../shared/js/engine/loop.js';
@@ -13,7 +14,9 @@ import { toast, esc } from '../../shared/js/ui/toast.js';
 import { icon } from '../../shared/js/ui/icons.js';
 import { motion } from '../../shared/js/motion.js';
 import * as E from './economy.js';
-import { drawPainting, makeStrokes, paintingTitle } from './art.js';
+import { drawPainting, makeStrokes, paintingTitle, paintingFamily, seedFor } from './art.js';
+import { createTown, TOWN_DEFAULTS } from './town.js';
+import { rarityRank } from './orders.js';
 
 const W = 320;
 const H = 240;
@@ -65,6 +68,9 @@ const store = createStore('paint-empire', {
     offlineBest: 0,
     legacy: null,
     legacyNoticed: false,
+    // Chevalet : style (null = le dernier mouvement), format, couleur dominante (null = libre)
+    easel: { style: null, format: 'moyen', family: null },
+    ...structuredClone(TOWN_DEFAULTS),
   },
   // Première visite : on reprend la fortune et les ventes de l'ancien Paint Empire
   migrate: (data, from) => (from === -1 ? fromLegacy(readJSON('artEmpireSave')) ?? undefined : data),
@@ -86,6 +92,11 @@ const expoEl = $('expo');
 const listEl = $('list');
 const collectorEl = $('collector');
 const dlg = $('dlg');
+const easelCtlEl = $('easelCtl');
+const noticeEl = $('notice');
+const villeDot = $('villeDot');
+const paneAtelier = $('paneAtelier');
+const paneVille = $('paneVille');
 
 const gv = bootGame('paint-empire', {
   hud: [
@@ -94,7 +105,8 @@ const gv = bootGame('paint-empire', {
   ],
   howTo: [
     { keys: ['icon:pointer', 'Espace'], text: 'Clique sur la toile pour peindre : terminée, elle se vend.' },
-    { keys: ['icon:user'], text: 'Engage des assistants : ils gagnent de l’argent même quand tu n’es pas là.' },
+    { keys: ['icon:home'], text: 'Dans la ville, accepte les commandes des clients et livre-les avant la fin du chrono.' },
+    { keys: ['icon:user'], text: 'Engage des assistants, ouvre des ateliers, signe avec les galeries.' },
     { keys: ['icon:starFill'], text: 'Expose pour gagner de la renommée : +5 % de revenus pour toujours.' },
   ],
   startLabel: 'Ouvrir l’atelier',
@@ -153,13 +165,14 @@ function unlockStyle(idx) {
   // Chaque nouveau mouvement est une étape : XP, crédits et défi du jour
   report({ xp: 10 + idx * 10 });
   renderExpo();
+  renderEasel();
 }
 
-function report({ xp, expo = 0, renown = 0 }) {
+function report({ xp, expo = 0, renown = 0, contract = 0 }) {
   gv.meta.reportRun('paint-empire', {
     score: 0,
     xp,
-    stats: { expo, renown, style: s.runStyle + 1, sold: s.runSold, masterpieces: s.runMasterpieces },
+    stats: { expo, renown, contract, style: s.runStyle + 1, sold: s.runSold, masterpieces: s.runMasterpieces, orders: s.runOrders },
   });
   submitFortune();
 }
@@ -171,9 +184,13 @@ function submitFortune() {
 // ---------- Toile ----------
 let holdUntil = 0;
 let deferred = false;
-function newPainting(carry = 0, { hold = false } = {}) {
-  s.n++;
-  s.current = { style: s.runStyle, seed: rng.int(1, 2 ** 31 - 1), done: carry, n: s.n };
+// Réglages du chevalet appliqués à la prochaine toile
+const easelStyle = () => (s.easel.style === null || s.easel.style > s.runStyle ? s.runStyle : s.easel.style);
+const strokesOf = (c = s.current) => E.formatOf(c.format).strokes;
+function newPainting(carry = 0, { hold = false, keepN = false } = {}) {
+  if (!keepN) s.n++;
+  const seed = seedFor(rng, s.easel.family);
+  s.current = { style: easelStyle(), seed, done: carry, n: s.n, format: s.easel.format, family: paintingFamily(seed) };
   // Après une vente, la toile finie reste exposée un court instant
   if (hold && !motion.reduced) {
     holdUntil = performance.now() + 420;
@@ -184,6 +201,10 @@ function newPainting(carry = 0, { hold = false } = {}) {
 function preparePainting() {
   deferred = false;
   const c = s.current;
+  // Anciennes sauvegardes : toile sans format ni couleur
+  c.format ??= 'moyen';
+  c.family ??= paintingFamily(c.seed);
+  frameEl.dataset.format = c.format;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   canvasEl.width = W * dpr;
   canvasEl.height = H * dpr;
@@ -208,7 +229,7 @@ function preparePainting() {
 
 function revealTo(done) {
   if (deferred) return;
-  const target = Math.min(strokes.length, Math.floor((done / E.STROKES_PER_PAINTING) * strokes.length));
+  const target = Math.min(strokes.length, Math.floor((done / strokesOf()) * strokes.length));
   for (; revealed < target; revealed++) {
     const st = strokes[revealed];
     ctx.save();
@@ -218,20 +239,20 @@ function revealTo(done) {
     ctx.drawImage(full, 0, 0, W, H);
     ctx.restore();
   }
-  progressEl.style.transform = `scaleX(${clamp(done / E.STROKES_PER_PAINTING)})`;
+  progressEl.style.transform = `scaleX(${clamp(done / strokesOf())})`;
 }
 
 function addStrokes(k) {
   s.current.done += k;
   // Gros pinceaux : un clic peut terminer plusieurs toiles, le surplus passe à la suivante
   let sales = 0;
-  while (s.current.done >= E.STROKES_PER_PAINTING && sales < 20) {
-    const carry = s.current.done - E.STROKES_PER_PAINTING;
+  while (s.current.done >= strokesOf() && sales < 20) {
+    const carry = s.current.done - strokesOf();
     sell();
     sales++;
     newPainting(carry, { hold: true });
   }
-  if (s.current.done >= E.STROKES_PER_PAINTING) s.current.done = E.STROKES_PER_PAINTING - 1;
+  if (s.current.done >= strokesOf()) s.current.done = strokesOf() - 1;
   revealTo(s.current.done);
 }
 
@@ -248,13 +269,22 @@ function paint(x, y) {
 
 function sell() {
   const c = s.current;
-  // Le tirage vient de la graine : une toile garde toujours la même rareté
-  const rarity = E.rollRarity(s, createRng(c.seed + 99).next());
-  const value = E.paintingValue(s, rarity, c.style);
-  earn(value);
+  // Le tirage vient de la graine : une toile garde toujours la même rareté…
+  let rarity = E.rollRarity(s, createRng(c.seed + 99).next());
+  // …sauf avec un objet rare offert par un client
+  if (s.inventory.toile > 0) {
+    s.inventory.toile--;
+    rarity = E.RARITIES[Math.max(2, rarityRank(rarity.id))];
+  } else if (s.inventory.pigment > 0) {
+    s.inventory.pigment--;
+    rarity = E.RARITIES[Math.min(3, rarityRank(rarity.id) + 1)];
+  }
+  const value = E.paintingValue(s, rarity, c.style, c.format);
+  const routed = town.route({ style: c.style, format: c.format, family: c.family, rarity: rarity.id }, 'hand');
+  if (!routed) earn(value);
   s.sold++;
   s.runSold++;
-  const entry = { style: c.style, seed: c.seed, rarity: rarity.id, value, n: c.n };
+  const entry = { style: c.style, seed: c.seed, rarity: rarity.id, value: routed?.kind === 'contract' ? routed.pay : value, n: c.n, format: c.format, to: routed?.kind ?? 'vente' };
   s.gallery = [entry, ...s.gallery].slice(0, GALLERY_MAX);
   if (rarity.id === 'chef') {
     s.masterpieces++;
@@ -265,11 +295,11 @@ function sell() {
   gv.unlock('premiere-toile');
   if (s.sold >= 100) gv.unlock('cent-toiles');
   if (s.sold >= 1000) gv.unlock('mille-toiles');
-  saleEffects(rarity, value);
+  saleEffects(rarity, value, routed);
   renderGallery(true);
 }
 
-function saleEffects(rarity, value) {
+function saleEffects(rarity, value, routed = null) {
   // Le cadre complet le temps d'un éclair : la toile finie
   ctx.drawImage(full, 0, 0, W, H);
   frameEl.dataset.rarity = rarity.id;
@@ -277,7 +307,15 @@ function saleEffects(rarity, value) {
   void frameEl.offsetWidth;
   frameEl.classList.add('is-sold');
   const big = rarity.id === 'chef' || rarity.id === 'remarquable';
-  fx.popupAt(canvasBtn, `+${fmt(value)}`, { size: big ? 40 : 30, color: rarity.id === 'commune' ? '#ffc93c' : rarity.color, rise: 70 });
+  // Où part la toile : commande, contrat, réserve ou marché
+  const label = !routed
+    ? `+${fmt(value)}`
+    : routed.kind === 'order'
+      ? `Pour ${E.clientOf(routed.order.client).name} · ${routed.done}/${routed.count}`
+      : routed.kind === 'contract'
+        ? `${E.clientOf(routed.contract.gallery).name} · +${fmt(routed.pay)}`
+        : 'En réserve';
+  fx.popupAt(canvasBtn, label, { size: routed ? 26 : big ? 40 : 30, color: routed?.kind === 'order' ? '#3ee6a8' : rarity.id === 'commune' ? '#ffc93c' : rarity.color, rise: 70 });
   fx.burstAt(canvasBtn, { count: big ? 50 : 14, colors: rarity.id === 'commune' ? ['#ffc93c', '#fff3c4'] : [rarity.color, '#ffffff', '#ffc93c'], speed: [120, big ? 520 : 300], size: [3, big ? 8 : 5], gravity: 700, shape: big ? 'star' : 'square', life: [0.4, 1] });
   if (rarity.id === 'chef') {
     gv.banner('Chef-d’œuvre !', { color: '#ffc93c' });
@@ -388,8 +426,8 @@ function askExpo() {
     'Organiser une exposition ?',
     `<p class="pe-dlg-lead">Ta rétrospective rapporte <b>+${formatInt(gain)} ★ de renommée</b> et <b>${formatInt(gain)} jeton${gain > 1 ? 's' : ''}</b> de mécène.</p>
      <ul class="pe-dlg-list">
-       <li>${icon('check')}Tu gardes : renommée (+${formatInt(Math.round(E.RENOWN_BONUS * 100))} % de revenus par étoile), jetons, mécènes, galerie et chefs-d’œuvre.</li>
-       <li>${icon('restart')}Tu repars de zéro : argent, assistants, matériel et mouvements.</li>
+       <li>${icon('check')}Tu gardes : renommée (+${formatInt(Math.round(E.RENOWN_BONUS * 100))} % de revenus par étoile), jetons, mécènes, réputation, quartiers, contrats, galerie et chefs-d’œuvre.</li>
+       <li>${icon('restart')}Tu repars de ton garage : argent, assistants, matériel, mouvements, bâtiments, stock. Les commandes en cours sont annulées sans pénalité.</li>
      </ul>
      <div class="pe-dlg-actions"><button class="btn btn--ghost" type="button" data-close>Pas encore</button><button class="btn btn--primary" type="button" data-expo>${icon('starFill')}Exposer</button></div>`,
   );
@@ -405,6 +443,7 @@ function doExpo() {
   if (s.renown >= 25) gv.unlock('renommee-25');
   report({ xp: Math.min(400, 40 + gain * 10), expo: 1, renown: gain });
   Object.assign(s, { money: E.startMoney(s), runEarned: 0, runSold: 0, runMasterpieces: 0, runStyle: 0, assistants: {}, tools: {} });
+  town.afterExpo();
   buffs.inspiration = 0;
   buffs.frenesie = 0;
   newPainting();
@@ -423,6 +462,7 @@ function handleGap(ms) {
     earn(income() * (ms / 1000));
     return;
   }
+  town.offline(Math.min(ms, E.offlineCapMs(s)));
   const off = E.offlineGain(s, ms);
   if (off.gain <= 0) return;
   s.offlineBest = Math.max(s.offlineBest, off.ms);
@@ -431,7 +471,7 @@ function handleGap(ms) {
     'Bon retour à l’atelier',
     `<p class="pe-dlg-lead">Pendant ton absence (${esc(formatDuration(off.ms))}${off.capped ? ', plafond atteint' : ''}), tes assistants ont gagné</p>
      <p class="pe-dlg-big">${esc(fmt(off.gain))}</p>
-     <p class="pe-dlg-note">${formatInt(Math.round(E.offlineRate(s) * 100))} % de ton revenu habituel, jusqu’à ${formatInt(E.offlineCapMs(s) / 3600e3)} h d’absence. Les mécènes peuvent améliorer les deux.</p>
+     <p class="pe-dlg-note">${formatInt(Math.round(E.offlineRate(s) * 100))} % de ton revenu habituel, jusqu’à ${formatInt(E.offlineCapMs(s) / 3600e3)} h d’absence. Les mécènes peuvent améliorer les deux.${s.orders.active.length ? ' Tes commandes en cours t’ont attendu.' : ''}</p>
      <div class="pe-dlg-actions"><button class="btn btn--primary" type="button" data-collect>${icon('coin')}Encaisser</button></div>`,
     () => collectOffline(off.gain),
   );
@@ -520,7 +560,7 @@ function viewPainting(g) {
   openDialog(
     `« ${paintingTitle(g.seed)} »`,
     `<div class="pe-view" data-rarity="${g.rarity}"><canvas width="${W * 2}" height="${H * 2}"></canvas></div>
-     <p class="pe-dlg-lead"><b style="color:${r.color}">${esc(r.name)}</b> · ${esc(styleOf(g.style).name)} · n°${formatInt(g.n)} · vendue ${esc(fmt(g.value))}</p>
+     <p class="pe-dlg-lead"><b style="color:${r.color}">${esc(r.name)}</b> · ${esc(styleOf(g.style).name)} · n°${formatInt(g.n)} · ${g.to === 'order' ? 'livrée à un client' : g.to === 'contract' ? `pour une galerie, ${esc(fmt(g.value))}` : g.to === 'stock' ? 'mise en réserve' : `vendue ${esc(fmt(g.value))}`}</p>
      <p class="pe-dlg-note">${formatInt(s.masterpieces)} chef${s.masterpieces > 1 ? 's' : ''}-d’œuvre peint${s.masterpieces > 1 ? 's' : ''} au total.</p>
      <div class="pe-dlg-actions"><button class="btn btn--ghost" type="button" data-close>Fermer</button></div>`,
   );
@@ -636,9 +676,97 @@ function renderAll() {
   renderList();
   renderGallery();
   renderBuffs();
+  renderEasel();
+  town.refresh(true);
   gv.hud('renown', `${formatInt(s.renown)} ★`);
   gv.hud('best', formatShort(s.totalEarned));
 }
+
+// ---------- Chevalet : style, format, couleur dominante ----------
+function renderEasel() {
+  const st = s.easel;
+  const styles = E.STYLES.slice(0, s.runStyle + 1);
+  easelCtlEl.innerHTML = `
+    <label class="pe-ctl"><span>Style</span>
+      <select data-easel="style">
+        <option value="" ${st.style === null ? 'selected' : ''}>Le dernier (${esc(styleOf(s.runStyle).name)})</option>
+        ${styles.map((x, i) => `<option value="${i}" ${st.style === i ? 'selected' : ''}>${esc(x.name)} · ×${String(x.mult).replace('.', ',')}</option>`).join('')}
+      </select></label>
+    <span class="pe-ctl"><span id="pe-fmt-label">Format</span>
+      <span class="pe-seg" role="radiogroup" aria-labelledby="pe-fmt-label">${E.FORMATS.map((f) => `<button type="button" role="radio" data-format="${f.id}" aria-checked="${st.format === f.id}" title="${esc(`${f.name} : ${f.strokes} coups, valeur ×${String(f.mult).replace('.', ',')}`)}">${esc(f.name)}</button>`).join('')}</span></span>
+    <span class="pe-ctl"><span id="pe-fam-label">Couleur</span>
+      <span class="pe-swatches" role="radiogroup" aria-labelledby="pe-fam-label">
+        <button type="button" role="radio" class="pe-sw pe-sw--free" data-family="" aria-checked="${st.family === null}" aria-label="Libre" title="Libre"></button>
+        ${E.FAMILIES.map((f) => `<button type="button" role="radio" class="pe-sw" data-family="${f.id}" style="--sw:${f.swatch}" aria-checked="${st.family === f.id}" aria-label="${esc(f.name)}" title="${esc(f.name)}"></button>`).join('')}
+      </span></span>`;
+}
+// Un réglage changé s'applique tout de suite si la toile n'est pas commencée
+function applyEasel() {
+  if (s.current.done === 0) newPainting(0, { keepN: true });
+  renderEasel();
+  renderCaption();
+}
+easelCtlEl.addEventListener('change', (e) => {
+  if (e.target.dataset.easel === 'style') {
+    s.easel.style = e.target.value === '' ? null : Number(e.target.value);
+    applyEasel();
+  }
+});
+easelCtlEl.addEventListener('click', (e) => {
+  const f = e.target.closest('[data-format]');
+  const c = e.target.closest('[data-family]');
+  if (f) s.easel.format = f.dataset.format;
+  else if (c) s.easel.family = c.dataset.family || null;
+  else return;
+  gv.audio.play('select');
+  applyEasel();
+  easelCtlEl.querySelector(f ? `[data-format="${s.easel.format}"]` : `[data-family="${s.easel.family ?? ''}"]`)?.focus();
+});
+
+// ---------- Vues : atelier et ville ----------
+let view = 'atelier';
+function setView(v) {
+  view = v;
+  paneAtelier.hidden = v !== 'atelier';
+  paneVille.hidden = v !== 'ville';
+  document.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
+  wrapEl.dataset.view = v;
+  if (v === 'ville') town.renderMap();
+  town.refresh(true);
+  gv.audio.play('select');
+}
+document.querySelector('.pe-switch').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-view]');
+  if (b) setView(b.dataset.view);
+});
+
+// Message discret sous l'en-tête (pas de notification qui masquerait le jeu)
+let noticeTimer = 0;
+function notify(text) {
+  noticeEl.textContent = text;
+  noticeEl.classList.add('is-on');
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => noticeEl.classList.remove('is-on'), 4200);
+}
+
+const town = createTown({
+  s,
+  gv,
+  fx,
+  rng,
+  earn,
+  save: () => save(),
+  report,
+  notify,
+  els: { strip: $('strip'), map: $('map'), board: $('board') },
+  view: () => view,
+  narrow: () => innerWidth < 860,
+  showVille: () => setView('ville'),
+  onChange: () => {
+    villeDot.hidden = !s.orders.offers.length;
+    villeDot.textContent = s.orders.offers.length || '';
+  },
+});
 
 // ---------- Évènements ----------
 canvasBtn.addEventListener('pointerdown', (e) => {
@@ -713,6 +841,7 @@ function update(dt) {
   if (gap > 2000) handleGap(gap);
   time += dt;
   earn(income() * dt);
+  town.tick(dt);
   autoAcc += E.autoStrokes(s) * dt;
   if (autoAcc >= 1) {
     const k = Math.floor(autoAcc);
@@ -731,6 +860,7 @@ function update(dt) {
     uiAcc = 0;
     renderPurse();
     refreshAffordable();
+    town.refresh();
     if (buffs.inspiration || buffs.frenesie) renderBuffs();
     // De nouveaux talents se dévoilent quand la fortune grimpe
     const shown = E.ASSISTANTS.reduce((k, a, i) => ((s.assistants[a.id] ?? 0) > 0 || s.runEarned >= a.base * 0.5 ? i : k), 0);
@@ -778,6 +908,13 @@ window.__pe = {
   paint: (n = 1) => { for (let i = 0; i < n; i++) paint(); },
   earn: (v) => earn(v),
   showCollector,
+  town,
+  setView,
+  // Avance le temps de la ville (tests) sans attendre
+  advance(sec) {
+    for (let t = 0; t < sec; t += 0.5) town.tick(Math.min(0.5, sec - t));
+    town.refresh(true);
+  },
 };
 
 if (!s.current) newPainting();

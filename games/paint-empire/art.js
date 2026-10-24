@@ -17,6 +17,22 @@ const PALETTES = [
   ['#22223b', '#4a4e69', '#9a8c98', '#c9ada7', '#f2e9e4'],
 ];
 
+// Couleur dominante de chaque palette (même ordre que PALETTES)
+const PALETTE_FAMILY = ['bleu', 'ocre', 'rouge', 'brume', 'nuit', 'terre', 'violet', 'rouge', 'vert', 'brume'];
+
+/** Couleur dominante d'une toile : celle de sa palette, tirée en premier par drawPainting. */
+export function paintingFamily(seed) {
+  const rng = createRng(seed);
+  return PALETTE_FAMILY[PALETTES.indexOf(rng.pick(PALETTES))];
+}
+/** Une graine dont la toile aura la couleur dominante voulue (ou n'importe laquelle). */
+export function seedFor(rng, family) {
+  let seed = rng.int(1, 2 ** 31 - 1);
+  if (!family) return seed;
+  for (let i = 0; i < 400 && paintingFamily(seed) !== family; i++) seed = rng.int(1, 2 ** 31 - 1);
+  return seed;
+}
+
 const NOUNS = ['Silence', 'Matin', 'Jardin', 'Lumière', 'Écho', 'Marée', 'Promenade', 'Vertige', 'Souvenir', 'Rivage', 'Fenêtre', 'Rumeur', 'Envol', 'Refuge', 'Horizon', 'Murmure'];
 const TAILS = ['du soir', 'd’automne', 'en bleu', 'sous la pluie', 'd’été', 'en mineur', 'au loin', 'de minuit', 'à deux voix', 'sans titre', 'de printemps', 'en sourdine', 'au grand jour', 'de passage'];
 
