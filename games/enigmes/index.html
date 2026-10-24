@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Énigmes Éclair · GameVerse</title>
+  <meta name="description" content="Énigmes Éclair : devinettes, questions pièges et logique en rafale contre la montre. Jokers, séries, mode Survie et énigme du jour. Gratuit, sans pub.">
+  <meta name="theme-color" content="#1c1606">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GameVerse">
+  <meta property="og:title" content="Énigmes Éclair · GameVerse">
+  <meta property="og:description" content="Des énigmes en rafale, contre la montre.">
+  <meta property="og:image" content="https://albangaming.github.io/Lobby-des-jeux/og.png">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="preload" href="../../shared/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../shared/fonts/rubik.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="data/riddles.json" as="fetch" crossorigin>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/components.css">
+  <link rel="stylesheet" href="../../shared/css/shell.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="../../shared/js/fallback.js" defer></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body class="gv-game">
+  <main class="gv-stage" id="stage">
+    <div class="en-sky" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="en-wrap" id="wrap">
+      <header class="en-top">
+        <span class="en-progress" id="progress"></span>
+        <span class="en-streak" id="streak" aria-live="polite"></span>
+        <span class="en-lives" id="lives" hidden></span>
+      </header>
+      <section class="en-card" id="card" aria-live="polite">
+        <span class="en-cat" id="cat"></span>
+        <div class="en-fuse" aria-hidden="true"><i id="fuse"></i></div>
+        <p class="en-q" id="question"></p>
+        <div class="en-explain" id="explain" hidden></div>
+      </section>
+      <div class="en-answers" id="answers" role="group" aria-label="Réponses"></div>
+      <div class="en-jokers" id="jokers" role="group" aria-label="Jokers"></div>
+    </div>
+  </main>
+  <noscript><p style="padding:24px">Énigmes Éclair a besoin de JavaScript pour fonctionner.</p></noscript>
+</body>
+</html>
