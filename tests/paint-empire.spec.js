@@ -57,7 +57,7 @@ test.describe('paint empire', () => {
     await page.locator('[data-buy="apprenti"]').click();
     expect(await pe(page, 'state.assistants.apprenti')).toBe(11);
     // Palier 10 franchi : production doublée
-    await expect(page.locator('.toast', { hasText: 'palier 10' })).toBeVisible();
+    await expect(page.locator('.toast', { hasText: 'palier 10' })).toBeVisible({ timeout: 9000 });
     await page.locator('[data-qty="max"]').click();
     const money = await pe(page, 'state.money');
     await page.locator('[data-buy="eleve"]').click();

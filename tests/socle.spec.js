@@ -133,4 +133,33 @@ test.describe('socle', () => {
     await expect(page.locator('[data-screen="over"]')).toHaveClass(/is-open/, { timeout: 6000 });
     w.expectClean();
   });
+
+  test('en jeu, les notifications restent une petite pastille, une à la fois', async ({ page }, testInfo) => {
+    await page.goto('games/volt-rush/');
+    await expect(page.locator('[data-screen="start"]')).toHaveClass(/is-open/);
+    await page.evaluate(async () => {
+      const { toast } = await import('../../shared/js/ui/toast.js');
+      for (let i = 1; i <= 5; i++) toast({ title: `Succès ${i}`, text: 'Une description assez longue pour déborder sur un petit écran de téléphone.' });
+    });
+    const t = page.locator('.toast');
+    await expect(t).toHaveCount(1);
+    await expect(t).toHaveClass(/toast--compact/);
+    const box = await t.boundingBox();
+    expect(box.height).toBeLessThan(48);
+    expect(box.width).toBeLessThanOrEqual(page.viewportSize().width - 20);
+    await shot(page, testInfo, 'socle-toast-compact');
+    // La rafale est résumée : la suivante annonce les notifications groupées
+    await expect(page.locator('.toast', { hasText: 'notifications' })).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('.toast')).toHaveCount(1);
+  });
+
+  test('dans le lobby, les notifications restent détaillées', async ({ page }) => {
+    await page.goto('./');
+    await page.evaluate(async () => {
+      const { toast } = await import('./shared/js/ui/toast.js');
+      toast({ title: 'Titre', text: 'Détail visible' });
+    });
+    await expect(page.locator('.toast')).not.toHaveClass(/toast--compact/);
+    await expect(page.locator('.toast__text')).toBeVisible();
+  });
 });

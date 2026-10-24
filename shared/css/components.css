@@ -412,8 +412,55 @@
   text-transform: uppercase;
 }
 .toast__text {
+  display: block;
   font-size: var(--fs-sm);
   color: var(--ink-600);
+}
+
+/* En jeu : une pastille d'une ligne, sous la barre du haut, qui ne masque pas la partie */
+.toasts.is-compact {
+  top: calc(var(--topbar-h) + 6px);
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  justify-items: center;
+}
+.toast--compact {
+  gap: 8px;
+  max-width: 100%;
+  padding: 4px 14px 4px 4px;
+  border-radius: var(--r-pill);
+  box-shadow: 0 3px 0 0 var(--ink-line), 0 10px 24px -10px rgb(0 0 0 / 0.7);
+  opacity: 0.96;
+}
+.toast--compact .toast__icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  box-shadow: none;
+}
+.toast--compact .toast__icon .icon {
+  width: 15px;
+  height: 15px;
+}
+.toast--compact .toast__content {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+}
+.toast--compact .toast__title {
+  font-size: var(--fs-md);
+}
+.toast--compact .toast__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--fs-xs);
+}
+@media (max-width: 599px) {
+  .toast--compact .toast__text {
+    display: none;
+  }
 }
 @keyframes gv-toast-in {
   from { opacity: 0; transform: translateY(-16px) scale(0.9); }
