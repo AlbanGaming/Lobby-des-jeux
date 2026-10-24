@@ -342,11 +342,11 @@ function roundWon(winner, line) {
   setStatus(isDuel() ? `Manche pour ${nameOf(winner)} !` : humanWon ? 'Manche pour toi !' : `Manche pour ${nameOf('O')}`, humanWon ? 'win' : 'lose');
   renderScore();
 
-  setTimeout(() => {
+  gv.after(FAST ? 120 : motion.reduced ? 700 : 1500, () => {
     if (match.rounds[winner] >= WIN_ROUNDS) return endMatch(winner);
     match.first = other(match.first);
     startRound();
-  }, FAST ? 120 : motion.reduced ? 700 : 1500);
+  });
 }
 
 function endMatch(winner) {

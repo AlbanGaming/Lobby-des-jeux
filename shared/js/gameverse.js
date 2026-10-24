@@ -28,6 +28,8 @@ export function bootGame(id, opts = {}) {
   audio.configure(settings);
   if (opts.music) audio.setSong(opts.music);
 
+  let runId = 0; // change à chaque partie : annule les enchaînements de la précédente
+
   // ---------- Temps de jeu actif ----------
   let activeSince = 0;
   const track = (on) => {
@@ -102,6 +104,7 @@ export function bootGame(id, opts = {}) {
 
     start() {
       if (shell.state === 'playing') return;
+      runId++;
       shell.hideScreens();
       meta.startRun(id);
       track(true);
@@ -111,6 +114,7 @@ export function bootGame(id, opts = {}) {
     },
 
     restart() {
+      runId++;
       shell.hideScreens();
       meta.startRun(id);
       track(true);
@@ -149,6 +153,33 @@ export function bootGame(id, opts = {}) {
       audio.play(sound ?? (r.isRecord && r.prevBest !== null ? 'record' : 'gameOver'));
       shell.showGameOver({ ...r, stats: extraStats, nextUnlock, title, kicker, scoreText, extraHtml });
       return r;
+    },
+
+    /**
+     * Comme setTimeout, mais le délai ne s'écoule que pendant le jeu : une pause le suspend,
+     * une nouvelle partie l'annule. Pour les enchaînements (objet suivant, fin de manche…).
+     */
+    after(ms, fn) {
+      const id0 = runId;
+      let left = ms;
+      let last = performance.now();
+      let timer = 0;
+      let cancelled = false;
+      const step = () => {
+        if (cancelled || runId !== id0 || shell.state === 'over') return;
+        const now = performance.now();
+        if (shell.state === 'playing') left -= now - last;
+        last = now;
+        if (left <= 0) return fn();
+        timer = setTimeout(step, Math.min(left, 100));
+      };
+      timer = setTimeout(step, Math.min(ms, 100));
+      return {
+        cancel() {
+          cancelled = true;
+          clearTimeout(timer);
+        },
+      };
     },
 
     unlock(achId) {

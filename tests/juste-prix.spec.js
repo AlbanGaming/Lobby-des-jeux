@@ -88,10 +88,28 @@ test.describe('juste-prix', () => {
     await choose(page, 'classique');
     await ready(page);
     await page.evaluate(() => window.__jp.setTime(0.05));
-    await expect(page.locator('.jp-stamp')).toContainText(/temps écoulé|si près/i);
-    const price = await jp(page, 'run.results[0].item.price');
-    await expect(page.locator('.jp-lot [data-tag]')).toContainText(new Intl.NumberFormat('fr-FR').format(price));
+    // Vérifié dans la page, avant que l'objet suivant n'arrive
+    await page.waitForFunction(() => {
+      const r = window.__jp.run.results[0];
+      const tag = document.querySelector('.jp-lot [data-tag]')?.textContent.replace(/\s/g, '') ?? '';
+      return r && /temps écoulé|si près/i.test(document.querySelector('.jp-stamp')?.textContent ?? '') && tag.includes(String(r.item.price));
+    });
     expect(await jp(page, 'run.streak')).toBe(0);
+  });
+
+  test('une pause pendant l’enchaînement ne bloque pas la partie', async ({ page }) => {
+    await open(page, '');
+    await choose(page, 'classique');
+    await ready(page);
+    await offer(page, await jp(page, 'cur.item.price'));
+    await expect(page.locator('.jp-stamp--win')).toBeVisible();
+    const first = await jp(page, 'cur.item.id');
+    await page.keyboard.press('Escape');
+    await expect(page.locator('[data-screen="pause"]')).toHaveClass(/is-open/);
+    await page.waitForTimeout(2200);
+    expect(await jp(page, 'cur.item.id')).toBe(first);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction((id) => window.__jp.cur.item.id !== id && !window.__jp.locked, first, { timeout: 5000 });
   });
 
   test('au plus juste : une offre pile rapporte le maximum', async ({ page }, testInfo) => {

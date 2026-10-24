@@ -283,8 +283,8 @@ function win() {
   if (mode.id === 'rush') {
     run.timeLeft += RUSH_BONUS;
     fx.popupAt(timerEl, `+${RUSH_BONUS} s`, { size: 22, color: '#3ee6a8' });
-    setTimeout(() => gv.playing && newVault(), motion.reduced ? 500 : 1300);
-  } else setTimeout(() => endGame(true), motion.reduced ? 600 : 1600);
+    gv.after(motion.reduced ? 500 : 1300, newVault);
+  } else gv.after(motion.reduced ? 600 : 1600, () => endGame(true));
 }
 
 function lose() {
@@ -302,8 +302,8 @@ function lose() {
   if (mode.id === 'rush') {
     run.timeLeft -= RUSH_FAIL;
     fx.popupAt(timerEl, `−${RUSH_FAIL} s`, { size: 22, color: '#ff5a4e' });
-    setTimeout(() => (run.timeLeft > 0 && gv.playing ? newVault() : endGame(false, true)), 1300);
-  } else setTimeout(() => endGame(false), 1700);
+    gv.after(1300, () => (run.timeLeft > 0 ? newVault() : endGame(false, true)));
+  } else gv.after(1700, () => endGame(false));
 }
 
 function endGame(won, timeUp = false) {

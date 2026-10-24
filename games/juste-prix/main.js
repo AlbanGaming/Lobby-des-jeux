@@ -329,7 +329,7 @@ function foundIt() {
   celebrate(pts, `Le juste prix !`, `${formatPrice(cur.item.price)} en ${cur.tries} offre${cur.tries > 1 ? 's' : ''}`);
   gv.hud('combo', `×${formatMult(classicMult(run.streak))}`, true);
   run.index++;
-  setTimeout(next, wait(1500));
+  gv.after(wait(1500), next);
 }
 
 // ---------- Au plus juste / Les 5 du jour ----------
@@ -355,7 +355,7 @@ function guessEstimate(g) {
   revealEstimate(g, r, pts);
   gv.hud('combo', `×${formatMult(estimateMult(run.streak))}`, hot);
   run.index++;
-  setTimeout(next, wait(1900));
+  gv.after(wait(1900), next);
 }
 
 function revealEstimate(g, r, pts) {
@@ -467,8 +467,8 @@ function resolveDuel(i) {
     hearts[run.lives]?.classList.add('is-lost');
     if (hearts[run.lives]) wiggle(hearts[run.lives], { amount: 6 });
   }
-  if (run.lives <= 0) setTimeout(endGame, wait(1500));
-  else setTimeout(next, wait(i === winner ? 1100 : 1700));
+  if (run.lives <= 0) gv.after(wait(1500), endGame);
+  else gv.after(wait(i === winner ? 1100 : 1700), next);
 }
 
 // ---------- Temps écoulé ----------
@@ -487,7 +487,7 @@ function timeUp() {
     revealEstimate(null, { tier: 'froid', err: 1, pts: 0 }, 0);
     gv.hud('combo', '×1');
     run.index++;
-    setTimeout(next, wait(1900));
+    gv.after(wait(1900), next);
     return;
   }
   locked = true;
@@ -510,7 +510,7 @@ function timeUp() {
   gv.hud('score', formatInt(run.points));
   gv.hud('combo', '×1');
   run.index++;
-  setTimeout(next, wait(1900));
+  gv.after(wait(1900), next);
 }
 
 // ---------- Effets ----------

@@ -261,8 +261,8 @@ function solved() {
     showToast(`+${bonus} s${run.mult > 1 ? ` · multiplicateur ×${run.mult}` : ''}`);
     if (run.words >= 10) gv.unlock('serie-10');
     busy = true;
-    setTimeout(() => gv.playing && newWord(), motion.reduced ? 500 : 1300);
-  } else setTimeout(() => finish(true), motion.reduced ? 600 : 1500);
+    gv.after(motion.reduced ? 500 : 1300, newWord);
+  } else gv.after(motion.reduced ? 600 : 1500, () => finish(true));
 }
 
 function failed() {
@@ -283,8 +283,8 @@ function failed() {
     run.timeLeft -= 30;
     run.mult = 1;
     busy = true;
-    setTimeout(() => (run.timeLeft > 0 && gv.playing ? newWord() : finish(false, true)), 1500);
-  } else setTimeout(() => finish(false), 1700);
+    gv.after(1500, () => (run.timeLeft > 0 ? newWord() : finish(false, true)));
+  } else gv.after(1700, () => finish(false));
 }
 
 function distributionHtml() {
