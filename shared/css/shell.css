@@ -328,6 +328,11 @@ body.gv-game {
   margin-top: var(--s-2);
 }
 
+.gv-extra {
+  margin-top: var(--s-4);
+  text-align: left;
+}
+
 /* Réglages rapides (pause) */
 .gv-quick-settings {
   margin-top: var(--s-4);

@@ -19,6 +19,8 @@ export function createShell({
   formatScore = (n) => formatInt(n),
   getSettings,
   onSetting,
+  // Touches de pause ; un jeu de lettres retire « KeyP » pour qu'on puisse taper la lettre P
+  pauseKeys = ['Escape', 'KeyP'],
   onStart,
   onPause,
   onResume,
@@ -190,7 +192,7 @@ export function createShell({
   window.addEventListener('keydown', (e) => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
     const onButton = e.target instanceof HTMLButtonElement || e.target instanceof HTMLAnchorElement;
-    if (e.code === 'Escape' || e.code === 'KeyP') {
+    if (pauseKeys.includes(e.code)) {
       if (shell.state === 'playing') {
         e.preventDefault();
         listeners.pause?.();
@@ -287,6 +289,7 @@ export function createShell({
           <p class="gv-score" aria-label="${esc(scoreLabel)} : ${esc(formatScore(r.score))}">${esc(formatScore(0))}</p>
           <p class="gv-hint" style="margin-top:4px">${esc(r.title ?? scoreLabel)}</p>
           <div class="gv-stats">${stats.map((s) => `<div class="gv-stat"><div class="gv-stat__label">${esc(s.label)}</div><div class="gv-stat__value">${esc(s.value)}</div></div>`).join('')}</div>
+          ${r.extraHtml ? `<div class="gv-extra">${r.extraHtml}</div>` : ''}
           <div class="gv-progress">
             <div class="gv-progress__row"><span>${lvlUp ? `<strong>Niveau ${r.levelAfter.level} atteint !</strong>` : `Niveau <strong>${r.levelAfter.level}</strong>`}</span><span><strong>+${formatInt(r.xp)} XP</strong> · +${formatInt(r.credits)} ${icon('coin')}</span></div>
             <div class="meter" data-meter="xp" style="--value:${lvlUp ? 0 : r.levelBefore.progress}"><div class="meter__fill"></div></div>

@@ -66,6 +66,7 @@ export function bootGame(id, opts = {}) {
     hud: opts.hud ?? [],
     howTo: opts.howTo ?? [],
     startLabel: opts.startLabel,
+    pauseKeys: opts.pauseKeys,
     formatScore,
     getSettings: meta.getSettings,
     onSetting: (k, v) => meta.setSetting(k, v),
@@ -139,13 +140,14 @@ export function bootGame(id, opts = {}) {
      * Fin de partie. `stats` sert au défi du jour et aux XP ; `extraStats` s'affiche
      * à l'écran de fin ; `nextUnlock` = { label, current, target }.
      */
-    gameOver({ score, stats = {}, extraStats = [], nextUnlock, title, kicker, xp, scoreText, sound } = {}) {
+    // extraHtml : contenu propre au jeu (graphique, bouton partager…) inséré dans la carte de fin
+    gameOver({ score, stats = {}, extraStats = [], nextUnlock, title, kicker, xp, scoreText, sound, extraHtml } = {}) {
       if (shell.state === 'over') return null;
       track(false);
       audio.pauseMusic();
       const r = meta.reportRun(id, { score, stats, xp });
       audio.play(sound ?? (r.isRecord && r.prevBest !== null ? 'record' : 'gameOver'));
-      shell.showGameOver({ ...r, stats: extraStats, nextUnlock, title, kicker, scoreText });
+      shell.showGameOver({ ...r, stats: extraStats, nextUnlock, title, kicker, scoreText, extraHtml });
       return r;
     },
 

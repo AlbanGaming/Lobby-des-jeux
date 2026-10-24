@@ -35,7 +35,9 @@ export function toast({ title, text = '', iconName = 'trophy', duration = 3600, 
   el.querySelector('.toast__text')?.style.setProperty('display', 'block');
   const h = ensureHost();
   h.appendChild(el);
-  while (h.children.length > 3) h.firstElementChild.remove();
+  // Sur petit écran, deux notifications à la fois suffisent : elles ne doivent pas masquer le jeu
+  const max = typeof innerWidth === 'number' && innerWidth < 600 ? 2 : 3;
+  while (h.children.length > max) h.firstElementChild.remove();
   setTimeout(() => {
     el.classList.add('is-leaving');
     el.addEventListener('animationend', () => el.remove(), { once: true });
