@@ -1,0 +1,496 @@
+/* Le Juste Prix — plateau télé : rideaux, projecteurs, podium tournant, tableau à ampoules */
+
+body { --curtain: #7a1424; --curtain-deep: #3a0912; --accent: #ff5a4e; --bulb: #ffc93c; --floor: #1a0a10; --sky: #12070b; }
+body[data-theme='neon'] { --curtain: #14365c; --curtain-deep: #081a30; --accent: #4cc3ff; --bulb: #7cf5ff; --floor: #071220; --sky: #050b16; }
+body[data-theme='retro'] { --curtain: #b5531c; --curtain-deep: #5e2709; --accent: #ffb347; --bulb: #ffe08a; --floor: #2a1608; --sky: #1a0d05; }
+body[data-theme='prestige'] { --curtain: #23201a; --curtain-deep: #0d0c09; --accent: #e0b04a; --bulb: #fff0c4; --floor: #0f0d08; --sky: #080705; }
+
+.gv-stage {
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  background: radial-gradient(ellipse 80% 60% at 50% 30%, color-mix(in srgb, var(--curtain) 35%, var(--sky)), var(--sky) 70%);
+}
+
+/* ---------- Décor ---------- */
+.jp-studio { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.jp-studio::before,
+.jp-studio::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 13%;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.35), transparent 30%, rgb(0 0 0 / 0.25) 55%, transparent 80%, rgb(0 0 0 / 0.3)) 0 0 / 48px 100%,
+    linear-gradient(180deg, var(--curtain), var(--curtain-deep));
+  box-shadow: 0 0 40px rgb(0 0 0 / 0.6);
+}
+.jp-studio::before { left: 0; border-bottom-right-radius: 60% 18%; }
+.jp-studio::after { right: 0; border-bottom-left-radius: 60% 18%; }
+.jp-valance {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 34px;
+  background:
+    radial-gradient(circle at 24px -8px, transparent 22px, var(--curtain) 23px) 0 0 / 48px 34px repeat-x;
+  filter: drop-shadow(0 6px 6px rgb(0 0 0 / 0.5));
+}
+.jp-beam {
+  position: absolute;
+  top: -8%;
+  width: 46%;
+  height: 120%;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bulb) 40%, transparent), transparent 75%);
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+  opacity: 0.16;
+  mix-blend-mode: screen;
+  transform-origin: 50% 0;
+  animation: jp-sway 7s var(--ease-in-out) infinite alternate;
+}
+.jp-beam--l { left: -6%; transform: rotate(-24deg); }
+.jp-beam--r { right: -6%; transform: rotate(24deg); animation-delay: -3.5s; }
+@keyframes jp-sway {
+  from { rotate: -5deg; }
+  to { rotate: 5deg; }
+}
+.jp-floor {
+  position: absolute;
+  inset: auto 0 0;
+  height: 30%;
+  background:
+    radial-gradient(ellipse 50% 60% at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%),
+    repeating-linear-gradient(90deg, transparent 0 79px, rgb(255 255 255 / 0.04) 79px 80px),
+    var(--floor);
+  border-top: 2px solid rgb(255 255 255 / 0.06);
+}
+
+/* ---------- Mise en page ---------- */
+.jp-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 370px);
+  gap: var(--s-5);
+  align-items: center;
+  width: min(960px, 100%);
+  padding: var(--s-4) clamp(var(--s-4), 6vw, 80px);
+}
+/* Révélé une fois rempli par le script : pas de décalage de mise en page au chargement */
+.jp-wrap:not(.is-ready) { visibility: hidden; }
+.jp-show { display: grid; gap: var(--s-3); min-width: 0; justify-items: center; }
+.jp-desk { display: grid; gap: var(--s-3); min-width: 0; }
+
+.jp-round {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.jp-round__n {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.jp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  background: rgb(5 6 11 / 0.55);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 60%, transparent);
+  font-size: var(--fs-2xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.jp-chip .icon { width: 13px; height: 13px; color: var(--accent); }
+
+/* ---------- Lots (podium + objet) ---------- */
+.jp-podiums { display: flex; justify-content: center; align-items: flex-end; gap: var(--s-4); width: 100%; }
+.jp-lot {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  width: min(100%, 320px);
+  padding: 0;
+  color: inherit;
+  text-align: center;
+}
+.jp-item { position: relative; width: 150px; height: 150px; display: grid; place-items: center; }
+.jp-item .jp-ico { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 10px 0 rgb(0 0 0 / 0.28)); animation: jp-float 3.2s var(--ease-in-out) infinite alternate; }
+.jp-item::before {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--bulb) 30%, transparent), transparent 70%);
+}
+.jp-lot.is-in .jp-item { animation: jp-drop 620ms var(--ease-spring) both; }
+@keyframes jp-float { to { transform: translateY(-7px); } }
+@keyframes jp-drop {
+  0% { opacity: 0; transform: translateY(-70px) scale(0.5) rotate(-12deg); }
+  60% { opacity: 1; transform: translateY(6px) scale(1.08, 0.92); }
+  100% { transform: none; }
+}
+.jp-pedestal {
+  position: relative;
+  width: 190px;
+  height: 30px;
+  margin-top: -22px;
+  border-radius: 0 0 50% 50% / 0 0 14px 14px;
+  background:
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--accent) 80%, #000) 0 14px, var(--accent) 14px 28px) 0 0 / 56px 100%,
+    var(--accent);
+  box-shadow: 0 8px 0 rgb(0 0 0 / 0.35), 0 26px 40px -10px color-mix(in srgb, var(--accent) 50%, transparent);
+  animation: jp-turn 2.8s linear infinite;
+}
+.jp-pedestal::before {
+  content: '';
+  position: absolute;
+  inset: -12px 0 auto;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 40%, #fff8ec, #d7cdbb 70%);
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.15);
+}
+@keyframes jp-turn { to { background-position: 56px 0, 0 0; } }
+.jp-name {
+  max-width: 30ch;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+  line-height: 1.1;
+  text-wrap: balance;
+  margin-top: var(--s-1);
+}
+.jp-step { font-size: var(--fs-2xs); color: var(--text-3); }
+.jp-tag {
+  display: inline-grid;
+  place-items: center;
+  min-width: 110px;
+  padding: 4px 14px;
+  border-radius: var(--r-sm);
+  background: #0a0a12;
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.1);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: var(--text-3);
+  transition: color var(--dur-2), box-shadow var(--dur-2), transform var(--dur-3) var(--ease-spring);
+}
+.jp-tag.is-shown { color: var(--bulb); text-shadow: 0 0 12px color-mix(in srgb, var(--bulb) 60%, transparent); }
+.jp-vs {
+  align-self: center;
+  margin-bottom: 70px;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 2rem;
+  color: var(--bulb);
+  text-shadow: 0 3px 0 #000;
+}
+
+/* Duel : les lots sont des boutons */
+button.jp-lot { cursor: pointer; border-radius: var(--r-lg); padding: var(--s-2) var(--s-2) var(--s-3); transition: transform var(--dur-2) var(--ease-spring), background-color var(--dur-2), box-shadow var(--dur-2); }
+button.jp-lot:hover:not(:disabled) { transform: translateY(-4px); background: rgb(255 255 255 / 0.04); }
+button.jp-lot:focus-visible { outline: 3px solid var(--bulb); outline-offset: 2px; }
+button.jp-lot:disabled { cursor: default; }
+.jp-lot.is-right { box-shadow: inset 0 0 0 3px var(--mint); background: rgb(62 230 168 / 0.08); }
+.jp-lot.is-wrong { box-shadow: inset 0 0 0 3px var(--tomato); background: rgb(255 90 78 / 0.08); }
+.jp-lot.is-right .jp-tag { color: var(--mint); }
+.jp-key-hint { font-family: var(--font-pixel); font-size: 10px; color: var(--text-3); }
+@media (hover: none) { .jp-key-hint { display: none; } }
+
+/* ---------- Fourchette (plus ou moins) ---------- */
+.jp-range { width: min(100%, 420px); display: grid; gap: 6px; }
+.jp-range__labels { display: flex; justify-content: space-between; font-size: var(--fs-xs); font-weight: 700; color: var(--text-2); }
+.jp-range__labels b { color: var(--text); font-family: var(--font-display); font-size: 1.1rem; }
+.jp-range__track { position: relative; height: 14px; border-radius: var(--r-pill); background: rgb(5 6 11 / 0.6); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.08); }
+.jp-range__zone {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--mint), var(--bulb), var(--tomato));
+  transition: left var(--dur-4) var(--ease-out), width var(--dur-4) var(--ease-out);
+}
+.jp-range__mark {
+  position: absolute;
+  top: -6px;
+  width: 4px;
+  height: 26px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--text);
+  box-shadow: 0 0 0 2px #05060b;
+  animation: jp-mark var(--dur-3) var(--ease-spring) both;
+}
+@keyframes jp-mark { from { transform: scaleY(0); } }
+
+.jp-guesses { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; min-height: 28px; max-width: 460px; }
+.jp-guess {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: var(--r-pill);
+  background: rgb(5 6 11 / 0.55);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  animation: jp-pop var(--dur-3) var(--ease-spring) both;
+}
+.jp-guess .icon { width: 14px; height: 14px; }
+.jp-guess--plus .icon { color: var(--mint); }
+.jp-guess--moins .icon { color: var(--tomato); }
+@keyframes jp-pop { from { transform: scale(0.4); opacity: 0; } }
+
+/* ---------- Jauge (au plus juste) ---------- */
+.jp-gauge { width: min(100%, 420px); display: grid; gap: 6px; }
+.jp-gauge__track {
+  position: relative;
+  height: 18px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, #4a4e63, #ff8a5b 25%, #ffc93c 40%, #3ee6a8 50%, #ffc93c 60%, #ff8a5b 75%, #4a4e63);
+  box-shadow: inset 0 0 0 2px rgb(0 0 0 / 0.35);
+}
+.jp-gauge__target { position: absolute; left: 50%; top: -6px; bottom: -6px; width: 3px; margin-left: -1.5px; background: #fff; border-radius: 2px; }
+.jp-gauge__you {
+  position: absolute;
+  top: -12px;
+  width: 0;
+  height: 0;
+  margin-left: -9px;
+  border: 9px solid transparent;
+  border-top: 12px solid var(--text);
+  filter: drop-shadow(0 2px 0 #000);
+  transition: left 700ms var(--ease-spring);
+}
+.jp-gauge__labels { display: flex; justify-content: space-between; font-size: var(--fs-2xs); color: var(--text-3); }
+
+/* ---------- Tableau à ampoules ---------- */
+.jp-board {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(180deg, #14121c, #08070c);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 70%, #000), 0 6px 0 3px #000, 0 20px 40px -12px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.jp-bulbs { display: flex; justify-content: space-between; }
+.jp-bulbs i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #2a2230;
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.4);
+  transition: background-color var(--dur-2), box-shadow var(--dur-2);
+}
+.jp-bulbs i.on { background: var(--bulb); box-shadow: 0 0 8px var(--bulb), 0 0 2px #fff inset; }
+.jp-board.is-low .jp-bulbs i.on { background: var(--tomato); box-shadow: 0 0 10px var(--tomato); animation: jp-blink 0.5s steps(2) infinite; }
+.jp-board.is-win .jp-bulbs i { background: var(--bulb); box-shadow: 0 0 10px var(--bulb); animation: jp-chase 0.6s steps(2) infinite; animation-delay: calc(var(--k) * -60ms); }
+@keyframes jp-blink { 50% { opacity: 0.35; } }
+@keyframes jp-chase { 50% { background: #2a2230; box-shadow: none; } }
+.jp-price {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.18em;
+  min-height: 1.15em;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2.6rem, 6vw, 3.6rem);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--bulb);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--bulb) 55%, transparent);
+}
+.jp-price.is-empty { color: #3a3346; text-shadow: none; }
+.jp-price .jp-cur { font-size: 0.6em; opacity: 0.8; }
+.jp-price .jp-caret { width: 0.08em; height: 0.8em; align-self: center; background: currentColor; animation: jp-blink 1s steps(2) infinite; }
+.jp-board__sub { text-align: center; font-family: var(--font-pixel); font-size: 10px; letter-spacing: 0.08em; color: var(--text-3); text-transform: uppercase; }
+
+/* ---------- Verdict ---------- */
+.jp-verdict { display: grid; place-items: center; min-height: 56px; text-align: center; }
+.jp-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 4px;
+  border-radius: var(--r-md);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.5rem, 3.4vw, 2rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  rotate: -3deg;
+  animation: jp-stamp 360ms var(--ease-spring) both;
+}
+.jp-stamp .icon { width: 1em; height: 1em; }
+.jp-stamp--plus { background: var(--mint); color: #032a1c; box-shadow: 0 4px 0 var(--mint-deep); }
+.jp-stamp--moins { background: var(--tomato); color: #2b1012; box-shadow: 0 4px 0 #a3271e; }
+.jp-stamp--win { background: var(--bulb); color: #2a1d00; box-shadow: 0 4px 0 #a37a00; font-size: clamp(1.8rem, 4.2vw, 2.5rem); }
+.jp-stamp--near { background: #ffb347; color: #2a1608; box-shadow: 0 4px 0 #a3621e; }
+.jp-stamp--info { background: rgb(5 6 11 / 0.6); color: var(--text-2); box-shadow: inset 0 0 0 2px var(--border); rotate: 0deg; font-family: var(--font-body); font-size: var(--fs-sm); font-weight: 600; text-transform: none; letter-spacing: 0; }
+@keyframes jp-stamp {
+  0% { transform: scale(2.2); opacity: 0; }
+  70% { transform: scale(0.92); opacity: 1; }
+  100% { transform: none; }
+}
+.jp-verdict small { display: block; margin-top: 4px; font-size: var(--fs-xs); color: var(--text-2); }
+
+/* ---------- Clavier ---------- */
+.jp-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); }
+.jp-key {
+  height: 52px;
+  border-radius: var(--r-md);
+  background: var(--surface-3);
+  box-shadow: 0 4px 0 var(--ink-line), var(--shadow-inset);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.7rem;
+  transition: transform var(--dur-1), box-shadow var(--dur-1), filter var(--dur-2);
+  touch-action: manipulation;
+}
+.jp-key:hover { filter: brightness(1.12); }
+.jp-key:active, .jp-key.is-pressed { transform: translateY(4px); box-shadow: 0 0 0 var(--ink-line); }
+.jp-key .icon { width: 24px; height: 24px; margin: auto; }
+.jp-key--ok { background: var(--bulb); color: #2a1d00; box-shadow: 0 4px 0 color-mix(in srgb, var(--bulb) 55%, #000); }
+.jp-key--fn { background: var(--surface-2); }
+.jp-pad[aria-disabled='true'] .jp-key { opacity: 0.55; pointer-events: none; }
+
+/* ---------- Duel ---------- */
+.jp-wrap.is-duel { grid-template-columns: minmax(0, 1fr); max-width: 760px; gap: var(--s-3); }
+.jp-wrap.is-duel .jp-desk { grid-row: 1; width: min(100%, 420px); justify-self: center; }
+.jp-wrap.is-duel .jp-pad,
+.jp-wrap.is-duel .jp-range,
+.jp-wrap.is-duel .jp-guesses { display: none; }
+.jp-wrap.is-duel .jp-price { font-size: clamp(1.8rem, 4vw, 2.4rem); }
+.jp-wrap.is-duel .jp-verdict { min-height: 44px; }
+.jp-wrap.is-duel .jp-podiums { align-items: stretch; }
+.jp-wrap.is-duel .jp-item { width: 128px; height: 128px; }
+.jp-wrap.is-duel .jp-pedestal { width: 150px; }
+.jp-wrap.is-duel .jp-name { font-size: clamp(1rem, 2.2vw, 1.25rem); min-height: 2.2em; }
+.jp-lives { display: inline-flex; gap: 3px; }
+.jp-lives .icon { width: 16px; height: 16px; color: var(--tomato); }
+.jp-lives .icon.is-lost { color: #3a3346; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 820px), (orientation: portrait) {
+  .gv-stage { place-items: start center; }
+  .jp-wrap {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-2);
+    width: min(520px, 100%);
+    padding: var(--s-2) var(--s-4) var(--s-3);
+  }
+  .jp-studio::before, .jp-studio::after { width: 9%; }
+  .jp-show { gap: var(--s-2); }
+  .jp-item { width: 104px; height: 104px; }
+  .jp-pedestal { width: 136px; height: 24px; margin-top: -16px; }
+  .jp-pedestal::before { inset: -9px 0 auto; height: 18px; }
+  .jp-name { font-size: 1.15rem; }
+  .jp-guesses { min-height: 24px; }
+  .jp-guess { font-size: 0.9rem; }
+  .jp-board { padding: 8px 12px; }
+  .jp-bulbs i { width: 9px; height: 9px; }
+  .jp-price { font-size: 2.5rem; }
+  .jp-verdict { min-height: 46px; }
+  .jp-stamp { font-size: 1.4rem; }
+  .jp-key { height: 48px; }
+  .jp-wrap.is-duel { min-height: 100%; align-content: center; gap: var(--s-4); }
+  .jp-wrap.is-duel .jp-item { width: 112px; height: 112px; }
+  .jp-wrap.is-duel .jp-pedestal { width: 128px; }
+  .jp-wrap.is-duel .jp-podiums { gap: var(--s-2); }
+  .jp-vs { font-size: 1.5rem; margin-bottom: 60px; }
+}
+@media (max-height: 700px) and (orientation: portrait) {
+  .jp-item { width: 84px; height: 84px; }
+  .jp-key { height: 42px; }
+  .jp-price { font-size: 2.1rem; }
+}
+
+/* ---------- Options de l'accueil ---------- */
+.jp-options { display: grid; gap: var(--s-3); margin-top: var(--s-4); padding: var(--s-3); border-radius: var(--r-md); background: var(--ink-950); text-align: left; }
+.jp-opt { display: grid; gap: var(--s-2); }
+.jp-label { font-family: var(--font-pixel); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.jp-modes { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+.jp-mode {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  min-height: 52px;
+  padding: 6px 10px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--border);
+  text-align: left;
+  font-weight: 700;
+  transition: box-shadow var(--dur-2), background-color var(--dur-2);
+}
+.jp-mode .icon { width: 18px; height: 18px; grid-row: span 2; }
+.jp-mode small { grid-column: 2; font-size: var(--fs-2xs); font-weight: 500; color: var(--text-3); line-height: 1.2; }
+.jp-mode[aria-checked='true'] { box-shadow: inset 0 0 0 2px var(--tomato); background: rgb(255 90 78 / 0.12); }
+.jp-mode[aria-checked='true'] .icon { color: var(--tomato); }
+.jp-mode[aria-disabled='true'] { color: var(--text-3); cursor: not-allowed; }
+.jp-themes { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.jp-theme { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); transition: transform var(--dur-2) var(--ease-spring); }
+.jp-theme span { width: 30px; height: 30px; border-radius: 50%; background: conic-gradient(from 200deg, var(--c1) 0 50%, var(--c2) 50% 100%); box-shadow: inset 0 0 0 3px rgb(0 0 0 / 0.25); }
+.jp-theme--studio { --c1: #7a1424; --c2: #ffc93c; }
+.jp-theme--neon { --c1: #14365c; --c2: #7cf5ff; }
+.jp-theme--retro { --c1: #b5531c; --c2: #ffe08a; }
+.jp-theme--prestige { --c1: #23201a; --c2: #e0b04a; }
+.jp-theme:hover { transform: translateY(-3px); }
+.jp-theme[aria-checked='true'] { box-shadow: 0 0 0 3px var(--tomato); }
+.jp-theme[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
+.jp-theme em { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-700); color: var(--text-2); }
+.jp-theme em .icon { width: 12px; height: 12px; }
+.jp-rayons { display: flex; flex-wrap: wrap; gap: 6px; }
+.jp-rayon { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: var(--r-pill); background: var(--surface-2); font-size: var(--fs-2xs); font-weight: 700; white-space: nowrap; }
+.jp-rayon .icon { width: 12px; height: 12px; }
+.jp-rayon.is-open .icon { color: var(--mint); }
+.jp-rayon.is-locked { color: var(--text-3); }
+.jp-hint { font-size: var(--fs-xs); color: var(--text-2); }
+.jp-hint:empty { display: none; }
+
+/* ---------- Fin de partie ---------- */
+.jp-recap { display: grid; gap: 6px; text-align: left; }
+.jp-recap__row { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 8px; padding: 4px 8px; border-radius: var(--r-sm); background: var(--ink-950); font-size: var(--fs-xs); }
+.jp-recap__row .jp-ico { width: 30px; height: 30px; }
+.jp-recap__row b { font-family: var(--font-display); font-size: 1rem; white-space: nowrap; }
+.jp-recap__row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jp-recap__tier { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 3px; vertical-align: middle; }
+.jp-share { margin-top: var(--s-2); }
+
+/* ---------- Illustrations ---------- */
+.jp-ico * { fill: none; stroke: #1b1626; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.jp-ico .t { fill: var(--tint); }
+.jp-ico .d { fill: color-mix(in srgb, var(--tint) 66%, #1b1626); }
+.jp-ico .l { fill: color-mix(in srgb, var(--tint) 45%, #fff); }
+.jp-ico .p { fill: #fff8ec; }
+.jp-ico .g { fill: #c9d1e0; }
+.jp-ico .y { fill: #ffc93c; }
+.jp-ico .w { fill: #e0a049; }
+.jp-ico .c { fill: #6b3f2a; }
+.jp-ico .r { fill: #ff5a4e; }
+.jp-ico .n { fill: #4fcf7a; }
+.jp-ico .b { fill: #4cc3ff; }
+.jp-ico .k { fill: #1b1626; }
+.jp-ico .s { fill: #22304a; }
+.jp-ico .f { fill: #ffd2a8; }
+.jp-ico .ts { stroke: var(--tint); }
+.jp-ico .h { stroke: #fff; opacity: 0.55; }
+.jp-ico .nf { stroke: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .jp-beam, .jp-pedestal, .jp-item .jp-ico { animation: none; }
+}
+:root[data-motion='reduced'] .jp-beam,
+:root[data-motion='reduced'] .jp-pedestal,
+:root[data-motion='reduced'] .jp-item .jp-ico { animation: none; }

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Le Juste Prix · GameVerse</title>
+  <meta name="description" content="Le Juste Prix : devine le prix d’objets du quotidien. Plus ou moins contre la montre, estimation au plus juste, duel du plus cher et les 5 objets du jour. Gratuit, sans pub.">
+  <meta name="theme-color" content="#12070b">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GameVerse">
+  <meta property="og:title" content="Le Juste Prix · GameVerse">
+  <meta property="og:description" content="Combien coûte ce vélo ? Et cette baguette ? Fais ton offre.">
+  <meta property="og:image" content="https://albangaming.github.io/Lobby-des-jeux/og.png">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="preload" href="../../shared/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../shared/fonts/rubik.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="data/items.json" as="fetch" crossorigin>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/components.css">
+  <link rel="stylesheet" href="../../shared/css/shell.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="../../shared/js/fallback.js" defer></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body class="gv-game">
+  <main class="gv-stage" id="stage">
+    <div class="jp-studio" aria-hidden="true">
+      <div class="jp-beam jp-beam--l"></div>
+      <div class="jp-beam jp-beam--r"></div>
+      <div class="jp-floor"></div>
+      <div class="jp-valance"></div>
+    </div>
+    <div class="jp-wrap" id="wrap">
+      <section class="jp-show" aria-label="Plateau">
+        <header class="jp-round" id="round"></header>
+        <div class="jp-podiums" id="podiums"></div>
+        <div class="jp-range" id="range" hidden></div>
+        <ol class="jp-guesses" id="guesses" aria-label="Offres précédentes"></ol>
+      </section>
+      <section class="jp-desk" aria-label="Pupitre">
+        <div class="jp-board" id="board">
+          <div class="jp-bulbs" id="bulbsTop" aria-hidden="true"></div>
+          <output class="jp-price is-empty" id="price" aria-live="off">—</output>
+          <p class="jp-board__sub" id="boardSub">Ton offre</p>
+          <div class="jp-bulbs" id="bulbsBot" aria-hidden="true"></div>
+        </div>
+        <div class="jp-verdict" id="verdict" aria-live="polite"></div>
+        <div class="jp-pad" id="pad" role="group" aria-label="Clavier des prix"></div>
+      </section>
+    </div>
+  </main>
+  <noscript><p style="padding:24px">Le Juste Prix a besoin de JavaScript pour fonctionner.</p></noscript>
+</body>
+</html>

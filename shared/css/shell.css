@@ -13,6 +13,8 @@ body.gv-game {
   height: 100dvh;
   background-image: none;
 }
+/* La scène garde sa ligne avant même que la barre du haut soit insérée (pas de saut au chargement) */
+body.gv-game > .gv-stage { grid-row: 2; }
 
 /* ---------- Barre du haut ---------- */
 .gv-topbar {
