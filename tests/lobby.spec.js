@@ -78,15 +78,15 @@ test.describe('lobby', () => {
     w.expectClean();
   });
 
-  test('lancer un ancien jeu compte la partie et alimente « Continuer »', async ({ page }) => {
+  test('lancer un jeu conservé dans sa version d’origine (F1 Manager) compte la partie', async ({ page }) => {
     await ready(page);
-    await page.locator('#grid .gcard[data-id="code-secret"] .gcard__link').click();
-    await page.waitForURL(/page10\.html$/);
+    await page.locator('#grid .gcard[data-id="paddock"] .gcard__link').click();
+    await page.waitForURL(/page-11\/page11\.html$/);
     await page.goBack();
     await expect(cards(page)).toHaveCount(11);
     await expect(page.locator('#picksTabs [data-tab="continue"]')).toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('#picksRail .gcard').first()).toContainText('Code Secret');
-    const g = (await readStore(page, 'gv:meta')).data.games['code-secret'];
+    await expect(page.locator('#picksRail .gcard').first()).toContainText('F1 Manager');
+    const g = (await readStore(page, 'gv:meta')).data.games.paddock;
     expect(g.plays).toBe(1);
   });
 

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Code Secret · GameVerse</title>
+  <meta name="description" content="Code Secret : déduis le code à 4 chiffres pour ouvrir le coffre. Indices bien placé / mal placé, outils, contre-la-montre et coffre du jour. Gratuit, sans pub.">
+  <meta name="theme-color" content="#11131f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GameVerse">
+  <meta property="og:title" content="Code Secret · GameVerse">
+  <meta property="og:description" content="Déduis le code à 4 chiffres et ouvre le coffre.">
+  <meta property="og:image" content="https://albangaming.github.io/Lobby-des-jeux/og.png">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="preload" href="../../shared/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../shared/fonts/rubik.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/components.css">
+  <link rel="stylesheet" href="../../shared/css/shell.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="../../shared/js/fallback.js" defer></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body class="gv-game">
+  <main class="gv-stage" id="stage">
+    <div class="cs-wrap">
+      <section class="cs-vault" aria-label="Le coffre">
+        <div class="cs-door" id="door" aria-hidden="true">
+          <svg viewBox="0 0 200 200">
+            <circle class="cs-door__rim" cx="100" cy="104" r="92"/>
+            <circle class="cs-door__face" cx="100" cy="100" r="92"/>
+            <circle class="cs-door__inner" cx="100" cy="100" r="78"/>
+            <g class="cs-bolts">
+              <rect x="94" y="2" width="12" height="18" rx="4"/><rect x="94" y="180" width="12" height="18" rx="4"/>
+              <rect x="2" y="94" width="18" height="12" rx="4"/><rect x="180" y="94" width="18" height="12" rx="4"/>
+            </g>
+            <g class="cs-studs">
+              <circle cx="100" cy="30" r="5"/><circle cx="170" cy="100" r="5"/><circle cx="100" cy="170" r="5"/><circle cx="30" cy="100" r="5"/>
+              <circle cx="149.5" cy="50.5" r="5"/><circle cx="149.5" cy="149.5" r="5"/><circle cx="50.5" cy="149.5" r="5"/><circle cx="50.5" cy="50.5" r="5"/>
+            </g>
+            <circle class="cs-door__well" cx="100" cy="100" r="48"/>
+            <g class="cs-dial" id="dial">
+              <circle class="cs-dial__face" cx="100" cy="100" r="40"/>
+              <g class="cs-dial__ticks"></g>
+              <circle class="cs-dial__hub" cx="100" cy="100" r="13"/>
+              <path class="cs-dial__needle" d="M100 100V66"/>
+            </g>
+            <path class="cs-door__marker" d="M100 46l-6-10h12z"/>
+          </svg>
+        </div>
+        <div class="cs-panel">
+          <div class="cs-entry" id="entry" role="group" aria-live="polite" aria-label="Code en cours de saisie"></div>
+          <div class="cs-meta">
+            <div class="cs-leds" id="leds" role="img" aria-label="Essais restants"></div>
+            <div class="cs-timer" id="timer" hidden></div>
+          </div>
+          <p class="cs-feedback" id="feedback" aria-live="polite"></p>
+        </div>
+      </section>
+      <section class="cs-log" aria-label="Essais précédents">
+        <p class="cs-log__title">Essais <span id="tryCount"></span></p>
+        <ol class="cs-history" id="history"></ol>
+      </section>
+      <section class="cs-pad" id="pad" aria-label="Clavier du coffre"></section>
+    </div>
+  </main>
+  <noscript><p style="padding:24px">Code Secret a besoin de JavaScript pour fonctionner.</p></noscript>
+</body>
+</html>
