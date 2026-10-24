@@ -65,8 +65,8 @@ test.describe('juste-prix', () => {
     await shot(page, testInfo, 'juste-prix-classique');
     // Le prix exact
     await offer(page, price);
-    await expect(page.locator('.jp-stamp--win')).toBeVisible();
-    expect(await jp(page, 'run.found')).toBe(1);
+    // En mode rapide, le tampon « Le juste prix ! » ne reste que 80 ms : on vérifie l'état
+    await page.waitForFunction(() => window.__jp.run.found === 1);
     expect(await jp(page, 'run.points')).toBeGreaterThan(300);
     // Les objets suivants : trouvés directement, puis la fin d'émission
     for (let i = 1; i < 5; i++) {

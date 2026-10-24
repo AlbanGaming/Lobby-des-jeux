@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Paint Empire · GameVerse</title>
+  <meta name="description" content="Paint Empire : peins, vends, agrandis ton atelier. Chaque toile est une œuvre unique qui rejoint ta galerie. Assistants, expositions et gains hors ligne. Gratuit, sans pub.">
+  <meta name="theme-color" content="#2a1a14">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GameVerse">
+  <meta property="og:title" content="Paint Empire · GameVerse">
+  <meta property="og:description" content="Peins, vends, agrandis ton atelier.">
+  <meta property="og:image" content="https://albangaming.github.io/Lobby-des-jeux/og.png">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="preload" href="../../shared/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../shared/fonts/rubik.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/components.css">
+  <link rel="stylesheet" href="../../shared/css/shell.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="../../shared/js/fallback.js" defer></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body class="gv-game">
+  <main class="gv-stage" id="stage">
+    <div class="pe-wrap" id="wrap">
+      <section class="pe-studio" aria-label="Atelier">
+        <header class="pe-purse">
+          <p class="pe-money" id="money" aria-live="off">0 €</p>
+          <p class="pe-rate" id="rate">0 € par seconde</p>
+        </header>
+        <div class="pe-easel">
+          <button class="pe-canvas" id="canvasBtn" type="button" aria-label="Peindre la toile">
+            <span class="pe-frame" id="frame"><canvas id="canvas" aria-hidden="true"></canvas></span>
+          </button>
+          <span class="pe-legs" aria-hidden="true"></span>
+        </div>
+        <div class="pe-progress" aria-hidden="true"><i id="progress"></i></div>
+        <p class="pe-caption" id="caption"></p>
+        <div class="pe-buffs" id="buffs" aria-live="polite"></div>
+        <div class="pe-gallery" id="gallery" aria-label="Galerie : tes dernières toiles"></div>
+      </section>
+      <section class="pe-shop" aria-label="Boutique">
+        <div class="pe-expo" id="expo"></div>
+        <div class="pe-tabs">
+          <div class="pe-tablist" role="tablist" aria-label="Rayons de la boutique">
+          <button class="chip" role="tab" type="button" data-tab="assistants" aria-selected="true">Assistants</button>
+          <button class="chip" role="tab" type="button" data-tab="tools" aria-selected="false">Matériel</button>
+          <button class="chip" role="tab" type="button" data-tab="patrons" aria-selected="false">Mécènes</button>
+          </div>
+          <span class="pe-qty" role="group" aria-label="Quantité à acheter">
+            <button type="button" data-qty="1" aria-pressed="true">×1</button><button type="button" data-qty="10" aria-pressed="false">×10</button><button type="button" data-qty="max" aria-pressed="false">Max</button>
+          </span>
+        </div>
+        <div class="pe-list" id="list" role="tabpanel"></div>
+      </section>
+    </div>
+    <button class="pe-collector" id="collector" type="button" hidden aria-label="Un collectionneur passe : clique vite !"></button>
+  </main>
+
+  <dialog class="dialog pe-dialog" id="dlg" aria-labelledby="dlgTitle">
+    <div class="dialog__head"><h2 class="dialog__title" id="dlgTitle"></h2></div>
+    <div class="dialog__body" id="dlgBody"></div>
+  </dialog>
+  <noscript><p style="padding:24px">Paint Empire a besoin de JavaScript pour fonctionner.</p></noscript>
+</body>
+</html>
