@@ -11,6 +11,7 @@
 //   status        'new' | 'popular' | null
 //   ready         false tant que le jeu n'a pas été refait (le lobby renvoie alors vers legacyPath)
 //   legacyPath    ancienne page, utilisée tant que ready === false
+//   keepLegacy    true = jeu volontairement conservé dans sa version d'origine (pas de refonte prévue)
 //   score         { label, unit, higherIsBetter }
 //   xp(result)    XP gagnée pour une partie (result = { score, stats })
 //   achievements  [{ id, title, desc, xp, secret? }]
@@ -203,15 +204,17 @@ export const GAMES = [
     daily: [],
   },
   {
+    // Jeu conservé tel quel à la demande de l'auteur : on ne modifie pas page-11/
     id: 'paddock',
-    title: 'Paddock Manager',
+    title: 'F1 Manager',
     category: 'gestion',
-    tags: ['course', 'automobile', 'gestion', 'écurie', 'saison'],
+    tags: ['course', 'automobile', 'gestion', 'écurie', 'saison', 'f1'],
     color: '#4cc3ff',
     ink: '#0c1a2a',
-    description: 'Monte ton écurie, développe ta monoplace et vise le titre sur une saison complète.',
+    description: 'Crée ton écurie, développe ta monoplace avec la R&D et dispute la saison.',
     status: null,
     ready: false,
+    keepLegacy: true,
     legacyPath: 'page-11/page11.html',
     score: { label: 'Titres', unit: '', higherIsBetter: true },
     xp: () => 10,
