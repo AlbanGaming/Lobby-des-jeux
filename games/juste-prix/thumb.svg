@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .jp-tag{transform-origin:210px 18px;animation:jp-swing 1s ease-in-out infinite alternate}
+    @keyframes jp-swing{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+    .jp-wheel{transform-box:fill-box;transform-origin:center;animation:jp-wheel .8s linear infinite}
+    @keyframes jp-wheel{to{transform:rotate(360deg)}}
+    .jp-up{animation:jp-up .5s ease-in-out infinite alternate}
+    @keyframes jp-up{to{transform:translateY(-6px)}}
+  </style>
+  <rect width="320" height="200" fill="#2a1210"/>
+  <g fill="#ff5a4e" opacity=".08"><circle cx="210" cy="104" r="90"/></g>
+  <rect x="0" y="168" width="320" height="32" fill="#1c0c0a"/>
+  <g transform="translate(20 104)" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <g class="jp-wheel"><circle cx="22" cy="44" r="20" stroke="#f4efe4" stroke-width="6"/><path d="M22 24v40M2 44h40" stroke="#f4efe4" stroke-width="2" opacity=".5"/></g>
+    <g class="jp-wheel"><circle cx="96" cy="44" r="20" stroke="#f4efe4" stroke-width="6"/><path d="M96 24v40M76 44h40" stroke="#f4efe4" stroke-width="2" opacity=".5"/></g>
+    <path d="M22 44l22-34h40l12 34M44 10l16 34 24-34M40 2h12M80 10l-4-10h12" stroke="#ff5a4e" stroke-width="6"/>
+  </g>
+  <path d="M210 0v18" stroke="#f4efe4" stroke-width="3"/>
+  <g class="jp-tag">
+    <path d="M210 18l-56 34v76a10 10 0 0 0 10 10h92a10 10 0 0 0 10-10V52z" fill="#05060b" opacity=".5" transform="translate(0 6)"/>
+    <path d="M210 18l-56 34v76a10 10 0 0 0 10 10h92a10 10 0 0 0 10-10V52z" fill="#f4efe4"/>
+    <circle cx="210" cy="46" r="8" fill="#2a1210"/>
+    <text x="210" y="106" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="44" fill="#2a1210">?? €</text>
+    <rect x="176" y="118" width="68" height="6" rx="3" fill="#ff5a4e"/>
+  </g>
+  <g class="jp-up">
+    <g transform="translate(274 120)"><rect width="34" height="30" rx="8" fill="#13996a" transform="translate(0 3)"/><rect width="34" height="30" rx="8" fill="#3ee6a8"/><path d="M17 8v14M10 14l7-7 7 7" stroke="#032a1c" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+  </g>
+  <g transform="translate(274 158)"><rect width="34" height="30" rx="8" fill="#b8281f" transform="translate(0 3)"/><rect width="34" height="30" rx="8" fill="#ff5a4e"/><path d="M17 8v14M10 16l7 7 7-7" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>

@@ -122,6 +122,25 @@ export function save() {
   emit('change', store.data);
 }
 
+// Relit la sauvegarde (retour sur une page restaurée depuis le cache du navigateur)
+export function reload() {
+  store.reload();
+  motion.setPreference(store.data.settings.motion);
+  emit('change', store.data);
+}
+
+// ---------- Objets achetés avec les crédits (palettes d'avatar…) ----------
+export const owns = (itemId) => store.data.owned.includes(itemId);
+
+export function buy(itemId, cost) {
+  if (owns(itemId)) return true;
+  if (store.data.credits < cost) return false;
+  store.data.credits -= cost;
+  store.data.owned.push(itemId);
+  save();
+  return true;
+}
+
 export function gameStats(id) {
   const g = (store.data.games[id] ??= { ...GAME_DEFAULTS });
   for (const k in GAME_DEFAULTS) if (g[k] === undefined) g[k] = GAME_DEFAULTS[k];

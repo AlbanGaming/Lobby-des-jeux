@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .cs-dial{transform-origin:214px 100px;animation:cs-dial 1.6s cubic-bezier(.65,0,.35,1) infinite alternate}
+    @keyframes cs-dial{to{transform:rotate(140deg)}}
+    .cs-blink{animation:cs-blink .5s steps(2) infinite}
+    @keyframes cs-blink{50%{opacity:0}}
+  </style>
+  <rect width="320" height="200" fill="#1a1433"/>
+  <g stroke="#a68bff" stroke-opacity=".08" stroke-width="2">
+    <path d="M0 40h320M0 80h320M0 120h320M0 160h320"/>
+  </g>
+  <circle cx="214" cy="108" r="76" fill="#05060b" opacity=".5"/>
+  <circle cx="214" cy="100" r="76" fill="#6a4fd1"/>
+  <circle cx="214" cy="100" r="66" fill="#3a2f66"/>
+  <g fill="#a68bff">
+    <circle cx="214" cy="40" r="5"/><circle cx="274" cy="100" r="5"/><circle cx="214" cy="160" r="5"/><circle cx="154" cy="100" r="5"/>
+    <circle cx="256.4" cy="57.6" r="5"/><circle cx="256.4" cy="142.4" r="5"/><circle cx="171.6" cy="142.4" r="5"/><circle cx="171.6" cy="57.6" r="5"/>
+  </g>
+  <circle cx="214" cy="100" r="42" fill="#251e47"/>
+  <g class="cs-dial">
+    <circle cx="214" cy="100" r="34" fill="#a68bff"/>
+    <g stroke="#1a1433" stroke-width="3" stroke-linecap="round">
+      <path d="M214 70v8"/><path d="M244 100h-8"/><path d="M214 130v-8"/><path d="M184 100h8"/>
+      <path d="M235.2 78.8l-4.2 4.2" opacity=".5"/><path d="M235.2 121.2l-4.2-4.2" opacity=".5"/><path d="M192.8 121.2l4.2-4.2" opacity=".5"/><path d="M192.8 78.8l4.2 4.2" opacity=".5"/>
+    </g>
+    <circle cx="214" cy="100" r="12" fill="#f4efe4"/>
+    <path d="M214 100l0-26" stroke="#ff5a4e" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="30" text-anchor="middle">
+    <g transform="translate(26 58)">
+      <rect width="34" height="44" rx="8" fill="#05060b" transform="translate(0 4)"/><rect width="34" height="44" rx="8" fill="#f4efe4"/>
+      <text x="17" y="33" fill="#1a1433">7</text><circle cx="17" cy="58" r="5" fill="#3ee6a8"/>
+    </g>
+    <g transform="translate(66 58)">
+      <rect width="34" height="44" rx="8" fill="#05060b" transform="translate(0 4)"/><rect width="34" height="44" rx="8" fill="#f4efe4"/>
+      <text x="17" y="33" fill="#1a1433">2</text><circle cx="17" cy="58" r="5" fill="#ffc93c"/>
+    </g>
+    <g transform="translate(26 120)">
+      <rect width="34" height="44" rx="8" fill="#251e47"/><rect x="2" y="2" width="30" height="40" rx="7" fill="none" stroke="#a68bff" stroke-width="2" stroke-dasharray="4 4"/>
+      <rect class="cs-blink" x="12" y="30" width="10" height="4" rx="2" fill="#a68bff"/>
+    </g>
+    <g transform="translate(66 120)">
+      <rect width="34" height="44" rx="8" fill="#251e47"/><rect x="2" y="2" width="30" height="40" rx="7" fill="none" stroke="#a68bff" stroke-width="2" stroke-dasharray="4 4"/>
+    </g>
+  </g>
+</svg>

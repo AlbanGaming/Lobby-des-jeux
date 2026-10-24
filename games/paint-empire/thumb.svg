@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .pe-brush{transform-origin:250px 150px;animation:pe-brush .45s ease-in-out infinite alternate}
+    @keyframes pe-brush{to{transform:rotate(-14deg) translate(-6px,4px)}}
+    .pe-a{transform-box:fill-box;transform-origin:center;animation:pe-a 1.2s ease-in-out infinite alternate}
+    @keyframes pe-a{to{transform:scale(1.15) rotate(12deg)}}
+    .pe-coin{animation:pe-coin .6s ease-in-out infinite alternate}
+    @keyframes pe-coin{to{transform:translateY(-8px)}}
+  </style>
+  <defs><clipPath id="pe-clip"><rect x="92" y="26" width="128" height="104" rx="4"/></clipPath></defs>
+  <rect width="320" height="200" fill="#2a1a14"/>
+  <rect x="0" y="160" width="320" height="40" fill="#1f130e"/>
+  <g fill="#ff8a5b" opacity=".08"><circle cx="160" cy="80" r="100"/></g>
+  <g stroke="#8a5a3c" stroke-width="7" stroke-linecap="round">
+    <path d="M120 130l-24 56"/><path d="M192 130l24 56"/><path d="M156 18v168"/>
+  </g>
+  <rect x="88" y="22" width="136" height="112" rx="6" fill="#05060b" opacity=".45" transform="translate(4 6)"/>
+  <rect x="88" y="22" width="136" height="112" rx="6" fill="#c4a27a"/>
+  <rect x="92" y="26" width="128" height="104" rx="4" fill="#f4efe4"/>
+  <g clip-path="url(#pe-clip)">
+    <circle class="pe-a" cx="130" cy="70" r="34" fill="#ffc93c"/>
+    <rect x="150" y="60" width="80" height="80" fill="#4cc3ff" transform="rotate(18 190 100)"/>
+    <circle cx="186" cy="58" r="16" fill="#ff5a4e"/>
+    <path d="M86 120c30-24 60 10 90-12s40 6 50 0v30H86z" fill="#3ee6a8"/>
+    <circle class="pe-a" cx="116" cy="112" r="10" fill="#11131f"/>
+  </g>
+  <rect x="128" y="132" width="56" height="8" rx="3" fill="#8a5a3c"/>
+  <g class="pe-brush">
+    <path d="M250 150l40-90" stroke="#ffc93c" stroke-width="10" stroke-linecap="round"/>
+    <path d="M250 150l8-18" stroke="#c4c7dc" stroke-width="12"/>
+    <path d="M244 162c-2-8 2-14 8-16l6 4c2 8-6 16-14 12z" fill="#ff5a4e"/>
+  </g>
+  <path d="M30 150c8-14 26-10 30 2s-6 22-18 20-18-10-12-22z" fill="#a68bff"/>
+  <circle cx="68" cy="176" r="5" fill="#a68bff"/>
+  <path d="M276 30c6-6 16-2 16 6s-10 12-16 6-4-8 0-12z" fill="#3ee6a8"/>
+  <g class="pe-coin">
+    <g transform="translate(28 56)">
+      <circle cx="22" cy="26" r="20" fill="#c98f00"/><circle cx="22" cy="22" r="20" fill="#ffc93c"/>
+      <text x="22" y="30" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="22" fill="#2a1d00">€</text>
+    </g>
+  </g>
+</svg>

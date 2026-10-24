@@ -4,13 +4,23 @@ import { icon } from './icons.js';
 
 let host = null;
 
+const canPopover = typeof HTMLElement !== 'undefined' && 'showPopover' in HTMLElement.prototype;
+
 function ensureHost() {
-  if (host && document.body.contains(host)) return host;
-  host = document.createElement('div');
-  host.className = 'toasts';
-  host.setAttribute('role', 'status');
-  host.setAttribute('aria-live', 'polite');
-  document.body.appendChild(host);
+  if (!host || !document.body.contains(host)) {
+    host = document.createElement('div');
+    host.className = 'toasts';
+    host.setAttribute('role', 'status');
+    host.setAttribute('aria-live', 'polite');
+    // En « popover », les notifications passent au-dessus des boîtes de dialogue modales
+    if (canPopover) host.setAttribute('popover', 'manual');
+    document.body.appendChild(host);
+  }
+  if (canPopover) {
+    // Ré-ouvrir le popover le remet tout en haut de la pile, devant une modale ouverte entre-temps
+    if (host.matches(':popover-open')) host.hidePopover();
+    host.showPopover();
+  }
   return host;
 }
 

@@ -10,6 +10,7 @@
     "assets": "node tests/tools/render-assets.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "1.56.1"
+    "@playwright/test": "1.56.1",
+    "lighthouse": "^12.8.2"
   }
 }

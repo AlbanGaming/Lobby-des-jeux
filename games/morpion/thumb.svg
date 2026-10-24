@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .mo-fade{animation:mo-fade .7s ease-in-out infinite alternate}
+    @keyframes mo-fade{to{opacity:.08}}
+    .mo-new{transform-box:fill-box;transform-origin:center;animation:mo-new .7s cubic-bezier(.34,1.56,.64,1) infinite alternate}
+    @keyframes mo-new{from{transform:scale(.4)}to{transform:scale(1)}}
+    .mo-tick{animation:mo-tick .7s steps(2) infinite}
+    @keyframes mo-tick{50%{opacity:.3}}
+  </style>
+  <rect width="320" height="200" fill="#2b1012"/>
+  <g fill="#ff5a4e" opacity=".07">
+    <path d="M0 0l60 0-60 60z"/><path d="M320 200l-80 0 80-80z"/>
+  </g>
+  <g transform="translate(0 5)" stroke="#05060b" stroke-width="10" stroke-linecap="round" opacity=".6">
+    <path d="M136 30v140"/><path d="M184 30v140"/><path d="M90 76h140"/><path d="M90 124h140"/>
+  </g>
+  <g stroke="#f4efe4" stroke-width="10" stroke-linecap="round">
+    <path d="M136 30v140"/><path d="M184 30v140"/><path d="M90 76h140"/><path d="M90 124h140"/>
+  </g>
+  <g stroke-linecap="round" stroke-width="11">
+    <g stroke="#b8281f" transform="translate(0 4)"><path d="M98 38l26 26M124 38l-26 26"/><path d="M196 136l26 26M222 136l-26 26"/></g>
+    <g stroke="#ff5a4e"><path d="M98 38l26 26M124 38l-26 26"/><path d="M196 136l26 26M222 136l-26 26"/></g>
+  </g>
+  <g class="mo-fade" stroke="#ff5a4e" stroke-width="11" stroke-linecap="round">
+    <path d="M148 88l24 24M172 88l-24 24"/>
+  </g>
+  <g fill="none" stroke-width="10">
+    <circle cx="208" cy="57" r="15" stroke="#c98f00" transform="translate(0 4)"/>
+    <circle cx="208" cy="57" r="15" stroke="#ffc93c"/>
+    <circle cx="112" cy="153" r="15" stroke="#c98f00" transform="translate(0 4)"/>
+    <circle cx="112" cy="153" r="15" stroke="#ffc93c"/>
+  </g>
+  <g class="mo-new" fill="none" stroke-width="10">
+    <circle cx="208" cy="100" r="15" stroke="#c98f00" transform="translate(0 4)"/>
+    <circle cx="208" cy="100" r="15" stroke="#ffc93c"/>
+  </g>
+  <g transform="translate(24 40)">
+    <rect width="44" height="44" rx="10" fill="#ff5a4e"/>
+    <text x="22" y="32" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="28" fill="#2b1012">3</text>
+    <g class="mo-tick" fill="#ff5a4e"><circle cx="8" cy="60" r="4"/><circle cx="22" cy="60" r="4"/><circle cx="36" cy="60" r="4" opacity=".3"/></g>
+  </g>
+  <g transform="translate(256 120)" fill="#f4efe4" opacity=".55">
+    <path d="M0 0h30M0 10h22M0 20h28" stroke="#f4efe4" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

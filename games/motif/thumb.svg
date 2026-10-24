@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .mf-t{transform-box:fill-box;transform-origin:center;animation:mf-flip .9s cubic-bezier(.65,0,.35,1) infinite alternate}
+    @keyframes mf-flip{0%,40%{transform:scaleY(1)}70%{transform:scaleY(.05)}100%{transform:scaleY(1)}}
+    .mf-d1{animation-delay:.08s}.mf-d2{animation-delay:.16s}.mf-d3{animation-delay:.24s}.mf-d4{animation-delay:.32s}
+  </style>
+  <rect width="320" height="200" fill="#0d2420"/>
+  <g fill="#3ee6a8" opacity=".06"><circle cx="30" cy="30" r="60"/><circle cx="300" cy="190" r="70"/></g>
+  <g font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="26" text-anchor="middle">
+    <g transform="translate(58 22)">
+      <g><rect width="36" height="36" rx="7" fill="#252a40"/><text x="18" y="27" fill="#8d93b3">P</text></g>
+      <g transform="translate(42 0)"><rect width="36" height="36" rx="7" fill="#c98f00" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#ffc93c"/><text x="18" y="27" fill="#2a1d00">I</text></g>
+      <g transform="translate(84 0)"><rect width="36" height="36" rx="7" fill="#252a40"/><text x="18" y="27" fill="#8d93b3">A</text></g>
+      <g transform="translate(126 0)"><rect width="36" height="36" rx="7" fill="#252a40"/><text x="18" y="27" fill="#8d93b3">N</text></g>
+      <g transform="translate(168 0)"><rect width="36" height="36" rx="7" fill="#c98f00" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#ffc93c"/><text x="18" y="27" fill="#2a1d00">O</text></g>
+    </g>
+    <g transform="translate(58 66)">
+      <g><rect width="36" height="36" rx="7" fill="#13996a" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#3ee6a8"/><text x="18" y="27" fill="#032a1c">M</text></g>
+      <g transform="translate(42 0)"><rect width="36" height="36" rx="7" fill="#c98f00" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#ffc93c"/><text x="18" y="27" fill="#2a1d00">I</text></g>
+      <g transform="translate(84 0)"><rect width="36" height="36" rx="7" fill="#252a40"/><text x="18" y="27" fill="#8d93b3">E</text></g>
+      <g transform="translate(126 0)"><rect width="36" height="36" rx="7" fill="#252a40"/><text x="18" y="27" fill="#8d93b3">U</text></g>
+      <g transform="translate(168 0)"><rect width="36" height="36" rx="7" fill="#252a40"/><text x="18" y="27" fill="#8d93b3">X</text></g>
+    </g>
+    <g transform="translate(58 110)">
+      <g class="mf-t"><rect width="36" height="36" rx="7" fill="#13996a" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#3ee6a8"/><text x="18" y="27" fill="#032a1c">M</text></g>
+      <g transform="translate(42 0)"><g class="mf-t mf-d1"><rect width="36" height="36" rx="7" fill="#13996a" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#3ee6a8"/><text x="18" y="27" fill="#032a1c">O</text></g></g>
+      <g transform="translate(84 0)"><g class="mf-t mf-d2"><rect width="36" height="36" rx="7" fill="#13996a" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#3ee6a8"/><text x="18" y="27" fill="#032a1c">T</text></g></g>
+      <g transform="translate(126 0)"><g class="mf-t mf-d3"><rect width="36" height="36" rx="7" fill="#13996a" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#3ee6a8"/><text x="18" y="27" fill="#032a1c">I</text></g></g>
+      <g transform="translate(168 0)"><g class="mf-t mf-d4"><rect width="36" height="36" rx="7" fill="#13996a" transform="translate(0 3)"/><rect width="36" height="36" rx="7" fill="#3ee6a8"/><text x="18" y="27" fill="#032a1c">F</text></g></g>
+    </g>
+    <g transform="translate(58 154)" opacity=".35">
+      <rect width="36" height="30" rx="7" fill="none" stroke="#3ee6a8" stroke-width="2"/><rect x="42" width="36" height="30" rx="7" fill="none" stroke="#3ee6a8" stroke-width="2"/>
+      <rect x="84" width="36" height="30" rx="7" fill="none" stroke="#3ee6a8" stroke-width="2"/><rect x="126" width="36" height="30" rx="7" fill="none" stroke="#3ee6a8" stroke-width="2"/>
+      <rect x="168" width="36" height="30" rx="7" fill="none" stroke="#3ee6a8" stroke-width="2"/>
+    </g>
+  </g>
+</svg>

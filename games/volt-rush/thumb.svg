@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .vr-bob{animation:vr-bob .32s ease-in-out infinite alternate}
+    @keyframes vr-bob{to{transform:translateY(-7px)}}
+    .vr-far{animation:vr-far 3s linear infinite alternate}
+    @keyframes vr-far{to{transform:translateX(-16px)}}
+    .vr-near{animation:vr-near 3s linear infinite alternate}
+    @keyframes vr-near{to{transform:translateX(-42px)}}
+    .vr-zap{animation:vr-zap .24s steps(2) infinite}
+    @keyframes vr-zap{50%{opacity:.25}}
+    .vr-legs{transform-box:fill-box;transform-origin:center;animation:vr-legs .16s steps(2) infinite}
+    @keyframes vr-legs{50%{transform:scaleX(-1)}}
+  </style>
+  <defs>
+    <linearGradient id="vr-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1d1436"/>
+      <stop offset=".55" stop-color="#4a2242"/>
+      <stop offset="1" stop-color="#e0643e"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" fill="url(#vr-sky)"/>
+  <g fill="#f4efe4" opacity=".75">
+    <rect x="34" y="22" width="2" height="2"/><rect x="92" y="40" width="2" height="2"/><rect x="150" y="18" width="3" height="3"/>
+    <rect x="196" y="34" width="2" height="2"/><rect x="268" y="16" width="2" height="2"/><rect x="300" y="46" width="2" height="2"/>
+  </g>
+  <circle cx="238" cy="118" r="54" fill="#ffc93c"/>
+  <circle cx="238" cy="118" r="54" fill="#ff8a5b" opacity=".35"/>
+  <g class="vr-far" fill="#5a2c4c">
+    <rect x="-10" y="104" width="34" height="80"/><rect x="28" y="88" width="22" height="96"/><rect x="54" y="112" width="40" height="72"/>
+    <rect x="98" y="80" width="26" height="104"/><rect x="128" y="100" width="36" height="84"/><rect x="168" y="92" width="20" height="92"/>
+    <rect x="192" y="108" width="44" height="76"/><rect x="240" y="96" width="28" height="88"/><rect x="272" y="116" width="40" height="68"/><rect x="316" y="90" width="30" height="94"/>
+  </g>
+  <g class="vr-near">
+    <g fill="#24183c">
+      <rect x="-20" y="128" width="70" height="72"/><rect x="58" y="118" width="54" height="82"/><rect x="120" y="134" width="64" height="66"/>
+      <rect x="192" y="122" width="58" height="78"/><rect x="258" y="136" width="70" height="64"/><rect x="334" y="126" width="40" height="74"/>
+    </g>
+    <g fill="#ffc93c" opacity=".55">
+      <rect x="68" y="128" width="6" height="8"/><rect x="82" y="128" width="6" height="8"/><rect x="96" y="144" width="6" height="8"/>
+      <rect x="132" y="146" width="6" height="8"/><rect x="204" y="134" width="6" height="8"/><rect x="218" y="150" width="6" height="8"/>
+      <rect x="270" y="148" width="6" height="8"/><rect x="0" y="140" width="6" height="8"/><rect x="346" y="138" width="6" height="8"/>
+    </g>
+    <path d="M184 128v-14M184 114l-8 6M184 114l8 6" stroke="#24183c" stroke-width="3"/>
+  </g>
+  <rect x="0" y="164" width="320" height="36" fill="#0b0c14"/>
+  <rect x="0" y="164" width="320" height="4" fill="#ff5a4e"/>
+  <g fill="#1a1d2e"><rect x="20" y="176" width="40" height="4" rx="2"/><rect x="110" y="180" width="60" height="4" rx="2"/><rect x="220" y="176" width="50" height="4" rx="2"/></g>
+  <g transform="translate(246 136)">
+    <rect x="0" y="4" width="30" height="28" rx="4" fill="#b8281f"/>
+    <rect x="0" y="0" width="30" height="28" rx="4" fill="#ff5a4e"/>
+    <path d="M4 22l10-18M14 26l12-22" stroke="#ffc93c" stroke-width="4"/>
+  </g>
+  <polyline class="vr-zap" points="28,128 44,120 54,132 68,122 80,132 92,124" fill="none" stroke="#4cc3ff" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+  <g stroke="#ffc93c" stroke-width="3" stroke-linecap="round" opacity=".7">
+    <path d="M40 104h22"/><path d="M30 116h26"/><path d="M46 140h16"/>
+  </g>
+  <ellipse cx="120" cy="166" rx="24" ry="4" fill="#000" opacity=".45"/>
+  <g class="vr-bob">
+    <g transform="translate(120 152)"><g class="vr-legs"><path d="M-10 0l-6 12M8 0l8 11" stroke="#c98f00" stroke-width="6" stroke-linecap="round"/></g></g>
+    <path d="M120 98l6-16" stroke="#11131f" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M128 72l-8 10h6l-3 8 9-11h-6z" fill="#f4efe4"/>
+    <rect x="96" y="104" width="50" height="48" rx="14" fill="#c98f00"/>
+    <rect x="96" y="98" width="50" height="48" rx="14" fill="#ffc93c"/>
+    <rect x="104" y="106" width="36" height="22" rx="7" fill="#11131f"/>
+    <rect x="114" y="111" width="6" height="11" rx="3" fill="#3ee6a8"/>
+    <rect x="127" y="111" width="6" height="11" rx="3" fill="#3ee6a8"/>
+    <rect x="88" y="120" width="12" height="7" rx="3.5" fill="#c98f00"/>
+    <rect x="142" y="114" width="13" height="7" rx="3.5" fill="#c98f00" transform="rotate(-20 148 117)"/>
+  </g>
+</svg>

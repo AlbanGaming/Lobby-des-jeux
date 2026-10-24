@@ -7,6 +7,7 @@ import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const BASE = '/Lobby-des-jeux/';
@@ -63,11 +64,16 @@ const server = createServer(async (req, res) => {
     }
     if (!info?.isFile()) return send404(res);
 
-    const body = await readFile(file);
-    res.writeHead(200, {
-      'content-type': TYPES[extname(file).toLowerCase()] ?? 'application/octet-stream',
-      'cache-control': 'no-cache',
-    });
+    let body = await readFile(file);
+    const type = TYPES[extname(file).toLowerCase()] ?? 'application/octet-stream';
+    const headers = { 'content-type': type, 'cache-control': 'no-cache' };
+    // Compression gzip comme GitHub Pages, pour des mesures de performance réalistes
+    if (/text|javascript|json|svg/.test(type) && /\bgzip\b/.test(req.headers['accept-encoding'] ?? '')) {
+      body = gzipSync(body);
+      headers['content-encoding'] = 'gzip';
+      headers.vary = 'Accept-Encoding';
+    }
+    res.writeHead(200, headers);
     res.end(body);
   } catch (err) {
     res.writeHead(500, { 'content-type': 'text/plain' });
