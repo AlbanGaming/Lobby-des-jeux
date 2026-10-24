@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page introuvable · GameVerse</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b0c14">
+  <script>
+    // GitHub Pages sert cette page pour toute adresse inconnue, à n'importe quelle profondeur :
+    // on fixe la base sur la racine du site pour que les chemins relatifs restent valides.
+    // Les feuilles de style sont ajoutées ici (et pas en <link>) pour que le préchargeur
+    // du navigateur ne les demande pas avant que la base soit connue.
+    (function () {
+      var seg = location.pathname.split('/')[1];
+      var project = /\.github\.io$/.test(location.hostname) || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+      var base = document.createElement('base');
+      base.href = project && seg && seg.indexOf('.') === -1 ? '/' + seg + '/' : '/';
+      document.head.appendChild(base);
+      var links = [
+        ['icon', 'favicon.svg'],
+        ['stylesheet', 'shared/css/tokens.css'],
+        ['stylesheet', 'shared/css/base.css'],
+        ['stylesheet', 'shared/css/components.css'],
+      ];
+      for (var i = 0; i < links.length; i++) {
+        var l = document.createElement('link');
+        l.rel = links[i][0];
+        l.href = links[i][1];
+        document.head.appendChild(l);
+      }
+    })();
+  </script>
+  <style>
+    .lost {
+      display: grid;
+      place-items: center;
+      min-height: 100dvh;
+      padding: var(--s-6) var(--gutter);
+      text-align: center;
+    }
+    .lost__inner {
+      display: grid;
+      justify-items: center;
+      gap: var(--s-4);
+      max-width: 520px;
+    }
+    .lost__code {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.06em;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(7rem, 30vw, 13rem);
+      line-height: 0.85;
+      color: var(--paper);
+      text-shadow: 0 8px 0 var(--ink-line);
+    }
+    .lost__coin {
+      width: 0.78em;
+      height: 0.78em;
+      animation: lost-spin 2.4s var(--ease-in-out) infinite;
+      filter: drop-shadow(0 8px 0 var(--ink-line));
+    }
+    @keyframes lost-spin {
+      0%, 100% { transform: translateY(0) scaleX(1); }
+      25% { transform: translateY(-14px) scaleX(0.15); }
+      50% { transform: translateY(0) scaleX(-1); }
+      75% { transform: translateY(-14px) scaleX(-0.15); }
+    }
+    .lost__kicker {
+      font-family: var(--font-pixel);
+      font-size: var(--fs-sm);
+      letter-spacing: 0.14em;
+      color: var(--coin);
+      text-transform: uppercase;
+    }
+    .lost h1 {
+      font-size: var(--fs-4xl);
+    }
+    .lost p {
+      color: var(--text-2);
+    }
+    .lost__actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--s-3);
+      margin-top: var(--s-3);
+    }
+  </style>
+</head>
+<body>
+  <main class="lost">
+    <div class="lost__inner">
+      <div class="lost__code" aria-hidden="true">
+        <span>4</span>
+        <svg class="lost__coin" viewBox="0 0 64 64"><circle cx="32" cy="35" r="24" fill="#c98f00"/><circle cx="32" cy="31" r="24" fill="#ffc93c"/><circle cx="32" cy="31" r="18.5" fill="none" stroke="#2a1d00" stroke-opacity=".16" stroke-width="2.5"/><path d="M40.5 22.6A12 12 0 1 0 44 31H33.5" fill="none" stroke="#2a1d00" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>4</span>
+      </div>
+      <p class="lost__kicker">Erreur 404 · Niveau introuvable</p>
+      <h1>Cette page s’est perdue en route</h1>
+      <p>L’adresse n’existe pas ou plus. Tous les jeux t’attendent dans le lobby.</p>
+      <div class="lost__actions">
+        <a class="btn btn--primary btn--lg" href="index.html">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>
+          Retour au lobby
+        </a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

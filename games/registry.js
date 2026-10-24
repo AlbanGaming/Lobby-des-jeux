@@ -1,0 +1,226 @@
+// Registre des jeux GameVerse.
+// Ajouter un jeu = créer games/<id>/ (index.html + main.js) et ajouter une entrée ici.
+//
+// Champs :
+//   id            identifiant stable = nom du dossier (sert aussi de namespace de sauvegarde)
+//   title         nom affiché
+//   category      id d'une entrée de CATEGORIES
+//   tags          mots-clés pour la recherche
+//   color / ink   couleur principale et couleur sombre de la vignette
+//   description   pitch en une phrase
+//   status        'new' | 'popular' | null
+//   ready         false tant que le jeu n'a pas été refait (le lobby renvoie alors vers legacyPath)
+//   legacyPath    ancienne page, utilisée tant que ready === false
+//   score         { label, unit, higherIsBetter }
+//   xp(result)    XP gagnée pour une partie (result = { score, stats })
+//   achievements  [{ id, title, desc, xp, secret? }]
+//   daily         modèles de défi du jour [{ text, stat?, min }]
+
+export const CATEGORIES = [
+  { id: 'arcade', label: 'Arcade', icon: 'joystick' },
+  { id: 'reflexion', label: 'Réflexion', icon: 'blocks' },
+  { id: 'quiz', label: 'Quiz & mots', icon: 'letter' },
+  { id: 'strategie', label: 'Stratégie', icon: 'crown' },
+  { id: 'gestion', label: 'Gestion & idle', icon: 'chart' },
+];
+
+const byScore = (perPoint, base = 5, cap = 400) => ({ score = 0 }) => Math.min(cap, Math.round(base + score * perPoint));
+
+export const GAMES = [
+  {
+    id: 'volt-rush',
+    title: 'Volt Rush',
+    category: 'arcade',
+    tags: ['runner', 'course', 'saut', 'un bouton', 'réflexes'],
+    color: '#ffc93c',
+    ink: '#1d1436',
+    description: 'Volt, petit robot survolté, file sur les toits de la ville au crépuscule. Jusqu’où iras-tu ?',
+    status: 'popular',
+    ready: false,
+    legacyPath: 'page6.html',
+    score: { label: 'Distance', unit: 'm', higherIsBetter: true },
+    xp: byScore(0.05),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'plume',
+    title: 'Plume',
+    category: 'arcade',
+    tags: ['vol', 'oiseau', 'papier', 'un bouton', 'réflexes'],
+    color: '#ff8a5b',
+    ink: '#2a1a14',
+    description: 'Un oiseau de papier plié se faufile entre les falaises de carton. Un tap, un battement d’ailes.',
+    status: null,
+    ready: false,
+    legacyPath: 'page7.html',
+    score: { label: 'Score', unit: '', higherIsBetter: true },
+    xp: byScore(3),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'bubble-pop',
+    title: 'Bubble Pop',
+    category: 'arcade',
+    tags: ['bulles', 'combo', 'chrono', 'tactile'],
+    color: '#4cc3ff',
+    ink: '#0d2033',
+    description: 'Éclate les bulles en chaîne avant la fin du chrono. Les combos font exploser le score.',
+    status: null,
+    ready: false,
+    legacyPath: 'page5.html',
+    score: { label: 'Score', unit: '', higherIsBetter: true },
+    xp: byScore(0.02),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'tic-tac',
+    title: 'Tic Tac',
+    category: 'arcade',
+    tags: ['timing', 'horloge', 'précision', 'un bouton'],
+    color: '#3ee6a8',
+    ink: '#0f2a22',
+    description: 'Arrête l’aiguille pile sur l’heure cible. Plus tu es précis, plus elle accélère.',
+    status: 'new',
+    ready: false,
+    legacyPath: 'page2.html',
+    score: { label: 'Score', unit: '', higherIsBetter: true },
+    xp: byScore(0.05),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'morpion',
+    title: 'Morpion Dynamique',
+    category: 'strategie',
+    tags: ['morpion', 'ia', 'duel', '2 joueurs', 'réflexion'],
+    color: '#ff5a4e',
+    ink: '#2b1012',
+    description: 'Le morpion où tes pions s’effacent au bout de trois coups : pas de match nul, que de la tactique.',
+    status: 'popular',
+    ready: false,
+    legacyPath: 'page3.html',
+    score: { label: 'Victoires', unit: '', higherIsBetter: true },
+    xp: byScore(20, 5, 80),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'code-secret',
+    title: 'Code Secret',
+    category: 'reflexion',
+    tags: ['code', 'logique', 'déduction', 'coffre'],
+    color: '#a68bff',
+    ink: '#1a1433',
+    description: 'Craque le coffre en déduisant le code à 4 chiffres. Chaque essai te rapproche du déclic.',
+    status: null,
+    ready: false,
+    legacyPath: 'page10.html',
+    score: { label: 'Score', unit: '', higherIsBetter: true },
+    xp: byScore(0.1),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'motif',
+    title: 'Motif',
+    category: 'quiz',
+    tags: ['mots', 'mot du jour', 'lettres', 'français', 'vocabulaire'],
+    color: '#3ee6a8',
+    ink: '#0d2420',
+    description: 'Le mot du jour en six essais, et des parties libres de 4 à 7 lettres.',
+    status: 'popular',
+    ready: false,
+    legacyPath: 'page8.html',
+    score: { label: 'Série', unit: '', higherIsBetter: true },
+    xp: byScore(10, 10, 120),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'enigmes',
+    title: 'Énigmes Éclair',
+    category: 'quiz',
+    tags: ['énigmes', 'devinettes', 'quiz', 'logique', 'rapidité'],
+    color: '#ffc93c',
+    ink: '#2a2208',
+    description: 'Des énigmes en rafale contre la montre. Enchaîne les bonnes réponses pour faire grimper le multiplicateur.',
+    status: 'new',
+    ready: false,
+    legacyPath: 'page4.html',
+    score: { label: 'Score', unit: '', higherIsBetter: true },
+    xp: byScore(0.05),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'juste-prix',
+    title: 'Le Juste Prix',
+    category: 'quiz',
+    tags: ['prix', 'estimation', 'objets', 'plus ou moins'],
+    color: '#ff5a4e',
+    ink: '#2a1210',
+    description: 'Combien coûte ce vélo ? Et cette baguette ? Estime au plus juste, enchaîne les manches.',
+    status: null,
+    ready: false,
+    legacyPath: 'page1.html',
+    score: { label: 'Score', unit: '', higherIsBetter: true },
+    xp: byScore(0.05),
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'paint-empire',
+    title: 'Paint Empire',
+    category: 'gestion',
+    tags: ['idle', 'incrémental', 'peinture', 'art', 'prestige'],
+    color: '#ff8a5b',
+    ink: '#2a1a14',
+    description: 'Peins, vends, agrandis ton atelier : chaque toile est une œuvre unique qui rejoint ta galerie.',
+    status: null,
+    ready: false,
+    legacyPath: 'page9.html',
+    score: { label: 'Fortune', unit: '€', higherIsBetter: true },
+    xp: () => 10,
+    achievements: [],
+    daily: [],
+  },
+  {
+    id: 'paddock',
+    title: 'Paddock Manager',
+    category: 'gestion',
+    tags: ['course', 'automobile', 'gestion', 'écurie', 'saison'],
+    color: '#4cc3ff',
+    ink: '#0c1a2a',
+    description: 'Monte ton écurie, développe ta monoplace et vise le titre sur une saison complète.',
+    status: null,
+    ready: false,
+    legacyPath: 'page-11/page11.html',
+    score: { label: 'Titres', unit: '', higherIsBetter: true },
+    xp: () => 10,
+    achievements: [],
+    daily: [],
+  },
+];
+
+// Anciennes URL → identifiants (redirections et migration des statistiques)
+export const LEGACY_IDS = {
+  1: 'juste-prix',
+  2: 'tic-tac',
+  3: 'morpion',
+  4: 'enigmes',
+  5: 'bubble-pop',
+  6: 'volt-rush',
+  7: 'plume',
+  8: 'motif',
+  9: 'paint-empire',
+  10: 'code-secret',
+  11: 'paddock',
+};
+
+export const getGame = (id) => GAMES.find((g) => g.id === id) ?? null;
+export const getCategory = (id) => CATEGORIES.find((c) => c.id === id) ?? null;
+// Chemin du jeu relatif à la racine du site
+export const gamePath = (game) => (game.ready ? `games/${game.id}/` : game.legacyPath);

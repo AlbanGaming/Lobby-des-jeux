@@ -1,0 +1,15 @@
+{
+  "name": "gameverse",
+  "private": true,
+  "description": "GameVerse — portail de mini-jeux arcade 100 % statique (GitHub Pages). Ce fichier ne sert qu'aux outils de développement : le site n'a pas d'étape de build.",
+  "type": "module",
+  "scripts": {
+    "serve": "node tests/serve.mjs",
+    "test": "playwright test",
+    "test:update": "playwright test --update-snapshots",
+    "assets": "node tests/tools/render-assets.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1"
+  }
+}

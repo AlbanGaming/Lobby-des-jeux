@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design system · GameVerse</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0b0c14">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="../shared/css/base.css">
+  <link rel="stylesheet" href="../shared/css/components.css">
+  <style>
+    .sg { max-width: var(--container); margin: 0 auto; padding: var(--s-7) var(--gutter) var(--s-9); display: grid; gap: var(--s-7); }
+    .sg header { display: flex; align-items: center; gap: var(--s-4); }
+    .sg header svg { width: 56px; height: 56px; }
+    .sg h1 { font-size: var(--fs-5xl); }
+    .sg h2 { font-size: var(--fs-2xl); margin-bottom: var(--s-4); color: var(--text-2); }
+    .row { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
+    .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: var(--s-3); }
+    .swatch { border-radius: var(--r-md); overflow: hidden; box-shadow: inset 0 0 0 2px var(--border), var(--shadow-hard); background: var(--surface); }
+    .swatch div { height: 64px; }
+    .swatch p { padding: var(--s-2) var(--s-3); font-size: var(--fs-xs); font-family: var(--font-pixel); color: var(--text-2); }
+    .type > * + * { margin-top: var(--s-3); }
+    .icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: var(--s-2); }
+    .icons figure { display: grid; justify-items: center; gap: var(--s-2); padding: var(--s-3) var(--s-2); border-radius: var(--r-md); background: var(--surface); font-size: 10px; color: var(--text-3); font-family: var(--font-pixel); }
+    .icons svg { width: 28px; height: 28px; color: var(--paper); }
+    .panel { padding: var(--s-5); max-width: 460px; }
+  </style>
+</head>
+<body>
+  <main class="sg">
+    <header><span id="logo"></span><h1>Design system</h1></header>
+
+    <section>
+      <h2>Couleurs</h2>
+      <div class="swatches" id="swatches"></div>
+    </section>
+
+    <section class="type">
+      <h2>Typographie</h2>
+      <p class="display" style="font-size:var(--fs-5xl)">Insert coin</p>
+      <h3 style="font-size:var(--fs-3xl)">Big Shoulders Display — titres</h3>
+      <p style="max-width:60ch">Rubik pour le texte courant : lisible, chaleureux, avec de vrais accents français — éèêàçœ. Le joueur doit comprendre chaque écran en moins de cinq secondes.</p>
+      <p class="pixel" style="font-size:var(--fs-lg)">SILKSCREEN · SCORE 012 450 · HUD</p>
+    </section>
+
+    <section>
+      <h2>Boutons</h2>
+      <div class="row">
+        <button class="btn btn--primary btn--lg" type="button" id="btnPlay"></button>
+        <button class="btn btn--primary" type="button">Rejouer</button>
+        <button class="btn" type="button">Secondaire</button>
+        <button class="btn btn--ghost" type="button">Fantôme</button>
+        <button class="btn btn--success" type="button">Valider</button>
+        <button class="btn btn--danger" type="button">Réinitialiser</button>
+        <button class="btn btn--sm" type="button">Petit</button>
+        <button class="btn btn--primary" type="button" disabled>Désactivé</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Pastilles, badges, touches</h2>
+      <div class="row">
+        <button class="chip" type="button" aria-pressed="true">Tous</button>
+        <button class="chip" type="button" aria-pressed="false">Arcade</button>
+        <button class="chip" type="button" aria-pressed="false">Réflexion</button>
+        <span class="badge badge--new">Nouveau</span>
+        <span class="badge badge--hot">Populaire</span>
+        <span class="badge badge--top">Record</span>
+        <span class="badge badge--soon">Bientôt</span>
+        <span class="kbd">Espace</span><span class="kbd">R</span><span class="kbd">Échap</span>
+      </div>
+    </section>
+
+    <section>
+      <h2>Formulaires et réglages</h2>
+      <div class="panel">
+        <div class="field">
+          <label class="field__label" for="pseudo">Pseudo</label>
+          <input class="input" id="pseudo" placeholder="Ton pseudo" value="JOUEUR">
+        </div>
+        <div style="margin-top:var(--s-4)">
+          <div class="setting-row"><span class="setting-row__text"><span>Effets sonores</span><span class="setting-row__hint">Sons synthétisés en direct</span></span><button class="switch" role="switch" aria-checked="true" type="button" aria-label="Effets sonores"></button></div>
+          <div class="setting-row"><span>Musique</span><button class="switch" role="switch" aria-checked="false" type="button" aria-label="Musique"></button></div>
+        </div>
+        <div style="margin-top:var(--s-4);display:grid;gap:var(--s-3)">
+          <div class="meter" style="--value:.62"><div class="meter__fill"></div></div>
+          <div class="meter" style="--value:.3;--meter-color:var(--sky)"><div class="meter__fill"></div></div>
+          <div class="loader" aria-label="Chargement"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Notifications</h2>
+      <button class="btn" type="button" id="btnToast">Afficher un succès</button>
+    </section>
+
+    <section>
+      <h2>Icônes</h2>
+      <div class="icons" id="icons"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { icon, ICON_NAMES, logoMark } from '../shared/js/ui/icons.js';
+    import { toast } from '../shared/js/ui/toast.js';
+    document.getElementById('logo').innerHTML = logoMark();
+    document.getElementById('btnPlay').innerHTML = icon('play') + 'Jouer';
+    document.getElementById('icons').innerHTML = ICON_NAMES.map((n) => `<figure>${icon(n)}<figcaption>${n}</figcaption></figure>`).join('');
+    const tokens = ['ink-950','ink-900','ink-800','ink-700','ink-600','paper','paper-2','paper-3','coin','coin-deep','tomato','mint','sky','grape'];
+    document.getElementById('swatches').innerHTML = tokens.map((t) => `<div class="swatch"><div style="background:var(--${t})"></div><p>--${t}</p></div>`).join('');
+    document.querySelectorAll('.switch').forEach((s) => s.addEventListener('click', () => s.setAttribute('aria-checked', String(s.getAttribute('aria-checked') !== 'true'))));
+    document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => {
+      document.querySelectorAll('.chip').forEach((o) => o.setAttribute('aria-pressed', 'false'));
+      c.setAttribute('aria-pressed', 'true');
+    }));
+    document.getElementById('btnToast').addEventListener('click', () => toast({ title: 'Premiers pas', text: 'Termine ta première partie.' }));
+  </script>
+</body>
+</html>
