@@ -102,23 +102,14 @@ test.describe('volt rush', () => {
     w.expectClean();
   });
 
-  test('animation fluide (≥ 50 images/s)', async ({ page }) => {
+  test('budget par image tenu (< 8 ms en moyenne, soit la moitié des 16,7 ms à 60 i/s)', async ({ page }) => {
     await open(page);
     await page.keyboard.press('Space');
-    const fps = await page.evaluate(
-      () =>
-        new Promise((resolve) => {
-          let n = 0;
-          const t0 = performance.now();
-          const tick = () => {
-            n++;
-            if (performance.now() - t0 < 1000) requestAnimationFrame(tick);
-            else resolve(n);
-          };
-          requestAnimationFrame(tick);
-        }),
-    );
-    expect(fps).toBeGreaterThanOrEqual(50);
+    await vr(page, 'surge()'); // le cas le plus chargé : particules et effets de Surcharge
+    await page.waitForTimeout(1500);
+    const ms = await vr(page, 'frameMs');
+    expect(ms).toBeGreaterThan(0);
+    expect(ms).toBeLessThan(8);
   });
 
   test('l’ancienne adresse page6.html redirige vers le jeu', async ({ page }) => {

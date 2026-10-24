@@ -337,6 +337,27 @@ body.gv-game {
   text-align: left;
 }
 
+/* Écrans peu hauts (téléphone en paysage, petite fenêtre) : cartes compactes,
+   l'action principale reste visible sans défiler */
+@media (max-height: 720px) {
+  .gv-screen { padding: var(--s-3); place-items: start center; }
+  .gv-card { padding: var(--s-4) var(--s-4) var(--s-4); }
+  .gv-card__title { font-size: var(--fs-3xl); margin-top: var(--s-1); }
+  .gv-card__lead { font-size: var(--fs-sm); }
+  .gv-actions { margin-top: var(--s-3); }
+  .gv-howto { margin-top: var(--s-3); gap: 6px; }
+  .gv-howto__row { padding: 6px var(--s-3); }
+  .gv-score { font-size: clamp(2.6rem, 8vh, 4rem); }
+  .gv-stats { margin-top: var(--s-3); }
+  .gv-progress { margin-top: var(--s-3); }
+}
+@media (max-height: 520px) {
+  .gv-card__lead { display: none; }
+  .gv-screen[data-screen='start'] .gv-card,
+  .gv-screen[data-screen='over'] .gv-card { width: min(640px, 100%); }
+  .gv-howto { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+}
+
 /* Compte à rebours / bannières de jeu */
 .gv-banner {
   position: absolute;

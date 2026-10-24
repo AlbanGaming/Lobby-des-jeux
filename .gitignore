@@ -5,3 +5,4 @@ tests/screenshots/
 blob-report/
 .DS_Store
 Thumbs.db
+.claude/

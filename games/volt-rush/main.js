@@ -906,11 +906,18 @@ gv.shell.startExtra.addEventListener('click', (e) => {
 });
 
 // ---------- Démarrage ----------
+// Coût moyen d'une image (logique + rendu), suivi pour les tests de performance
+let frameMs = 0;
+let frameStart = 0;
 const loop = createLoop({
   update(dt, realDt) {
+    frameStart = performance.now();
     update(dt, realDt);
   },
-  render,
+  render(realDt) {
+    render(realDt);
+    frameMs = frameMs * 0.95 + (performance.now() - frameStart) * 0.05;
+  },
   onAutoPause() {
     if (state === 'run' && gv.playing) gv.pause();
   },
@@ -923,6 +930,7 @@ window.__voltRush = {
   get player() { return p; },
   get world() { return world; },
   get speed() { return speed; },
+  get frameMs() { return frameMs; },
   surge: () => addSurge(1),
 };
 

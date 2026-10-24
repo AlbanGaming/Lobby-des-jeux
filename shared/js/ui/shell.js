@@ -126,16 +126,16 @@ export function createShell({
       <p class="gv-kicker">${esc(cat?.label ?? '')}</p>
       <h2 class="gv-card__title">${esc(game.title)}</h2>
       <p class="gv-card__lead">${esc(game.description)}</p>
+      <div class="gv-actions">
+        <button class="btn btn--primary btn--lg btn--block" type="button" data-primary data-act="start">${icon('play')}${esc(startLabel)}</button>
+      </div>
+      <p class="gv-hint gv-start-best" hidden></p>
       ${howTo.length ? `<div class="gv-howto">${howTo.map((h) => `
         <div class="gv-howto__row">
           <span class="gv-howto__keys">${h.keys.map((k) => (k.startsWith('icon:') ? `<span class="kbd">${icon(k.slice(5))}</span>` : `<span class="kbd">${esc(k)}</span>`)).join('')}</span>
           <span class="gv-howto__text">${esc(h.text)}</span>
         </div>`).join('')}</div>` : ''}
       <div class="gv-start-extra"></div>
-      <div class="gv-actions">
-        <button class="btn btn--primary btn--lg btn--block" type="button" data-primary data-act="start">${icon('play')}${esc(startLabel)}</button>
-      </div>
-      <p class="gv-hint gv-start-best" hidden></p>
     </div>`;
   startEl.querySelector('[data-act="start"]').addEventListener('click', () => listeners.start?.());
 
