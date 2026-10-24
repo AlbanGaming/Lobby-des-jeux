@@ -1,0 +1,63 @@
+/* Tic Tac — options de l'écran d'accueil (modes, cadrans) ; le jeu est dessiné sur le canvas */
+
+.gv-stage { background: #0e231d; }
+.gv-stage canvas.gv-canvas { cursor: pointer; }
+
+.tt-options { display: grid; gap: var(--s-3); margin-top: var(--s-4); padding: var(--s-3); border-radius: var(--r-md); background: var(--ink-950); text-align: left; }
+.tt-row { display: grid; gap: var(--s-2); }
+.tt-label { font-family: var(--font-pixel); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.tt-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); }
+.tt-mode {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 8px;
+  min-height: 52px;
+  padding: 6px 10px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--border);
+  text-align: left;
+  font-weight: 700;
+  transition: box-shadow var(--dur-2), background-color var(--dur-2);
+}
+.tt-mode .icon { width: 18px; height: 18px; grid-row: span 2; }
+.tt-mode small { grid-column: 2; font-size: var(--fs-2xs); font-weight: 500; color: var(--text-3); line-height: 1.2; }
+.tt-mode[aria-checked='true'] { box-shadow: inset 0 0 0 2px var(--mint); background: rgb(62 230 168 / 0.1); }
+.tt-mode[aria-checked='true'] .icon { color: var(--mint); }
+.tt-mode[aria-disabled='true'] { color: var(--text-3); cursor: not-allowed; }
+@media (max-width: 520px) {
+  .tt-modes { grid-template-columns: 1fr; }
+  .tt-mode { min-height: 44px; }
+}
+
+.tt-dials { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.tt-dial { position: relative; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); transition: transform var(--dur-2) var(--ease-spring); }
+.tt-dial span {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--c2);
+  box-shadow: inset 0 0 0 4px var(--c1);
+}
+.tt-dial span::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 6px;
+  width: 2px;
+  height: 10px;
+  border-radius: 1px;
+  background: var(--c3);
+  transform-origin: 1px 9px;
+  transform: rotate(40deg);
+}
+.tt-dial:hover { transform: translateY(-3px); }
+.tt-dial[aria-checked='true'] { box-shadow: 0 0 0 3px var(--mint); }
+.tt-dial[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
+.tt-dial em { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-700); color: var(--text-2); }
+.tt-dial em .icon { width: 12px; height: 12px; }
+.tt-hint { font-size: var(--fs-xs); color: var(--text-2); }
+.tt-hint:empty { display: none; }
+.tt-daily { font-size: var(--fs-sm); color: var(--text-2); text-align: center; }
