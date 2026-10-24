@@ -139,13 +139,13 @@ export function bootGame(id, opts = {}) {
      * Fin de partie. `stats` sert au défi du jour et aux XP ; `extraStats` s'affiche
      * à l'écran de fin ; `nextUnlock` = { label, current, target }.
      */
-    gameOver({ score, stats = {}, extraStats = [], nextUnlock, title, kicker, xp } = {}) {
+    gameOver({ score, stats = {}, extraStats = [], nextUnlock, title, kicker, xp, scoreText, sound } = {}) {
       if (shell.state === 'over') return null;
       track(false);
       audio.pauseMusic();
       const r = meta.reportRun(id, { score, stats, xp });
-      audio.play(r.isRecord && r.prevBest !== null ? 'record' : 'gameOver');
-      shell.showGameOver({ ...r, stats: extraStats, nextUnlock, title, kicker });
+      audio.play(sound ?? (r.isRecord && r.prevBest !== null ? 'record' : 'gameOver'));
+      shell.showGameOver({ ...r, stats: extraStats, nextUnlock, title, kicker, scoreText });
       return r;
     },
 

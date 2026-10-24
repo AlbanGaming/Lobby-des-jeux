@@ -307,6 +307,13 @@ export function createShell({
       // Compteur de score et remplissage de la barre d'XP
       const scoreEl = overEl.querySelector('.gv-score');
       const meterEl = overEl.querySelector('[data-meter="xp"]');
+      setTimeout(() => meterEl.style.setProperty('--value', r.levelAfter.progress), motion.reduced ? 0 : 250);
+      // Score textuel (ex. « 3 – 1 » en duel) : affiché tel quel, sans compteur
+      if (r.scoreText) {
+        scoreEl.textContent = r.scoreText;
+        scoreEl.setAttribute('aria-label', r.scoreText);
+        return;
+      }
       const target = Number(r.score) || 0;
       const t0 = performance.now();
       const dur = motion.reduced ? 0 : Math.min(900, 300 + Math.abs(target) * 4);
@@ -317,7 +324,6 @@ export function createShell({
         if (p < 1 && shell.state === 'over') requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
-      setTimeout(() => meterEl.style.setProperty('--value', r.levelAfter.progress), motion.reduced ? 0 : 250);
     },
 
     banner(text, { color } = {}) {

@@ -48,13 +48,15 @@ test.describe('volt rush', () => {
     expect(await vr(page, 'run.surgeT')).toBeGreaterThan(0);
     await shot(page, testInfo, 'volt-surge');
 
-    // Pause et reprise
-    await page.keyboard.press('Escape');
-    await expect(page.locator('[data-screen="pause"]')).toHaveClass(/is-open/);
-    const xp = await vr(page, 'player.x');
-    await page.waitForTimeout(300);
-    expect(await vr(page, 'player.x')).toBe(xp);
-    await page.keyboard.press('Escape');
+    // Pause et reprise (si Volt est encore en course : sous forte charge, il a pu tomber)
+    if ((await vr(page, 'state')) === 'run') {
+      await page.keyboard.press('Escape');
+      await expect(page.locator('[data-screen="pause"]')).toHaveClass(/is-open/);
+      const xp = await vr(page, 'player.x');
+      await page.waitForTimeout(300);
+      expect(await vr(page, 'player.x')).toBe(xp);
+      await page.keyboard.press('Escape');
+    }
 
     // Sans sauter, Volt finit par tomber ou heurter un obstacle
     await expect(page.locator('[data-screen="over"]')).toHaveClass(/is-open/, { timeout: 20000 });

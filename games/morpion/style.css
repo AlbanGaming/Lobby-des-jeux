@@ -1,0 +1,341 @@
+/* Morpion Dynamique — plateau à l'encre rouge, pions à la lèvre dure, pion condamné qui se fissure */
+
+.gv-stage {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 40%, rgb(255 90 78 / 0.12), transparent 60%),
+    #2b1012;
+}
+
+.mo-wrap {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+  width: min(560px, 100%);
+  padding: var(--s-4);
+}
+
+/* ---------- Tableau des scores ---------- */
+.mo-score {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+}
+.mo-side {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+  padding: 6px 10px;
+  border-radius: var(--r-lg);
+  background: rgb(5 6 11 / 0.35);
+  box-shadow: inset 0 0 0 2px transparent;
+  transition: box-shadow var(--dur-2), background-color var(--dur-2);
+}
+.mo-side--o { justify-content: flex-end; text-align: right; }
+.mo-side--x.is-turn { box-shadow: inset 0 0 0 2px var(--tomato); background: rgb(255 90 78 / 0.12); }
+.mo-side--o.is-turn { box-shadow: inset 0 0 0 2px var(--coin); background: rgb(255 201 60 / 0.1); }
+.mo-side__avatar { flex: none; width: 44px; height: 44px; border-radius: 12px; overflow: hidden; }
+.mo-side__avatar svg,
+.mo-side__avatar img { width: 44px; height: 44px; object-fit: cover; }
+.mo-side__info { display: grid; gap: 4px; min-width: 0; }
+.mo-side__name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: var(--fs-lg);
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.mo-pips { display: flex; gap: 4px; }
+.mo-side--o .mo-pips { justify-content: flex-end; }
+.mo-pips i {
+  width: 14px;
+  height: 8px;
+  border-radius: 3px;
+  background: rgb(244 239 228 / 0.15);
+  transition: background-color var(--dur-3), transform var(--dur-3) var(--ease-spring);
+}
+.mo-side--x .mo-pips i.on { background: var(--tomato); transform: scaleY(1.25); }
+.mo-side--o .mo-pips i.on { background: var(--coin); transform: scaleY(1.25); }
+.mo-vs { font-family: var(--font-pixel); font-size: var(--fs-sm); color: var(--text-3); }
+
+.mo-status {
+  min-height: 1.6em;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-xl);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--paper);
+}
+.mo-status[data-tone='x'] { color: #ff8a80; }
+.mo-status[data-tone='o'] { color: var(--coin); }
+.mo-status[data-tone='win'] { color: var(--mint); }
+.mo-status[data-tone='lose'] { color: var(--paper-3); }
+.mo-status[data-tone='thinking']::after {
+  content: '…';
+  display: inline-block;
+  animation: mo-dots 1s steps(4) infinite;
+  width: 1.2em;
+  overflow: hidden;
+  vertical-align: bottom;
+  text-align: left;
+}
+@keyframes mo-dots { from { width: 0; } to { width: 1.2em; } }
+
+/* ---------- Plateau ---------- */
+.mo-board-wrap {
+  position: relative;
+  width: min(100%, 60dvh, 440px);
+  aspect-ratio: 1;
+}
+.mo-board {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--r-xl);
+  background: #f4efe4;
+  box-shadow: 0 8px 0 #b9b2a2, 0 24px 40px -18px rgb(0 0 0 / 0.7);
+}
+.mo-cell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-md);
+  background: #3a1517;
+  box-shadow: inset 0 4px 0 rgb(0 0 0 / 0.35);
+  transition: background-color var(--dur-2), transform var(--dur-1);
+}
+.mo-board:not(.is-locked) .mo-cell:not(.is-x):not(.is-o):hover { background: #4a1c1f; }
+.mo-board:not(.is-locked) .mo-cell:not(.is-x):not(.is-o):active { transform: scale(0.96); }
+/* Aperçu fantôme du pion qu'on s'apprête à poser */
+.mo-board.is-turn-x:not(.is-locked) .mo-cell:not(.is-x):not(.is-o):hover::after,
+.mo-board.is-turn-x:not(.is-locked) .mo-cell:not(.is-x):not(.is-o):focus-visible::after,
+.mo-board.is-turn-o:not(.is-locked) .mo-cell:not(.is-x):not(.is-o):hover::after,
+.mo-board.is-turn-o:not(.is-locked) .mo-cell:not(.is-x):not(.is-o):focus-visible::after {
+  content: '';
+  width: 46%;
+  aspect-ratio: 1;
+  opacity: 0.22;
+  background: currentColor;
+  -webkit-mask: var(--ghost) center / contain no-repeat;
+  mask: var(--ghost) center / contain no-repeat;
+}
+.mo-board.is-turn-x { --ghost: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M15 15l70 70M85 15L15 85' stroke='black' stroke-width='18' stroke-linecap='round'/%3E%3C/svg%3E"); color: var(--tomato); }
+.mo-board.is-turn-o { --ghost: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='38' fill='none' stroke='black' stroke-width='16'/%3E%3C/svg%3E"); color: var(--coin); }
+.mo-board.is-locked .mo-cell { cursor: default; }
+
+.mo-piece { width: 74%; height: 74%; overflow: visible; }
+.mo-piece path,
+.mo-piece circle {
+  fill: none;
+  stroke-width: 15;
+  stroke-linecap: round;
+}
+.mo-piece--x path { stroke: var(--tomato); }
+.mo-piece--x .mo-piece__shadow { stroke: #8a1d16; }
+.mo-piece--o circle { stroke: var(--coin); }
+.mo-piece--o .mo-piece__shadow { stroke: #8f6200; }
+.is-fresh .mo-piece { animation: mo-in var(--dur-4) var(--ease-spring); }
+@keyframes mo-in {
+  from { transform: scale(0.2) rotate(-25deg); opacity: 0; }
+}
+
+/* Points de vie du pion */
+.mo-life {
+  position: absolute;
+  bottom: 7%;
+  left: 50%;
+  display: flex;
+  gap: 4px;
+  transform: translateX(-50%);
+}
+.mo-life i { width: 7px; height: 7px; border-radius: 50%; background: rgb(244 239 228 / 0.85); }
+.mo-life i.off { background: rgb(244 239 228 / 0.15); }
+
+/* Pion condamné : il clignote et se fissure */
+.mo-cell.is-doomed .mo-piece { animation: mo-doom 0.9s var(--ease-in-out) infinite; }
+@keyframes mo-doom { 50% { opacity: 0.35; transform: scale(0.92) rotate(-3deg); } }
+.mo-crack {
+  position: absolute;
+  inset: 18%;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M48 6l-6 22 12 10-14 18 10 12-8 26M54 38l18-6M40 56l-18 4' fill='none' stroke='%23f4efe4' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* Ligne gagnante */
+.mo-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.mo-line line {
+  stroke: #f4efe4;
+  stroke-width: 14;
+  stroke-linecap: round;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  filter: drop-shadow(0 4px 0 rgb(0 0 0 / 0.5));
+}
+.mo-line[data-winner='x'] line { stroke: #fff3f1; }
+.mo-line.is-on line { animation: mo-strike 0.45s var(--ease-out) forwards; }
+@keyframes mo-strike { to { stroke-dashoffset: 0; } }
+.mo-cell.is-win { background: #5a1f22; }
+.mo-cell.is-win .mo-piece { animation: mo-win 0.6s var(--ease-spring); }
+@keyframes mo-win { 40% { transform: scale(1.2) rotate(6deg); } }
+
+/* Bulle du robot : sous son avatar, au-dessus de la ligne de statut (jamais sur le plateau) */
+.mo-score { position: relative; }
+.mo-bubble {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 5;
+  max-width: min(260px, 70%);
+  padding: 8px 12px;
+  border-radius: 14px 4px 14px 14px;
+  background: var(--coin);
+  color: var(--coin-ink);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  line-height: 1.25;
+  box-shadow: 0 4px 0 var(--coin-deep);
+  transform-origin: 100% 0;
+}
+.mo-bubble::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 18px;
+  border: 7px solid transparent;
+  border-top: 0;
+  border-bottom-color: var(--coin);
+}
+.mo-bubble.is-in { animation: gv-pop-in var(--dur-3) var(--ease-spring); }
+.mo-score:has(.mo-bubble:not([hidden])) + .mo-status { opacity: 0; }
+.mo-status { transition: opacity var(--dur-2); }
+
+.mo-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+  text-align: center;
+}
+.mo-rule__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--tomato); animation: mo-doom 0.9s var(--ease-in-out) infinite; }
+
+@media (max-height: 640px) {
+  .mo-wrap { gap: var(--s-2); padding: var(--s-2); }
+  .mo-rule { display: none; }
+  .mo-board-wrap { width: min(100%, 56dvh, 440px); }
+}
+
+/* ---------- Styles de pions ---------- */
+.mo-board[data-skin='neon'] { background: #11131f; box-shadow: 0 8px 0 #05060b, 0 24px 40px -18px rgb(0 0 0 / 0.7); }
+.mo-board[data-skin='neon'] .mo-cell { background: #1a1d2e; }
+.mo-board[data-skin='neon'] .mo-piece { filter: drop-shadow(0 0 6px currentColor); }
+.mo-board[data-skin='neon'] .mo-piece--x { color: #ff5a4e; }
+.mo-board[data-skin='neon'] .mo-piece--o { color: #4cc3ff; }
+.mo-board[data-skin='neon'] .mo-piece--o circle { stroke: #4cc3ff; }
+.mo-board[data-skin='neon'] .mo-piece__shadow { display: none; }
+.mo-board[data-skin='craie'] { background: #3b4a3f; box-shadow: 0 8px 0 #6b4a2a, 0 24px 40px -18px rgb(0 0 0 / 0.7); }
+.mo-board[data-skin='craie'] .mo-cell { background: #26332a; }
+.mo-board[data-skin='craie'] .mo-piece path,
+.mo-board[data-skin='craie'] .mo-piece circle { stroke: #f4efe4; stroke-dasharray: 18 5; stroke-width: 11; }
+.mo-board[data-skin='craie'] .mo-piece--o circle { stroke: #ffe7a3; }
+.mo-board[data-skin='craie'] .mo-piece__shadow { display: none; }
+.mo-board[data-skin='pixel'] .mo-piece path { stroke: none; }
+.mo-board[data-skin='pixel'] .mo-piece--x path { fill: var(--tomato); }
+.mo-board[data-skin='pixel'] .mo-piece--o path { fill: var(--coin); }
+.mo-board[data-skin='or'] { background: #2a1d00; box-shadow: 0 8px 0 #05060b, 0 24px 40px -18px rgb(0 0 0 / 0.7); }
+.mo-board[data-skin='or'] .mo-cell { background: #3a2a08; }
+.mo-board[data-skin='or'] .mo-piece--x path:not(.mo-piece__shadow) { stroke: #ffe7a3; }
+.mo-board[data-skin='or'] .mo-piece--x .mo-piece__shadow { stroke: #9a6a12; }
+.mo-board[data-skin='or'] .mo-piece--o circle:not(.mo-piece__shadow) { stroke: #e8b04a; }
+
+/* ---------- Options de l'accueil ---------- */
+.mo-options {
+  display: grid;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+  padding: var(--s-3);
+  border-radius: var(--r-md);
+  background: var(--ink-950);
+  text-align: left;
+}
+.mo-row { display: grid; gap: var(--s-2); }
+.mo-label { font-family: var(--font-pixel); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.mo-seg { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+.mo-seg button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--border);
+  font-weight: 700;
+  transition: box-shadow var(--dur-2), background-color var(--dur-2);
+}
+.mo-seg button .icon { width: 18px; height: 18px; }
+.mo-seg button[aria-checked='true'] { box-shadow: inset 0 0 0 2px var(--tomato); background: rgb(255 90 78 / 0.12); }
+.mo-levels { display: grid; gap: var(--s-2); }
+.mo-opt {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: 48px;
+  padding: 6px 10px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--border);
+  text-align: left;
+  transition: box-shadow var(--dur-2), transform var(--dur-1);
+}
+.mo-opt:active { transform: scale(0.98); }
+.mo-opt strong { display: block; line-height: 1.1; }
+.mo-opt small { font-size: var(--fs-2xs); color: var(--text-3); }
+.mo-opt__av { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 10px; overflow: hidden; background: var(--ink-700); color: var(--text-3); }
+.mo-opt__av .icon { width: 18px; height: 18px; }
+.mo-opt[aria-checked='true'] { box-shadow: inset 0 0 0 2px var(--tomato); background: rgb(255 90 78 / 0.12); }
+.mo-opt[aria-disabled='true'] { color: var(--text-3); cursor: not-allowed; }
+.mo-skins { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.mo-skin {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 40px;
+  border-radius: var(--r-md);
+  background: #3a1517;
+  box-shadow: inset 0 0 0 2px var(--border);
+  transition: transform var(--dur-2) var(--ease-spring), box-shadow var(--dur-2);
+}
+.mo-skin:hover { transform: translateY(-3px); }
+.mo-skin[aria-checked='true'] { box-shadow: 0 0 0 3px var(--tomato); }
+.mo-skin[aria-disabled='true'] { cursor: not-allowed; opacity: 0.55; }
+.mo-skin__demo { font-family: var(--font-display); font-weight: 900; font-size: 20px; letter-spacing: 2px; color: var(--tomato); }
+.mo-skin__demo--neon { color: #4cc3ff; text-shadow: 0 0 6px #4cc3ff; }
+.mo-skin__demo--craie { color: #f4efe4; }
+.mo-skin__demo--pixel { font-family: var(--font-pixel); font-size: 15px; color: var(--coin); }
+.mo-skin__demo--or { color: #e8b04a; }
+.mo-skin__lock { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-700); color: var(--text-2); }
+.mo-skin__lock .icon { width: 12px; height: 12px; }
+.mo-hint { font-size: var(--fs-xs); color: var(--text-2); }
+.mo-hint:empty { display: none; }

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Morpion Dynamique · GameVerse</title>
+  <meta name="description" content="Morpion Dynamique : trois pions chacun, pas un de plus. Poser le quatrième efface ton plus ancien. Affronte trois robots ou joue à deux. Gratuit, sans pub.">
+  <meta name="theme-color" content="#11131f">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GameVerse">
+  <meta property="og:title" content="Morpion Dynamique · GameVerse">
+  <meta property="og:description" content="Le morpion où les pions s’effacent : jamais de match nul, que de la tactique.">
+  <meta property="og:image" content="https://albangaming.github.io/Lobby-des-jeux/og.png">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="preload" href="../../shared/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../shared/fonts/rubik.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/components.css">
+  <link rel="stylesheet" href="../../shared/css/shell.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="../../shared/js/fallback.js" defer></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body class="gv-game">
+  <main class="gv-stage" id="stage">
+    <div class="mo-wrap" id="wrap">
+      <div class="mo-score" aria-live="polite">
+        <div class="mo-side mo-side--x" id="sideX">
+          <span class="mo-side__avatar" id="avX"></span>
+          <span class="mo-side__info"><span class="mo-side__name" id="nameX">Toi</span><span class="mo-pips" id="pipsX"></span></span>
+        </div>
+        <span class="mo-vs">VS</span>
+        <div class="mo-side mo-side--o" id="sideO">
+          <span class="mo-side__info"><span class="mo-side__name" id="nameO">Rouille</span><span class="mo-pips" id="pipsO"></span></span>
+          <span class="mo-side__avatar" id="avO"></span>
+        </div>
+        <div class="mo-bubble" id="bubble" hidden></div>
+      </div>
+      <p class="mo-status" id="status" aria-live="polite"></p>
+      <div class="mo-board-wrap">
+        <div class="mo-board" id="board" role="group" aria-label="Plateau de morpion, flèches pour se déplacer"></div>
+        <svg class="mo-line" id="winLine" viewBox="0 0 300 300" aria-hidden="true"><line x1="0" y1="0" x2="0" y2="0"/></svg>
+      </div>
+      <p class="mo-rule"><span class="mo-rule__dot"></span><span>3 pions chacun : poser le 4<sup>e</sup> efface ton plus ancien.</span></p>
+    </div>
+  </main>
+  <noscript><p style="padding:24px">Morpion Dynamique a besoin de JavaScript pour fonctionner.</p></noscript>
+</body>
+</html>
