@@ -870,3 +870,4 @@ window.addEventListener('pageshow', (e) => {
 
 renderAll();
 document.documentElement.classList.add('is-ready');
+document.documentElement.setAttribute('data-gv-ready', '');

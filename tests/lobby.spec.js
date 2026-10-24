@@ -1,6 +1,8 @@
 // Tests du lobby : rendu, recherche, filtres, favoris, profil, réglages, données.
 import { test, expect } from '@playwright/test';
 import { watchPage, shot, readStore } from './helpers.js';
+import { pathToFileURL } from 'node:url';
+import { resolve } from 'node:path';
 
 const cards = (page) => page.locator('#grid .gcard');
 
@@ -170,6 +172,21 @@ test.describe('lobby', () => {
     await page.locator('#picksTabs [data-tab="favorites"]').click();
     await expect(page.locator('#picksRail .gcard')).toContainText('Paint Empire');
     w.expectClean();
+  });
+
+  test('ouvert depuis le disque (file://) : message explicatif au lieu d’une page vide', async ({ page }, testInfo) => {
+    const url = pathToFileURL(resolve('index.html')).href;
+    await page.goto(url);
+    const box = page.locator('.gv-fallback');
+    await expect(box).toBeVisible();
+    await expect(box).toContainText('npm run serve');
+    await shot(page, testInfo, 'lobby-file-protocol');
+  });
+
+  test('servi normalement, le message de secours ne s’affiche jamais', async ({ page }) => {
+    await ready(page);
+    await page.waitForTimeout(4500);
+    await expect(page.locator('.gv-fallback')).toHaveCount(0);
   });
 
   test('survol d’une carte (animation de vignette)', async ({ page }, testInfo) => {

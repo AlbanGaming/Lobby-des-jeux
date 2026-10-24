@@ -21,6 +21,7 @@ export function bootGame(id, opts = {}) {
   if (!game) throw new Error(`Jeu inconnu dans le registre : ${id}`);
   const stage = opts.stage ?? document.querySelector('.gv-stage');
   document.documentElement.classList.add('gv-game-root');
+  document.documentElement.setAttribute('data-gv-ready', ''); // désarme le message de secours
   document.body.classList.add('gv-game');
 
   const settings = meta.getSettings();
