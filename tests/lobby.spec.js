@@ -3,13 +3,14 @@ import { test, expect } from '@playwright/test';
 import { watchPage, shot, readStore } from './helpers.js';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
+import { GAMES } from '../games/registry.js';
 
 const cards = (page) => page.locator('#grid .gcard');
 
 async function ready(page) {
   await page.goto('./');
   await page.evaluate(() => document.fonts.ready);
-  await expect(cards(page)).toHaveCount(11);
+  await expect(cards(page)).toHaveCount(GAMES.length);
   await expect(page.locator('html')).toHaveClass(/is-ready/);
   // Les vignettes s'injectent à l'approche de l'écran : on fait défiler pour toutes les charger
   await page.evaluate(async () => {
@@ -18,7 +19,7 @@ async function ready(page) {
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     }
   });
-  await expect(page.locator('#grid .gcard__thumb.is-loaded')).toHaveCount(11);
+  await expect(page.locator('#grid .gcard__thumb.is-loaded')).toHaveCount(GAMES.length);
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
@@ -28,7 +29,7 @@ test.describe('lobby', () => {
     await ready(page);
     await expect(page.locator('#feature .lb-feature__title')).not.toBeEmpty();
     await expect(page.locator('#player .lb-player__name')).toHaveText('JOUEUR');
-    await expect(page.locator('#gameCount')).toHaveText('11 jeux');
+    await expect(page.locator('#gameCount')).toHaveText(`${GAMES.length} jeux`);
     await page.waitForTimeout(500);
     await shot(page, testInfo, 'lobby');
     await page.screenshot({ path: `tests/screenshots/${testInfo.project.name}/lobby-full.png`, fullPage: true });
@@ -50,7 +51,7 @@ test.describe('lobby', () => {
     await expect(page.locator('#empty')).toBeVisible();
     await shot(page, testInfo, 'lobby-empty-search');
     await page.getByRole('button', { name: 'Tout afficher' }).click();
-    await expect(cards(page)).toHaveCount(11);
+    await expect(cards(page)).toHaveCount(GAMES.length);
     w.expectClean();
   });
 
@@ -83,7 +84,7 @@ test.describe('lobby', () => {
     await page.locator('#grid .gcard[data-id="paddock"] .gcard__link').click();
     await page.waitForURL(/page-11\/page11\.html$/);
     await page.goBack();
-    await expect(cards(page)).toHaveCount(11);
+    await expect(cards(page)).toHaveCount(GAMES.length);
     await expect(page.locator('#picksTabs [data-tab="continue"]')).toHaveAttribute('aria-selected', 'true');
     await expect(page.locator('#picksRail .gcard').first()).toContainText('F1 Manager');
     const g = (await readStore(page, 'gv:meta')).data.games.paddock;
@@ -123,7 +124,7 @@ test.describe('lobby', () => {
     await shot(page, testInfo, 'lobby-profile');
 
     await dlg.locator('[data-ptab="stats"]').click();
-    await expect(dlg.locator('#ppanel-stats table tbody tr')).toHaveCount(11);
+    await expect(dlg.locator('#ppanel-stats table tbody tr')).toHaveCount(GAMES.length);
     await shot(page, testInfo, 'lobby-stats');
     await dlg.locator('[data-ptab="ach"]').click();
     await expect(dlg.locator('#ppanel-ach .lb-ach').first()).toBeVisible();

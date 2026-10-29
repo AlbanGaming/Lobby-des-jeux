@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .gc-slab{animation:gc-slide 1.6s ease-in-out infinite alternate}
+    @keyframes gc-slide{from{transform:translateX(-58px)}to{transform:translateX(58px)}}
+    .gc-fall{transform-box:fill-box;transform-origin:center;animation:gc-fall 1.6s ease-in infinite}
+    @keyframes gc-fall{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(26px,90px) rotate(70deg);opacity:0}}
+    .gc-star{animation:gc-tw 1.2s steps(2) infinite}
+    @keyframes gc-tw{50%{opacity:.3}}
+  </style>
+  <defs><linearGradient id="gc-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d3557"/><stop offset=".55" stop-color="#6a4c93"/><stop offset="1" stop-color="#ff8a5b"/></linearGradient></defs>
+  <rect width="320" height="200" fill="url(#gc-sky)"/>
+  <g fill="#fff" class="gc-star"><rect x="40" y="24" width="3" height="3"/><rect x="270" y="40" width="2" height="2"/><rect x="230" y="16" width="3" height="3"/><rect x="80" y="54" width="2" height="2"/></g>
+  <circle cx="262" cy="34" r="14" fill="#f4efe4"/>
+  <g fill="#3d2c66"><rect x="0" y="150" width="40" height="50"/><rect x="44" y="132" width="30" height="68"/><rect x="236" y="140" width="34" height="60"/><rect x="274" y="122" width="46" height="78"/></g>
+  <rect x="0" y="186" width="320" height="14" fill="#241b3d"/>
+  <g stroke="#2a1a14" stroke-width="2">
+    <rect x="112" y="164" width="96" height="22" fill="#c0634a"/>
+    <rect x="114" y="142" width="92" height="22" fill="#c0634a"/>
+    <rect x="118" y="120" width="86" height="22" fill="#e3cfa1"/>
+    <rect x="118" y="98" width="82" height="22" fill="#e3cfa1"/>
+    <rect x="122" y="76" width="78" height="22" fill="#4cc3ff"/>
+  </g>
+  <g fill="#ffe9a8"><rect x="124" y="170" width="8" height="10"/><rect x="146" y="170" width="8" height="10"/><rect x="170" y="170" width="8" height="10"/><rect x="192" y="170" width="8" height="10"/><rect x="128" y="126" width="8" height="10"/><rect x="152" y="126" width="8" height="10"/><rect x="178" y="126" width="8" height="10"/></g>
+  <rect class="gc-fall" x="200" y="76" width="10" height="22" fill="#4cc3ff" stroke="#2a1a14" stroke-width="2"/>
+  <g class="gc-slab">
+    <path d="M161 14V50" stroke="#2a1a14" stroke-width="2"/>
+    <rect x="123" y="52" width="76" height="22" fill="#4cc3ff" stroke="#2a1a14" stroke-width="2"/>
+    <rect x="155" y="46" width="12" height="6" fill="#ffc93c"/>
+  </g>
+  <g transform="translate(40 92) rotate(-8)">
+    <rect x="-34" y="-12" width="76" height="28" rx="8" fill="#05060b"/>
+    <rect x="-34" y="-16" width="76" height="28" rx="8" fill="#ffc93c"/>
+    <text x="4" y="4" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="18" fill="#2a1d00">PARFAIT</text>
+  </g>
+</svg>
