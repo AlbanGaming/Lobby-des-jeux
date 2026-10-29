@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .al-a{animation:al-left 1.8s ease-in-out infinite}
+    .al-b{animation:al-right 1.8s ease-in-out infinite}
+    @keyframes al-left{0%,20%{transform:translateX(0)}55%,100%{transform:translateX(58px);opacity:0}}
+    @keyframes al-right{0%,20%{transform:translateX(0)}55%,100%{transform:translateX(-58px);opacity:0}}
+    .al-out{transform-box:fill-box;transform-origin:center;animation:al-out 1.8s cubic-bezier(.34,1.56,.64,1) infinite}
+    @keyframes al-out{0%,50%{transform:scale(0);opacity:0}70%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+    .al-bub{animation:al-bub 1.8s ease-in infinite}
+    @keyframes al-bub{from{transform:translateY(0);opacity:.8}to{transform:translateY(-30px);opacity:0}}
+  </style>
+  <rect width="320" height="200" fill="#10262b"/>
+  <g fill="#5bc0be" opacity=".08"><circle cx="160" cy="100" r="95"/><circle cx="160" cy="100" r="70"/></g>
+  <rect x="96" y="160" width="128" height="12" rx="6" fill="#05060b" opacity=".5"/>
+  <g class="al-a"><circle cx="102" cy="100" r="30" fill="#3a86d4" stroke="#1b1626" stroke-width="3"/><path fill="#fff8ec" d="M102 80c6 8 10 13 10 18a10 10 0 0 1-20 0c0-5 4-10 10-18z"/></g>
+  <g class="al-b"><circle cx="218" cy="100" r="30" fill="#e8573f" stroke="#1b1626" stroke-width="3"/><path fill="#fff8ec" d="M218 78c2 7 9 9 9 17a9 9 0 0 1-18 0c0-4 2-7 4-9 1 3 2 5 4 5-1-5 0-9 1-13z"/></g>
+  <g class="al-out"><circle cx="160" cy="100" r="34" fill="#9aa5b1" stroke="#1b1626" stroke-width="3"/><path fill="none" stroke="#fff8ec" stroke-width="5" stroke-linecap="round" d="M148 116c-5-6 5-10 0-17s5-10 0-15M160 116c-5-6 5-10 0-17s5-10 0-15M172 116c-5-6 5-10 0-17s5-10 0-15"/></g>
+  <g fill="#ffc93c"><circle class="al-bub" cx="150" cy="56" r="3"/><circle class="al-bub" cx="168" cy="60" r="2" style="animation-delay:-.6s"/><circle class="al-bub" cx="160" cy="50" r="2.5" style="animation-delay:-1.2s"/></g>
+  <g transform="translate(160 182)"><rect x="-46" y="-12" width="92" height="22" rx="8" fill="#ffc93c"/><text y="4" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="15" fill="#2a1d00">EAU + FEU</text></g>
+</svg>
