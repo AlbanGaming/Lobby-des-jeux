@@ -46,7 +46,7 @@
       <div class="lb-header__right">
         <button class="icon-btn lb-search-btn" type="button" id="btnSearch" aria-label="Rechercher un jeu (touche /)"></button>
         <span class="lb-pill lb-pill--streak" id="hdrStreak" title="Série de jours consécutifs"></span>
-        <span class="lb-pill lb-pill--credits" id="hdrCredits" title="Crédits"></span>
+        <button class="lb-pill lb-pill--credits" type="button" id="hdrCredits" aria-haspopup="dialog" title="Boutique"></button>
         <button class="lb-me" type="button" id="btnProfile" aria-haspopup="dialog"></button>
         <button class="icon-btn" type="button" id="btnSettings" aria-label="Paramètres" aria-haspopup="dialog"></button>
       </div>
@@ -121,6 +121,17 @@
       <div role="tabpanel" id="ppanel-stats" aria-labelledby="ptab-stats" hidden></div>
       <div role="tabpanel" id="ppanel-ach" aria-labelledby="ptab-ach" hidden></div>
     </div>
+  </dialog>
+
+  <!-- Boutique -->
+  <dialog class="dialog lb-dialog lb-dialog--wide" id="dlgShop" aria-labelledby="shopTitle">
+    <div class="dialog__head">
+      <h2 class="dialog__title" id="shopTitle">Boutique</h2>
+      <span class="sh-credits" id="shopCredits"></span>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer"></button>
+    </div>
+    <div class="lb-dtabs sh-tabs" role="tablist" aria-label="Rayons de la boutique" id="shopTabs"></div>
+    <div class="dialog__body" id="shopBody" role="tabpanel"></div>
   </dialog>
 
   <!-- Paramètres -->

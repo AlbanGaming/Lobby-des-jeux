@@ -10,6 +10,8 @@ import { formatInt, formatDuration } from '../shared/js/core/math.js';
 import { createRng, dailySeed, dayKey } from '../shared/js/core/rng.js';
 import { createStore } from '../shared/js/storage.js';
 import { motion } from '../shared/js/motion.js';
+import { applyLook, FRAMES, equipped } from '../shared/js/shop.js';
+import { initShop, openShop } from './shop.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -26,6 +28,9 @@ const state = {
 };
 
 const data = () => meta.getData();
+// Look d'avatar acheté à la boutique (cadre, accessoire)
+const look = () => ({ frame: FRAMES.find((f) => f.id === data().look.frame), hat: data().look.hat });
+const titleOf = () => (data().look.title !== 'none' ? equipped('title').name : '');
 const stats = (id) => data().games[id];
 
 const normalize = (s) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
@@ -117,7 +122,7 @@ function renderHeader() {
 
   const c = $('#hdrCredits');
   c.innerHTML = `${icon('coin')}<span>${formatInt(d.credits)}</span>`;
-  c.setAttribute('aria-label', `${formatInt(d.credits)} crédits`);
+  c.setAttribute('aria-label', `Boutique : ${formatInt(d.credits)} crédits`);
 
   const C = 2 * Math.PI * 22;
   $('#btnProfile').innerHTML = `
@@ -126,7 +131,7 @@ function renderHeader() {
       <circle cx="24" cy="24" r="22" fill="none" stroke="var(--coin)" stroke-width="3" stroke-linecap="round"
         stroke-dasharray="${(C * lvl.progress).toFixed(1)} ${C.toFixed(1)}"/>
     </svg>
-    ${avatarSVG(d.profile.avatar, { size: 36 })}
+    ${avatarSVG(d.profile.avatar, { size: 36, look: look() })}
     <span class="lb-me__lvl" aria-hidden="true">${lvl.level}</span>`;
   $('#btnProfile').setAttribute('aria-label', `Mon profil : ${d.profile.name}, niveau ${lvl.level}`);
 }
@@ -176,9 +181,10 @@ function renderPlayer() {
   const unlocked = all.filter((a) => d.achievements[a.key]).length;
   $('#player').innerHTML = `
     <div class="lb-player__id">
-      <button class="lb-player__avatar" type="button" data-open="profile" aria-label="Modifier mon avatar">${avatarSVG(d.profile.avatar, { size: 68 })}</button>
+      <button class="lb-player__avatar" type="button" data-open="profile" aria-label="Modifier mon avatar">${avatarSVG(d.profile.avatar, { size: 68, look: look() })}</button>
       <div>
         <p class="lb-player__name">${esc(d.profile.name)}</p>
+        ${titleOf() ? `<p class="lb-player__title">${esc(titleOf())}</p>` : ''}
         <p class="lb-player__lvl">Niveau <strong>${lvl.level}</strong> · ${formatInt(d.xp)} XP au total</p>
       </div>
     </div>
@@ -188,7 +194,7 @@ function renderPlayer() {
     </div>
     <div class="lb-tiles">
       <div class="lb-tile"><span style="color:var(--tomato)">${icon('flame')}</span><span class="lb-tile__value">${streak}</span><span class="lb-tile__label">jour${streak > 1 ? 's' : ''} de série</span></div>
-      <div class="lb-tile"><span style="color:var(--coin)">${icon('coin')}</span><span class="lb-tile__value">${formatInt(d.credits)}</span><span class="lb-tile__label">crédits</span></div>
+      <button class="lb-tile" type="button" data-open="shop"><span style="color:var(--coin)">${icon('coin')}</span><span class="lb-tile__value">${formatInt(d.credits)}</span><span class="lb-tile__label">crédits · boutique</span></button>
       <button class="lb-tile" type="button" data-open="profile" data-ptab="ach"><span style="color:var(--mint)">${icon('trophy')}</span><span class="lb-tile__value">${unlocked}<small style="font-size:.55em;color:var(--text-3)">/${all.length}</small></span><span class="lb-tile__label">succès</span></button>
     </div>
     <p class="lb-player__hint ${playedToday ? 'is-done' : ''}">${playedToday ? `${icon('check')} Série prolongée aujourd’hui. À demain !` : `${icon('flame')} Joue une partie aujourd’hui pour ${streak ? 'prolonger' : 'lancer'} ta série.`}</p>`;
@@ -205,13 +211,16 @@ function cardHTML(game, i = 0) {
   else if (st?.plays) line = `<span>${esc(cat.label)} · ${st.plays} partie${st.plays > 1 ? 's' : ''}${legacy}</span>`;
   else line = `<span>${esc(cat.label)}${legacy}</span>`;
   const badges = [];
+  const locked = !meta.gameUnlocked(game.id);
+  if (locked) line = `${icon('lock')}<span>Jeu secret · ${formatInt(game.secret.cost)} crédits</span>`;
+  else if (game.secret) badges.push('<span class="badge badge--secret">Secret</span>');
   if (game.status === 'new') badges.push('<span class="badge badge--new">Nouveau</span>');
   if (game.status === 'popular') badges.push('<span class="badge badge--hot">Populaire</span>');
   return `
-    <article class="gcard" style="--g:${game.color};--gi:${game.ink};--i:${i}" data-id="${game.id}">
-      <a class="gcard__link" href="${gamePath(game)}" data-play="${game.id}">
+    <article class="gcard ${locked ? 'is-locked' : ''}" style="--g:${game.color};--gi:${game.ink};--i:${i}" data-id="${game.id}">
+      <a class="gcard__link" href="${locked ? '#boutique' : gamePath(game)}" ${locked ? `data-shop-game="${game.id}"` : `data-play="${game.id}"`}>
         <div class="gcard__thumb" data-thumb="${game.id}">
-          <span class="gcard__play" aria-hidden="true">${icon('play')}</span>
+          <span class="gcard__play" aria-hidden="true">${icon(locked ? 'lock' : 'play')}</span>
         </div>
         <div class="gcard__body">
           <h3 class="gcard__title">${esc(game.title)}</h3>
@@ -321,7 +330,7 @@ function renderProfilePanel() {
   const seeds = state.avatarSeeds;
   $('#ppanel-me').innerHTML = `
     <div class="lb-me-head">
-      <div class="lb-me-head__avatar">${avatarSVG(av, { size: 112, label: 'Ton avatar' })}</div>
+      <div class="lb-me-head__avatar">${avatarSVG(av, { size: 112, label: 'Ton avatar', look: look() })}</div>
       <form class="lb-me-head__form" id="nameForm">
         <label class="field__label" for="nameInput">Pseudo</label>
         <div class="lb-me-head__row">
@@ -580,6 +589,8 @@ function openDialog(name, opts = {}) {
   } else if (name === 'settings') {
     renderSettings();
     $('#dlgSettings').showModal();
+  } else if (name === 'shop') {
+    openShop(opts.stab);
   }
 }
 
@@ -614,6 +625,12 @@ document.addEventListener('click', (e) => {
     }
     const g = getGame(t.dataset.fav);
     toast({ title: added ? 'Ajouté aux favoris' : 'Retiré des favoris', text: g.title, iconName: added ? 'heartFill' : 'heart', tone: added ? 'var(--tomato)' : undefined, duration: 1800 });
+    return;
+  }
+
+  if (t.dataset.shopGame) {
+    e.preventDefault();
+    openDialog('shop', { stab: 'jeux' });
     return;
   }
 
@@ -835,6 +852,7 @@ function focusSearch() {
 $('#btnSearch').addEventListener('click', focusSearch);
 $('#btnProfile').addEventListener('click', () => openDialog('profile', { ptab: 'me' }));
 $('#btnSettings').addEventListener('click', () => openDialog('settings'));
+$('#hdrCredits').addEventListener('click', () => openDialog('shop'));
 document.addEventListener('keydown', (e) => {
   const typing = e.target.closest?.('input, textarea, select, [contenteditable]');
   if ((e.key === '/' && !typing) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
@@ -852,7 +870,13 @@ document.addEventListener('pointerover', (e) => {
 });
 
 // Méta-progression
-meta.events.addEventListener('change', renderAll);
+meta.events.addEventListener('change', () => {
+  applyLook();
+  renderAll();
+});
+meta.events.addEventListener('gel', (e) => {
+  toast({ title: 'Série sauvée !', text: `${e.detail.used} gel${e.detail.used > 1 ? 's' : ''} de série utilisé${e.detail.used > 1 ? 's' : ''}. Il t’en reste ${e.detail.left}.`, iconName: 'flame', tone: 'var(--sky)' });
+});
 meta.events.addEventListener('settings', (e) => audio.configure(e.detail));
 meta.events.addEventListener('achievement', (e) => {
   sfx('achievement');
@@ -868,6 +892,10 @@ window.addEventListener('pageshow', (e) => {
   if (e.persisted) meta.reload();
 });
 
+applyLook();
+initShop({ confirmAction: (o) => confirmAction(o), sfx, hydrateThumbs });
 renderAll();
+// Lien direct vers la boutique (depuis un jeu secret verrouillé)
+if (location.hash === '#boutique') openDialog('shop', { stab: 'jeux' });
 document.documentElement.classList.add('is-ready');
 document.documentElement.setAttribute('data-gv-ready', '');

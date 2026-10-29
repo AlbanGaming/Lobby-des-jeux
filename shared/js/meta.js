@@ -26,6 +26,12 @@ const DEFAULTS = {
   dailyWins: 0,
   stats: { runs: 0, timeMs: 0, days: 0, firstDay: '' },
   owned: [],
+  // Boutique : objets équipés, consommables, boost, relances du défi
+  look: { theme: 'nuit', frame: 'none', hat: 'none', title: 'none', celebration: 'confettis', sound: 'classique' },
+  inventory: { gel: 0 },
+  boostUntil: 0,
+  reroll: { day: '', n: 0 },
+  shop: { purchases: 0, chests: 0, gelsUsed: 0 },
   settings: { sound: true, music: false, volume: 0.8, motion: 'system' },
   migratedLegacy: false,
 };
@@ -49,6 +55,11 @@ export const GLOBAL_ACHIEVEMENTS = [
   { id: 'defi-10', title: 'Habitué des défis', desc: 'Réussis 10 défis du jour.', xp: 400 },
   { id: 'records-10', title: 'Chasseur de records', desc: 'Bats 10 fois un record personnel.', xp: 200 },
   { id: 'collection-25', title: 'Collectionneur', desc: 'Débloque 25 succès.', xp: 300 },
+  { id: 'premier-achat', title: 'Premier achat', desc: 'Achète un objet à la boutique.', xp: 30 },
+  { id: 'coffre', title: 'Chasseur de trésors', desc: 'Ouvre un coffre surprise.', xp: 40 },
+  { id: 'garde-robe', title: 'Garde-robe', desc: 'Possède 15 objets de la boutique.', xp: 200 },
+  { id: 'mecene', title: 'Mécène', desc: 'Débloque les trois jeux secrets.', xp: 300 },
+  { id: 'gel', title: 'Sauvé par le gel', desc: 'Un gel de série a protégé ta série.', xp: 40 },
 ];
 
 export function allAchievements() {
@@ -141,6 +152,49 @@ export function buy(itemId, cost) {
   return true;
 }
 
+/** Donne un objet sans le faire payer (coffre surprise) */
+export function grant(itemId) {
+  if (!owns(itemId)) store.data.owned.push(itemId);
+  save();
+}
+
+/** Un jeu secret de la boutique est-il ouvert ? */
+export const gameUnlocked = (id) => !getGame(id)?.secret || owns(`game:${id}`);
+
+// Compteurs et succès de la boutique
+export function noteShopping({ chest = false } = {}) {
+  store.data.shop.purchases++;
+  if (chest) store.data.shop.chests++;
+  unlockAchievement('global', 'premier-achat', { silentSave: true });
+  if (chest) unlockAchievement('global', 'coffre', { silentSave: true });
+  if (store.data.owned.filter((k) => !k.startsWith('game:')).length >= 15) unlockAchievement('global', 'garde-robe', { silentSave: true });
+  const secrets = GAMES.filter((g) => g.secret);
+  if (secrets.length && secrets.every((g) => owns(`game:${g.id}`))) unlockAchievement('global', 'mecene', { silentSave: true });
+  save();
+}
+
+// ---------- Objets de la boutique ----------
+export const boostActive = () => Date.now() < (store.data.boostUntil ?? 0);
+export const rerollsToday = () => (store.data.reroll.day === dayKey() ? store.data.reroll.n : 0);
+
+/** Achète un consommable : 'gel' (max 2 en réserve), 'relance' (défi du jour), 'boost' (30 min) */
+export function buyItem(id, cost, { max = Infinity, boostMs = 30 * 60e3, maxRerolls = 3 } = {}) {
+  if (store.data.credits < cost) return false;
+  if (id === 'gel') {
+    if (store.data.inventory.gel >= max) return false;
+    store.data.inventory.gel++;
+  } else if (id === 'relance') {
+    const ch = dailyChallenge();
+    if (!ch || ch.done || rerollsToday() >= maxRerolls) return false;
+    store.data.reroll = { day: dayKey(), n: rerollsToday() + 1 };
+  } else if (id === 'boost') {
+    store.data.boostUntil = Math.max(Date.now(), store.data.boostUntil ?? 0) + boostMs;
+  } else return false;
+  store.data.credits -= cost;
+  noteShopping();
+  return true;
+}
+
 export function gameStats(id) {
   const g = (store.data.games[id] ??= { ...GAME_DEFAULTS });
   for (const k in GAME_DEFAULTS) if (g[k] === undefined) g[k] = GAME_DEFAULTS[k];
@@ -182,7 +236,16 @@ function touchDay() {
   const s = store.data.streak;
   if (s.last === today) return false;
   const gap = s.last ? daysBetween(s.last, today) : Infinity;
-  s.count = gap === 1 ? s.count + 1 : 1;
+  const missed = gap - 1;
+  if (gap === 1) s.count++;
+  else if (Number.isFinite(gap) && missed <= store.data.inventory.gel) {
+    // Des gels de série couvrent les jours manqués
+    store.data.inventory.gel -= missed;
+    store.data.shop.gelsUsed += missed;
+    s.count++;
+    emit('gel', { used: missed, left: store.data.inventory.gel });
+    unlockAchievement('global', 'gel', { silentSave: true });
+  } else s.count = 1;
   s.best = Math.max(s.best, s.count);
   s.last = today;
   store.data.stats.days++;
@@ -194,18 +257,20 @@ function touchDay() {
 export function currentStreak() {
   const s = store.data.streak;
   if (!s.last) return 0;
-  return daysBetween(s.last, dayKey()) <= 1 ? s.count : 0;
+  return daysBetween(s.last, dayKey()) - 1 <= Math.max(0, store.data.inventory.gel) ? s.count : 0;
 }
 
 // ---------- Défi du jour ----------
 export function dailyChallenge(date = new Date()) {
   const pool = [];
   for (const g of GAMES) {
-    if (!g.ready) continue;
+    if (!g.ready || !gameUnlocked(g.id)) continue;
     for (const d of g.daily ?? []) pool.push({ ...d, gameId: g.id });
   }
   if (!pool.length) return null;
-  const rng = createRng(dailySeed('defi', date));
+  // Une relance achetée à la boutique tire un autre défi pour la journée
+  const n = store.data.reroll.day === dayKey(date) ? store.data.reroll.n : 0;
+  const rng = createRng(dailySeed(n ? `defi-r${n}` : 'defi', date));
   const pick = rng.pick(pool);
   const day = dayKey(date);
   return {
@@ -307,6 +372,8 @@ export function reportRun(id, result) {
   const levelBefore = levelInfo(store.data.xp);
   let xp = result.xp ?? (game?.xp ? game.xp({ score, stats: result.stats ?? {} }) : 10);
   if (isRecord && prevBest !== null) xp = Math.round(xp * 1.25);
+  const boosted = boostActive();
+  if (boosted) xp *= 2;
   g.xp += xp;
   addXP(xp);
   const credits = Math.max(1, Math.round(xp / 6)) + (isRecord && prevBest !== null ? 5 : 0);
@@ -331,9 +398,11 @@ export function reportRun(id, result) {
 
   // Succès globaux
   unlockAchievement('global', 'premiers-pas', { silentSave: true });
-  const tried = GAMES.filter((x) => (store.data.games[x.id]?.plays ?? 0) > 0).length;
+  // Les jeux secrets de la boutique ne comptent pas pour « essayer tous les jeux »
+  const open = GAMES.filter((x) => !x.secret);
+  const tried = open.filter((x) => (store.data.games[x.id]?.plays ?? 0) > 0).length;
   if (tried >= 5) unlockAchievement('global', 'curieux', { silentSave: true });
-  if (tried >= GAMES.length) unlockAchievement('global', 'explorateur', { silentSave: true });
+  if (tried >= open.length) unlockAchievement('global', 'explorateur', { silentSave: true });
   if (store.data.stats.runs >= 50) unlockAchievement('global', 'habitue', { silentSave: true });
   if (store.data.stats.runs >= 250) unlockAchievement('global', 'accro', { silentSave: true });
   if (store.data.records >= 10) unlockAchievement('global', 'records-10', { silentSave: true });
@@ -346,6 +415,7 @@ export function reportRun(id, result) {
     isRecord,
     xp,
     credits,
+    boosted,
     daily,
     levelBefore,
     levelAfter: levelInfo(store.data.xp),

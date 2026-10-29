@@ -15,6 +15,8 @@ import { createShell } from './ui/shell.js';
 import { toast } from './ui/toast.js';
 import { formatInt } from './core/math.js';
 import { motion } from './motion.js';
+import { applyLook } from './shop.js';
+import { celebrate } from './ui/celebrate.js';
 
 export function bootGame(id, opts = {}) {
   const game = opts.game ?? getGame(id);
@@ -26,6 +28,10 @@ export function bootGame(id, opts = {}) {
 
   const settings = meta.getSettings();
   audio.configure(settings);
+  // Thème et pack de sons achetés à la boutique
+  applyLook();
+  meta.events.addEventListener('change', applyLook);
+  const locked = !meta.gameUnlocked(id);
   if (opts.music) audio.setSong(opts.music);
 
   let runId = 0; // change à chaque partie : annule les enchaînements de la précédente
@@ -99,11 +105,12 @@ export function bootGame(id, opts = {}) {
     },
 
     showStart() {
+      if (locked) return shell.showLocked({ cost: game.secret.cost });
       shell.showStart({ best: gv.best });
     },
 
     start() {
-      if (shell.state === 'playing') return;
+      if (shell.state === 'playing' || locked) return;
       runId++;
       shell.hideScreens();
       meta.startRun(id);
@@ -151,6 +158,7 @@ export function bootGame(id, opts = {}) {
       audio.pauseMusic();
       const r = meta.reportRun(id, { score, stats, xp });
       audio.play(sound ?? (r.isRecord && r.prevBest !== null ? 'record' : 'gameOver'));
+      if (r.isRecord && r.prevBest !== null) celebrate(meta.getData().look.celebration);
       shell.showGameOver({ ...r, stats: extraStats, nextUnlock, title, kicker, scoreText, extraHtml });
       return r;
     },

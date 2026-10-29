@@ -416,3 +416,9 @@ body.gv-game > .gv-stage { grid-row: 2; }
   80% { opacity: 1; }
   100% { opacity: 0; transform: translate(-50%, -60%) scale(0.95); }
 }
+
+/* Jeu secret pas encore débloqué */
+.gv-locked { text-align: center; }
+.gv-locked__icon { display: inline-grid; place-items: center; width: 64px; height: 64px; margin: 0 auto var(--s-2); border-radius: 50%; background: var(--surface-2); box-shadow: inset 0 0 0 3px var(--accent); color: var(--accent); }
+.gv-locked__icon .icon { width: 28px; height: 28px; }
+.gv-locked .gv-card__lead { display: block; }

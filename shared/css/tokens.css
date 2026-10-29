@@ -129,3 +129,53 @@
   --dur-4: 0ms;
   --dur-5: 0ms;
 }
+
+/* ---------- Thèmes de la boutique (lobby et barre des jeux) ---------- */
+:root[data-gv-theme='ocean'] {
+  --ink-950: #04131f; --ink-900: #071b2b; --ink-850: #0a2236; --ink-800: #0e2a40; --ink-700: #16405e; --ink-600: #22567a; --ink-500: #3a7298; --ink-line: #020a12;
+  --paper-2: #bcd8ea; --paper-3: #86aac4;
+  --accent: var(--sky); --accent-deep: var(--sky-deep); --accent-ink: #04131f;
+}
+:root[data-gv-theme='foret'] {
+  --ink-950: #08140d; --ink-900: #0c1c12; --ink-850: #102418; --ink-800: #143021; --ink-700: #1f4530; --ink-600: #2d5c40; --ink-500: #447a58; --ink-line: #030a06;
+  --paper: #eef4e4; --paper-2: #c2d6b8; --paper-3: #8eaa86;
+  --accent: var(--mint); --accent-deep: var(--mint-deep); --accent-ink: #062014;
+}
+:root[data-gv-theme='aube'] {
+  --ink-950: #1a0f1c; --ink-900: #221426; --ink-850: #2a1830; --ink-800: #35203a; --ink-700: #4a2e50; --ink-600: #623e68; --ink-500: #80568a; --ink-line: #0e0610;
+  --paper: #fbefe6; --paper-2: #e2c8c4; --paper-3: #b8949a;
+  --accent: #ff8a5b; --accent-deep: #c4532a; --accent-ink: #2a1008;
+}
+:root[data-gv-theme='papier'] {
+  color-scheme: light;
+  --ink-950: #f4efe4; --ink-900: #fbf7ee; --ink-850: #f0e8d8; --ink-800: #e9dfcc; --ink-700: #d8cbb2; --ink-600: #bfae90; --ink-500: #9a8a6e; --ink-line: #8a7a5e;
+  --paper: #1f2233; --paper-2: #3a3e55; --paper-3: #5a5e78;
+  --accent: #c4532a; --accent-deep: #8a3214; --accent-ink: #fff8ec;
+  --focus: #1a7fb8;
+}
+:root[data-gv-theme='neon'] {
+  --ink-950: #0d0618; --ink-900: #130a22; --ink-850: #190d2c; --ink-800: #22113b; --ink-700: #35195a; --ink-600: #4a247a; --ink-500: #6a35a8; --ink-line: #05020a;
+  --paper: #fff0fa; --paper-2: #e2c2f0; --paper-3: #b28ccc;
+  --accent: #ff5fa2; --accent-deep: #c22a6e; --accent-ink: #1b0612;
+  --focus: #4cfff0;
+}
+:root[data-gv-theme='retro'] {
+  --ink-950: #030a04; --ink-900: #051007; --ink-850: #07160a; --ink-800: #0c2210; --ink-700: #14381a; --ink-600: #1f5226; --ink-500: #2e7236; --ink-line: #010402;
+  --paper: #c8ffc0; --paper-2: #8ce68a; --paper-3: #5cb862;
+  --accent: #3eff7a; --accent-deep: #18b048; --accent-ink: #021006;
+}
+/* Lignes de balayage de l'écran cathodique, par-dessus tout (sans bloquer les clics) */
+:root[data-gv-theme='retro'] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.16) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+:root[data-gv-theme='or'] {
+  --ink-950: #0f0b02; --ink-900: #161004; --ink-850: #1c1405; --ink-800: #241a05; --ink-700: #3a2a08; --ink-600: #523c0e; --ink-500: #735618; --ink-line: #060401;
+  --paper: #fff6d8; --paper-2: #e8d49a; --paper-3: #b8a066;
+  --accent: #ffd15c; --accent-deep: #c98f00; --accent-ink: #241a00;
+}

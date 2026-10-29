@@ -23,6 +23,7 @@ class AudioEngine {
     this.song = null;
     this.musicTimer = 0;
     this.lastPlay = new Map();
+    this.pack = 'classique'; // timbre des effets (boutique : coton, retro, xylo, cosmos)
     this._unlock = this._unlock.bind(this);
     if (typeof window !== 'undefined') {
       window.addEventListener('pointerdown', this._unlock, { capture: true });
@@ -103,7 +104,13 @@ class AudioEngine {
   }
 
   /** Oscillateur avec enveloppe et glissando. */
-  tone({ type = 'square', freq = 440, to, duration = 0.12, attack = 0.004, volume = 0.3, delay = 0, vibrato = 0, vibratoRate = 18, filter, pan = 0, bus } = {}) {
+  tone(opts = {}) {
+    // Les effets (pas la musique) prennent le timbre du pack de sons choisi
+    if (!opts.bus && this.pack !== 'classique' && PACKS[this.pack]) opts = PACKS[this.pack].tone(opts, this);
+    this._tone(opts);
+  }
+
+  _tone({ type = 'square', freq = 440, to, duration = 0.12, attack = 0.004, volume = 0.3, delay = 0, vibrato = 0, vibratoRate = 18, filter, pan = 0, bus } = {}) {
     if (!this.ready || !this.enabled) return;
     const ctx = this.ctx;
     const t0 = ctx.currentTime + delay;
@@ -138,7 +145,12 @@ class AudioEngine {
   }
 
   /** Bruit blanc filtré (impacts, souffles, explosions, caisse claire). */
-  noise({ duration = 0.2, volume = 0.3, freq = 2000, to, q = 0.8, filterType = 'bandpass', delay = 0, attack = 0.002, pan = 0, bus } = {}) {
+  noise(opts = {}) {
+    if (!opts.bus && this.pack !== 'classique' && PACKS[this.pack]?.noise) opts = PACKS[this.pack].noise(opts);
+    this._noiseBurst(opts);
+  }
+
+  _noiseBurst({ duration = 0.2, volume = 0.3, freq = 2000, to, q = 0.8, filterType = 'bandpass', delay = 0, attack = 0.002, pan = 0, bus } = {}) {
     if (!this.ready || !this.enabled) return;
     const ctx = this.ctx;
     const t0 = ctx.currentTime + delay;
@@ -260,6 +272,32 @@ const DRUMS = {
 };
 
 // Banque d'effets. Chaque entrée : (audio, pitch, volume, pan)
+// Packs de sons : ils réécrivent les réglages d'un oscillateur ou d'un bruit avant de le jouer
+const semitone = (f) => (f ? 440 * 2 ** (Math.round(12 * Math.log2(f / 440)) / 12) : f);
+const PACKS = {
+  coton: {
+    tone: (o) => ({ ...o, type: o.type === 'sine' ? 'sine' : 'triangle', filter: Math.min(o.filter ?? 2200, 2200), volume: (o.volume ?? 0.3) * 0.85, attack: Math.max(o.attack ?? 0.004, 0.012) }),
+    noise: (o) => ({ ...o, volume: (o.volume ?? 0.3) * 0.6, filterType: 'lowpass' }),
+  },
+  retro: {
+    tone: (o) => ({ ...o, type: 'square', freq: semitone(o.freq ?? 440), to: o.to ? semitone(o.to) : undefined, filter: undefined, vibrato: 0 }),
+    noise: (o) => ({ ...o, q: Math.max(o.q ?? 0.8, 4) }),
+  },
+  xylo: {
+    tone: (o, a) => {
+      const d = Math.min((o.duration ?? 0.12) * 0.9, 0.25);
+      // Une harmonique aiguë et brève donne le « tintement » de la lame
+      a._tone({ type: 'sine', freq: (o.freq ?? 440) * 3.01, duration: d * 0.45, volume: (o.volume ?? 0.3) * 0.22, delay: o.delay ?? 0, pan: o.pan ?? 0 });
+      return { ...o, type: 'triangle', duration: d, attack: 0.002, to: o.to ? (o.freq ?? 440) + ((o.to - (o.freq ?? 440)) * 0.3) : undefined };
+    },
+  },
+  cosmos: {
+    tone: (o) => ({ ...o, type: 'sine', vibrato: Math.max(o.vibrato ?? 0, (o.freq ?? 440) * 0.025), vibratoRate: 7, duration: (o.duration ?? 0.12) * 1.3, filter: Math.min(o.filter ?? 3200, 3200) }),
+    noise: (o) => ({ ...o, duration: (o.duration ?? 0.2) * 1.3, volume: (o.volume ?? 0.3) * 0.8 }),
+  },
+};
+export const SOUND_PACKS = Object.keys(PACKS);
+
 const SFX = {
   click: (a, p, v, pan) => a.tone({ type: 'square', freq: 900 * p, to: 600 * p, duration: 0.04, volume: 0.12 * v, pan }),
   hover: (a, p, v) => a.tone({ type: 'sine', freq: 1200 * p, duration: 0.03, volume: 0.05 * v }),

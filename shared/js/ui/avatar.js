@@ -50,18 +50,44 @@ const TOPS = [
   (p) => `<rect x="24" y="10" width="16" height="7" rx="3.5" fill="${p.deep}"/><rect x="14" y="8" width="36" height="4" rx="2" fill="${p.main}"/>`,
 ];
 
-/** Renvoie le SVG d'un avatar. avatar = { kind: 'gen', seed, palette } | { kind: 'image', data } */
-export function avatarSVG(avatar, { size = 64, label = '' } = {}) {
+// ---------- Boutique : cadres et accessoires ----------
+// frame = { id, color, color2, glow, dashed, leaves } ; hat = id
+const HAT_SVG = {
+  fete: '<path d="M24 18L33 0l8 18z" fill="#ff5fa2"/><path d="M27 12l10-2M29 7l7-1.5" stroke="#ffc93c" stroke-width="2.4"/><circle cx="33" cy="1.5" r="3" fill="#ffc93c"/>',
+  antennes: '<path d="M24 17L17 5M40 17l7-12" stroke="#a9b3c4" stroke-width="2.6" stroke-linecap="round"/><circle cx="16.5" cy="4.5" r="3.6" fill="#ff5a4e"/><circle cx="47.5" cy="4.5" r="3.6" fill="#3ee6a8"/>',
+  lunettes: '<rect x="18" y="25.5" width="13" height="10" rx="4" fill="#05060b"/><rect x="33" y="25.5" width="13" height="10" rx="4" fill="#05060b"/><path d="M31 29h2" stroke="#05060b" stroke-width="2"/><path d="M20.5 28l3-1.5M35.5 28l3-1.5" stroke="#fff" stroke-opacity=".55" stroke-width="1.6" stroke-linecap="round"/>',
+  casque: '<path d="M9 34a23 22 0 0 1 46 0" fill="none" stroke="#2b2d42" stroke-width="4.5"/><rect x="4.5" y="28" width="10" height="17" rx="4" fill="#ff5a4e" stroke="#2b2d42" stroke-width="2"/><rect x="49.5" y="28" width="10" height="17" rx="4" fill="#ff5a4e" stroke="#2b2d42" stroke-width="2"/>',
+  couronne: '<path d="M19 18V6l7 6 6-9 6 9 7-6v12z" fill="#ffc93c" stroke="#c98f00" stroke-width="1.6" stroke-linejoin="round"/><circle cx="32" cy="13" r="2.2" fill="#ff5a4e"/><circle cx="24" cy="15" r="1.6" fill="#4cc3ff"/><circle cx="40" cy="15" r="1.6" fill="#3ee6a8"/>',
+  aureole: '<ellipse cx="32" cy="8" rx="15" ry="4.2" fill="none" stroke="#fff3c4" stroke-width="5" opacity=".35"/><ellipse cx="32" cy="8" rx="15" ry="4.2" fill="none" stroke="#ffd15c" stroke-width="2.6"/>',
+};
+let uid = 0;
+function frameSVG(fr) {
+  if (!fr || fr.id === 'none') return '';
+  const id = `avf${++uid}`;
+  const glow = fr.glow ? `<filter id="${id}" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.6"/></filter><rect x="2.5" y="2.5" width="59" height="59" rx="15" fill="none" stroke="${fr.color}" stroke-width="5" filter="url(#${id})" opacity=".8"/>` : '';
+  const leaves = fr.leaves ? [8, 18, 28, 38, 48].map((y) => `<ellipse cx="4.5" cy="${y + 6}" rx="2.6" ry="5" fill="${fr.color}" transform="rotate(-25 4.5 ${y + 6})"/><ellipse cx="59.5" cy="${y + 6}" rx="2.6" ry="5" fill="${fr.color}" transform="rotate(25 59.5 ${y + 6})"/>`).join('') + `<circle cx="32" cy="61" r="2.6" fill="${fr.color2}"/>` : '';
+  return `${glow}<rect x="2.5" y="2.5" width="59" height="59" rx="15" fill="none" stroke="${fr.color2}" stroke-width="5"/><rect x="2.5" y="2.5" width="59" height="59" rx="15" fill="none" stroke="${fr.color}" stroke-width="3" ${fr.dashed ? 'stroke-dasharray="5 3"' : ''}/>${leaves}`;
+}
+
+/**
+ * Renvoie le SVG d'un avatar. avatar = { kind: 'gen', seed, palette } | { kind: 'image', data }
+ * look = { frame: objet cadre, hat: id d'accessoire } (boutique)
+ */
+export function avatarSVG(avatar, { size = 64, label = '', look = null } = {}) {
   const a11y = label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true"';
+  const hat = look?.hat && look.hat !== 'none' ? HAT_SVG[look.hat] ?? '' : '';
+  const frame = frameSVG(look?.frame);
   if (avatar?.kind === 'image' && typeof avatar.data === 'string' && avatar.data.startsWith('data:image/')) {
-    return `<img class="avatar-img" src="${esc(avatar.data)}" width="${size}" height="${size}" alt="${esc(label)}" ${label ? '' : 'aria-hidden="true"'}>`;
+    if (!hat && !frame) return `<img class="avatar-img" src="${esc(avatar.data)}" width="${size}" height="${size}" alt="${esc(label)}" ${label ? '' : 'aria-hidden="true"'}>`;
+    const clip = `avc${++uid}`;
+    return `<svg class="avatar-svg" viewBox="0 0 64 64" width="${size}" height="${size}" ${a11y}><clipPath id="${clip}"><rect width="64" height="64" rx="16"/></clipPath><image href="${esc(avatar.data)}" width="64" height="64" clip-path="url(#${clip})" preserveAspectRatio="xMidYMid slice"/>${frame}${hat}</svg>`;
   }
   const p = getPalette(avatar?.palette ?? 0);
   const f = parts(avatar?.seed ?? 'gameverse');
   const screen = '#11131f';
   return `<svg class="avatar-svg" viewBox="0 0 64 64" width="${size}" height="${size}" ${a11y}>
     <rect width="64" height="64" rx="16" fill="${p.bg}"/>
-    ${TOPS[f.top](p)}
+    ${hat && look.hat !== 'lunettes' ? '' : TOPS[f.top](p)}
     <rect x="12" y="19" width="40" height="34" rx="11" fill="${p.deep}"/>
     <rect x="12" y="16" width="40" height="34" rx="11" fill="${p.main}"/>
     ${p.shine ? '<path d="M17 21a7 7 0 0 1 6-3" stroke="#fff" stroke-opacity=".7" stroke-width="2.5" fill="none" stroke-linecap="round"/>' : ''}
@@ -70,6 +96,7 @@ export function avatarSVG(avatar, { size = 64, label = '' } = {}) {
     ${MOUTHS[f.mouth](p.eye)}
     ${f.cheeks ? `<circle cx="15.5" cy="39" r="2.4" fill="${p.deep}" opacity=".9"/><circle cx="48.5" cy="39" r="2.4" fill="${p.deep}" opacity=".9"/>` : ''}
     <rect x="22" y="53" width="20" height="5" rx="2.5" fill="${p.deep}"/>
+    ${frame}${hat}
   </svg>`;
 }
 

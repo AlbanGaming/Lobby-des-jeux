@@ -245,6 +245,23 @@ export function createShell({
       open(startEl);
     },
 
+    // Jeu secret pas encore acheté : l'accueil renvoie vers la boutique du lobby
+    showLocked({ cost }) {
+      shell.state = 'locked';
+      startEl.innerHTML = `
+        <div class="gv-card gv-locked">
+          <span class="gv-locked__icon">${icon('lock')}</span>
+          <p class="gv-kicker">Jeu secret</p>
+          <h2 class="gv-card__title">${esc(game.title)}</h2>
+          <p class="gv-card__lead">${esc(game.description)}</p>
+          <div class="gv-actions">
+            <a class="btn btn--primary btn--lg btn--block" href="${lobbyHref}#boutique" data-primary>${icon('coin')}Débloquer à la boutique · ${formatInt(cost)}</a>
+            <a class="btn btn--ghost btn--block" href="${lobbyHref}">${icon('home')}Retour au lobby</a>
+          </div>
+        </div>`;
+      open(startEl);
+    },
+
     hideScreens() {
       if (openScreen) close(openScreen);
       shell.state = 'playing';
@@ -291,7 +308,7 @@ export function createShell({
           <div class="gv-stats">${stats.map((s) => `<div class="gv-stat"><div class="gv-stat__label">${esc(s.label)}</div><div class="gv-stat__value">${esc(s.value)}</div></div>`).join('')}</div>
           ${r.extraHtml ? `<div class="gv-extra">${r.extraHtml}</div>` : ''}
           <div class="gv-progress">
-            <div class="gv-progress__row"><span>${lvlUp ? `<strong>Niveau ${r.levelAfter.level} atteint !</strong>` : `Niveau <strong>${r.levelAfter.level}</strong>`}</span><span><strong>+${formatInt(r.xp)} XP</strong> · +${formatInt(r.credits)} ${icon('coin')}</span></div>
+            <div class="gv-progress__row"><span>${lvlUp ? `<strong>Niveau ${r.levelAfter.level} atteint !</strong>` : `Niveau <strong>${r.levelAfter.level}</strong>`}</span><span><strong>+${formatInt(r.xp)} XP${r.boosted ? ' (boost ×2)' : ''}</strong> · +${formatInt(r.credits)} ${icon('coin')}</span></div>
             <div class="meter" data-meter="xp" style="--value:${lvlUp ? 0 : r.levelBefore.progress}"><div class="meter__fill"></div></div>
             ${nu ? `
               <div class="gv-progress__row"><span>Prochain déblocage : <strong>${esc(nu.label)}</strong></span><span>${esc(formatInt(Math.min(nu.current, nu.target)))} / ${esc(formatInt(nu.target))}</span></div>
