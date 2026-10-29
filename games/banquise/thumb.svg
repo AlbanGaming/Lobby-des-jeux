@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .bq-p{animation:bq-slide 2.8s cubic-bezier(.5,0,.3,1) infinite}
+    @keyframes bq-slide{0%,15%{transform:translate(0,0)}45%,60%{transform:translate(120px,0)}85%,100%{transform:translate(120px,-72px)}}
+    .bq-s{transform-box:fill-box;transform-origin:center;animation:bq-squash 2.8s infinite}
+    @keyframes bq-squash{0%,44%{transform:none}48%{transform:scale(1.15,.85)}54%,84%{transform:none}88%{transform:scale(1.15,.85)}94%,100%{transform:none}}
+    .bq-w{animation:bq-wave 3s ease-in-out infinite alternate}
+    @keyframes bq-wave{to{transform:translateX(-14px)}}
+  </style>
+  <rect width="320" height="200" fill="#0b4f7a"/>
+  <g class="bq-w" stroke="#fff" stroke-opacity=".08" stroke-width="3" fill="none"><path d="M-20 20q20-8 40 0t40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0"/><path d="M-20 186q20-8 40 0t40 0 40 0 40 0 40 0 40 0 40 0 40 0 40 0"/></g>
+  <rect x="58" y="36" width="216" height="144" fill="#cdeefc"/>
+  <g stroke="#468cbe" stroke-opacity=".2"><path d="M94 36v144M130 36v144M166 36v144M202 36v144M238 36v144M58 72h216M58 108h216M58 144h216"/></g>
+  <rect x="58" y="144" width="36" height="36" fill="#f7fbff"/>
+  <g transform="translate(238 108)"><path d="M5 27l2-14 9-8 11 3 5 12-2 8z" fill="#7d8597" stroke="#4a5160" stroke-width="2"/><path d="M8 12l8-6 10 3-4 3-6-1z" fill="#f4fbff"/></g>
+  <g transform="translate(202 36)"><path d="M3 30a15 15 0 0 1 30 0z" fill="#fff" stroke="#9cc7e0" stroke-width="1.5"/><path d="M13 30a5 5 0 0 1 10 0z" fill="#16324a"/><path d="M18 15V5" stroke="#6b4a2b" stroke-width="1.5"/><path d="M18 5l7 2-7 3z" fill="#ff5d5d"/></g>
+  <g transform="translate(130 108)"><ellipse cx="18" cy="18" rx="8" ry="5" fill="#ff8a5b" stroke="#b4432a" stroke-width="1.2"/><path d="M24 18l6-5v10z" fill="#ff8a5b"/></g>
+  <g class="bq-p"><g class="bq-s" transform="translate(94 108)">
+    <ellipse cx="18" cy="33" rx="10" ry="3" fill="#00284622"/>
+    <ellipse cx="13" cy="32" rx="4" ry="2" fill="#ffb02e"/><ellipse cx="23" cy="32" rx="4" ry="2" fill="#ffb02e"/>
+    <ellipse cx="18" cy="20" rx="10" ry="13" fill="#1f2433"/>
+    <ellipse cx="18" cy="22" rx="7" ry="10" fill="#f7f3ea"/><ellipse cx="18" cy="12" rx="6" ry="4" fill="#f7f3ea"/>
+    <circle cx="15.5" cy="11.5" r="1.3" fill="#1f2433"/><circle cx="20.5" cy="11.5" r="1.3" fill="#1f2433"/>
+    <path d="M16 14h4l-2 2z" fill="#ffb02e"/><rect x="10" y="16" width="16" height="2.5" fill="#e63946"/>
+  </g></g>
+  <g transform="translate(160 26)"><rect x="-50" y="-12" width="100" height="22" rx="8" fill="#7fd0f5"/><text y="4" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="15" fill="#0b4f7a">ÇA GLISSE !</text></g>
+</svg>
