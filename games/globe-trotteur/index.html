@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Globe-trotteur · GameVerse</title>
+  <meta name="description" content="Globe-trotteur : un quiz de géographie contre la montre. Drapeaux, capitales et cartes de 91 pays, des continents à débloquer et un défi du jour. Gratuit, sans pub.">
+  <meta name="theme-color" content="#0f2b46">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GameVerse">
+  <meta property="og:title" content="Globe-trotteur · GameVerse">
+  <meta property="og:description" content="Drapeaux, capitales et cartes : fais le tour du monde en 60 secondes.">
+  <meta property="og:image" content="https://albangaming.github.io/Lobby-des-jeux/og.png">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="preload" href="../../shared/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../shared/fonts/rubik.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="data/countries.json" as="fetch" type="application/json" crossorigin>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/components.css">
+  <link rel="stylesheet" href="../../shared/css/shell.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="../../shared/js/fallback.js" defer></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body class="gv-game">
+  <main class="gv-stage" id="stage">
+    <div class="gt-wrap">
+      <div class="gt-top">
+        <div class="gt-timer" id="timer" role="timer"><i></i><b></b></div>
+        <span class="gt-streak" id="streak" aria-live="polite"></span>
+        <span class="gt-count" id="count"></span>
+      </div>
+      <section class="gt-card" id="card" aria-live="polite">
+        <p class="gt-kicker" id="kicker"></p>
+        <h2 class="gt-prompt" id="prompt"></h2>
+        <div class="gt-visual" id="visual"></div>
+      </section>
+      <div class="gt-answers" id="answers" role="group" aria-label="Réponses"></div>
+      <div class="gt-learn" id="learn" role="status" hidden></div>
+    </div>
+  </main>
+  <noscript><p style="padding:24px">Globe-trotteur a besoin de JavaScript pour fonctionner.</p></noscript>
+</body>
+</html>
