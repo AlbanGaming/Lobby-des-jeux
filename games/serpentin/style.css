@@ -1,0 +1,23 @@
+/* Serpentin — le plateau est dessiné sur le canvas ; ici, l'écran d'accueil */
+
+.gv-stage { background: #070912; }
+
+.sp-options { display: grid; gap: var(--s-3); margin-top: var(--s-4); padding: var(--s-3); border-radius: var(--r-md); background: var(--ink-950); text-align: left; }
+.sp-row { display: grid; gap: var(--s-2); }
+.sp-label { font-family: var(--font-pixel); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.sp-modes { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-2); }
+.sp-mode { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 8px; min-height: 52px; padding: 6px 10px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); text-align: left; font-weight: 700; }
+.sp-mode .icon { width: 18px; height: 18px; grid-row: span 2; }
+.sp-mode small { grid-column: 2; font-size: var(--fs-2xs); font-weight: 500; color: var(--text-3); line-height: 1.2; }
+.sp-mode[aria-checked='true'] { box-shadow: inset 0 0 0 2px #3ee6a8; background: rgb(62 230 168 / 0.12); }
+.sp-mode[aria-checked='true'] .icon { color: #3ee6a8; }
+.sp-mode[aria-disabled='true'] { opacity: 0.6; cursor: not-allowed; }
+@media (max-width: 520px) { .sp-modes { grid-template-columns: 1fr; } }
+.sp-skins { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.sp-skin { position: relative; display: grid; place-items: center; width: 64px; height: 40px; border-radius: var(--r-pill); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); }
+.sp-skin span { width: 48px; height: 16px; border-radius: 8px; }
+.sp-skin[aria-checked='true'] { box-shadow: 0 0 0 3px #3ee6a8; }
+.sp-skin[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
+.sp-skin em { position: absolute; right: -4px; bottom: -6px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-700); color: var(--text-2); }
+.sp-skin em .icon { width: 12px; height: 12px; }
+.sp-hint { font-size: var(--fs-xs); color: var(--text-2); }

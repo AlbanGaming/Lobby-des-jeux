@@ -58,7 +58,7 @@ export const GLOBAL_ACHIEVEMENTS = [
   { id: 'premier-achat', title: 'Premier achat', desc: 'Achète un objet à la boutique.', xp: 30 },
   { id: 'coffre', title: 'Chasseur de trésors', desc: 'Ouvre un coffre surprise.', xp: 40 },
   { id: 'garde-robe', title: 'Garde-robe', desc: 'Possède 15 objets de la boutique.', xp: 200 },
-  { id: 'mecene', title: 'Mécène', desc: 'Débloque les trois jeux secrets.', xp: 300 },
+  { id: 'mecene', title: 'Mécène', desc: 'Débloque tous les jeux secrets de la boutique.', xp: 300 },
   { id: 'gel', title: 'Sauvé par le gel', desc: 'Un gel de série a protégé ta série.', xp: 40 },
 ];
 

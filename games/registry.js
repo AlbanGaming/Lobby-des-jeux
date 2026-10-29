@@ -659,6 +659,37 @@ export const GAMES = [
     ],
   },
   {
+    // Jeu secret : visible dans le lobby, à débloquer à la boutique
+    id: 'serpentin',
+    title: 'Serpentin',
+    category: 'arcade',
+    tags: ['serpent', 'néon', 'fruits', 'combo', 'secret'],
+    color: '#3ee6a8',
+    ink: '#070912',
+    description: 'Un serpent néon qui grandit à chaque fruit. Enchaîne-les pour le combo, attrape les bonus, évite ta queue.',
+    status: null,
+    secret: { cost: 300 },
+    ready: true,
+    score: { label: 'Score', unit: '', higherIsBetter: true },
+    xp: byScore(0.05, 6, 250),
+    achievements: [
+      { id: 'premier-fruit', title: 'Première bouchée', desc: 'Mange ton premier fruit.', xp: 20 },
+      { id: 'long-25', title: 'Long serpent', desc: 'Atteins 25 cases de long.', xp: 80 },
+      { id: 'long-50', title: 'Serpent de mer', desc: 'Atteins 50 cases de long.', xp: 200 },
+      { id: 'combo-5', title: 'Glouton', desc: 'Monte le combo jusqu’à ×5.', xp: 80 },
+      { id: 'bonus', title: 'Touche-à-tout', desc: 'Attrape les quatre bonus.', xp: 100 },
+      { id: 'score-500', title: 'Cinq cents', desc: 'Marque 500 points en une partie.', xp: 150 },
+      { id: 'sans-murs', title: 'Sans limites', desc: 'Joue une partie sans murs.', xp: 30 },
+      { id: 'du-jour', title: 'Le serpent du jour', desc: 'Joue le serpent du jour.', xp: 40 },
+    ],
+    daily: [
+      { text: 'Marque 300 points dans Serpentin.', min: 300 },
+      { text: 'Atteins 20 cases de long dans Serpentin.', stat: 'length', min: 20 },
+      { text: 'Monte le combo à ×4 dans Serpentin.', stat: 'combo', min: 4 },
+      { text: 'Joue le serpent du jour de Serpentin.', stat: 'daily', min: 1 },
+    ],
+  },
+  {
     // Jeu conservé tel quel à la demande de l'auteur : on ne modifie pas page-11/
     id: 'paddock',
     title: 'F1 Manager',
