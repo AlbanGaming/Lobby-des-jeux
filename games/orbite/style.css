@@ -1,0 +1,26 @@
+/* Orbite — le jeu est dessiné sur le canvas ; ici, l'écran d'accueil */
+
+.gv-stage { background: #0b1026; touch-action: manipulation; }
+.gv-stage canvas.gv-canvas { cursor: pointer; }
+
+.or-options { display: grid; gap: var(--s-3); margin-top: var(--s-4); padding: var(--s-3); border-radius: var(--r-md); background: var(--ink-950); text-align: left; }
+.or-row { display: grid; gap: var(--s-2); }
+.or-label { font-family: var(--font-pixel); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.or-modes { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-2); }
+.or-mode { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 8px; min-height: 52px; padding: 6px 10px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); text-align: left; font-weight: 700; }
+.or-mode .icon { width: 18px; height: 18px; grid-row: span 2; }
+.or-mode small { grid-column: 2; font-size: var(--fs-2xs); font-weight: 500; color: var(--text-3); line-height: 1.2; }
+.or-mode[aria-checked='true'] { box-shadow: inset 0 0 0 2px #c49aff; background: rgb(196 154 255 / 0.12); }
+.or-mode[aria-checked='true'] .icon { color: #c49aff; }
+@media (max-width: 520px) { .or-modes { grid-template-columns: 1fr; } }
+.or-picks { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.or-pick, .or-gal { position: relative; display: grid; place-items: center; width: 54px; height: 54px; border-radius: var(--r-md); background: #0b1026; box-shadow: inset 0 0 0 2px var(--border); }
+.or-pick canvas { width: 44px; height: 44px; }
+.or-gal { border-radius: 50%; }
+.or-gal span { width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, var(--c2) 0 25%, var(--c1) 60%); }
+.or-pick[aria-checked='true'], .or-gal[aria-checked='true'] { box-shadow: 0 0 0 3px #c49aff; }
+.or-pick[aria-disabled='true'], .or-gal[aria-disabled='true'] { opacity: 0.5; cursor: not-allowed; }
+.or-pick em, .or-gal em { position: absolute; right: -4px; bottom: -4px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--ink-700); color: var(--text-2); }
+.or-pick em .icon, .or-gal em .icon { width: 12px; height: 12px; }
+.or-hint { font-size: var(--fs-xs); color: var(--text-2); }
+.or-daily { margin-top: var(--s-2); font-size: var(--fs-sm); color: var(--text-2); text-align: center; }
