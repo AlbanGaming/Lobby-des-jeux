@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Le Potager · GameVerse</title>
+  <meta name="description" content="Le Potager : un jeu de gestion tranquille. Sème, arrose, récolte au fil des saisons, livre les commandes du village, agrandis ton jardin. Il pousse même quand tu n’es pas là. Gratuit, sans pub.">
+  <meta name="theme-color" content="#5a3a1a">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GameVerse">
+  <meta property="og:title" content="Le Potager · GameVerse">
+  <meta property="og:description" content="Sème, arrose, récolte : ton potager au fil des saisons.">
+  <meta property="og:image" content="https://albangaming.github.io/Lobby-des-jeux/og.png">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="preload" href="../../shared/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../shared/fonts/rubik.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/components.css">
+  <link rel="stylesheet" href="../../shared/css/shell.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="../../shared/js/fallback.js" defer></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body class="gv-game" data-season="printemps">
+  <main class="gv-stage" id="stage">
+    <div class="pg-wrap">
+      <section class="pg-garden" aria-label="Potager">
+        <header class="pg-head">
+          <div class="pg-season"><b id="season">Printemps</b><span class="pg-bar" id="seasonBar" role="presentation"><i></i></span></div>
+          <div class="pg-level"><b id="lvl">Jardinier niv. 1</b><span class="pg-bar pg-bar--xp" id="xpBar" role="presentation"><i></i></span></div>
+        </header>
+        <div class="pg-plots" id="plots" role="group" aria-label="Parcelles"></div>
+        <div class="pg-coop" id="coop" hidden></div>
+        <p class="pg-msg" id="msg" aria-live="polite"></p>
+      </section>
+      <aside class="pg-panel" aria-label="Graines, marché et améliorations">
+        <div class="pg-tabs" id="tabs" role="tablist">
+          <button type="button" role="tab" data-tab="semer" aria-controls="tab-semer">Semer</button>
+          <button type="button" role="tab" data-tab="marche" aria-controls="tab-marche">Marché</button>
+          <button type="button" role="tab" data-tab="ameliorer" aria-controls="tab-ameliorer">Améliorer</button>
+        </div>
+        <div class="pg-tabpanel" id="tab-semer" role="tabpanel"></div>
+        <div class="pg-tabpanel" id="tab-marche" role="tabpanel" hidden></div>
+        <div class="pg-tabpanel" id="tab-ameliorer" role="tabpanel" hidden></div>
+      </aside>
+    </div>
+    <dialog class="pg-dlg" id="dlg" aria-labelledby="dlgTitle">
+      <h2 id="dlgTitle">Bon retour au potager</h2>
+      <div id="dlgBody"></div>
+      <button type="button" class="btn btn--primary" data-close>Au travail !</button>
+    </dialog>
+  </main>
+  <noscript><p style="padding:24px">Le Potager a besoin de JavaScript pour fonctionner.</p></noscript>
+</body>
+</html>

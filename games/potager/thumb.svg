@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .pg-g{transform-box:fill-box;transform-origin:50% 100%;animation:pg-grow 3s ease-out infinite}
+    .pg-g2{animation-delay:-1s}.pg-g3{animation-delay:-2s}
+    @keyframes pg-grow{0%{transform:scale(.2)}60%,100%{transform:scale(1)}}
+    .pg-c{animation:pg-coin 3s ease-out infinite;opacity:0}
+    @keyframes pg-coin{0%,60%{opacity:0;transform:translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateY(-30px)}}
+    .pg-d{animation:pg-drop 1.2s linear infinite}
+    @keyframes pg-drop{from{transform:translateY(-10px);opacity:1}to{transform:translateY(14px);opacity:0}}
+  </style>
+  <rect width="320" height="200" fill="#8ccf6a"/>
+  <rect x="40" y="30" width="240" height="150" rx="16" fill="#c8955a"/>
+  <g fill="#7a5a3a">
+    <rect x="52" y="42" width="66" height="60" rx="10"/><rect x="127" y="42" width="66" height="60" rx="10"/><rect x="202" y="42" width="66" height="60" rx="10"/>
+    <rect x="52" y="110" width="66" height="60" rx="10"/><rect x="127" y="110" width="66" height="60" rx="10"/><rect x="202" y="110" width="66" height="60" rx="10"/>
+  </g>
+  <g class="pg-g"><ellipse cx="80" cy="70" rx="5" ry="12" fill="#5aa83a" transform="rotate(-20 80 70)"/><ellipse cx="90" cy="70" rx="5" ry="12" fill="#5aa83a" transform="rotate(20 90 70)"/><path d="M76 80h18l-9 18z" fill="#ff8a2b"/></g>
+  <g class="pg-g pg-g2"><circle cx="160" cy="80" r="16" fill="#e63946"/><path d="M152 66l8 6 8-6" stroke="#3f8a3a" stroke-width="4" fill="none"/></g>
+  <g class="pg-g pg-g3"><ellipse cx="235" cy="88" rx="22" ry="14" fill="#f4a261"/><rect x="232" y="70" width="6" height="8" fill="#6b4a2b"/></g>
+  <g class="pg-g pg-g2"><circle cx="85" cy="144" r="16" fill="#5fb84a"/><circle cx="85" cy="142" r="10" fill="#7fd35a"/></g>
+  <g class="pg-g"><circle cx="160" cy="146" r="12" fill="#ff5d8f"/><ellipse cx="154" cy="128" rx="4" ry="9" fill="#4c9a3a" transform="rotate(-20 154 128)"/><ellipse cx="166" cy="128" rx="4" ry="9" fill="#4c9a3a" transform="rotate(20 166 128)"/></g>
+  <g fill="#4cc3ff"><circle class="pg-d" cx="230" cy="130" r="4"/><circle class="pg-d" cx="242" cy="124" r="3" style="animation-delay:-.4s"/><circle class="pg-d" cx="222" cy="122" r="3" style="animation-delay:-.8s"/></g>
+  <g class="pg-c"><circle cx="160" cy="60" r="9" fill="#ffc93c" stroke="#c8961e" stroke-width="2"/></g>
+  <g transform="translate(160 18)"><rect x="-52" y="-12" width="104" height="22" rx="8" fill="#ffc93c"/><text y="4" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="15" fill="#3a2414">C’EST MÛR !</text></g>
+</svg>

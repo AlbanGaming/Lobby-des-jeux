@@ -4,6 +4,8 @@ import { watchPage, shot, readStore } from './helpers.js';
 import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { GAMES } from '../games/registry.js';
+// Le filtre « gestion » montre tous les jeux de cette catégorie
+const GESTION = GAMES.filter((g) => g.category === 'gestion').length;
 
 const cards = (page) => page.locator('#grid .gcard');
 
@@ -59,10 +61,10 @@ test.describe('lobby', () => {
     const w = watchPage(page);
     await ready(page);
     await page.locator('#filters [data-cat="gestion"]').click();
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page)).toHaveCount(GESTION);
     await page.reload();
     await expect(page.locator('#filters [data-cat="gestion"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page)).toHaveCount(GESTION);
     w.expectClean();
   });
 
