@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .lt-l{stroke-dasharray:260;stroke-dashoffset:260;animation:lt-draw 2.6s ease-in-out infinite}
+    @keyframes lt-draw{0%,10%{stroke-dashoffset:260}55%,80%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:0}}
+    .lt-w{animation:lt-word 2.6s steps(1) infinite;opacity:0}
+    @keyframes lt-word{0%,55%{opacity:0}56%,92%{opacity:1}93%,100%{opacity:0}}
+    .lt-t rect{fill:url(#lt-wood)}
+  </style>
+  <defs><linearGradient id="lt-wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9c48f"/><stop offset="1" stop-color="#c8955a"/></linearGradient></defs>
+  <rect width="320" height="200" fill="#2a1a0e"/>
+  <circle cx="110" cy="104" r="80" fill="#4a2e18" opacity=".8"/>
+  <polyline class="lt-l" points="110,40 166,74 166,134" fill="none" stroke="#ffc93c" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>
+  <g class="lt-t" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="26" fill="#3a2414" text-anchor="middle">
+    <g transform="translate(110 40)"><rect x="-19" y="-19" width="38" height="38" rx="8"/><text y="10">C</text></g>
+    <g transform="translate(166 74)"><rect x="-19" y="-19" width="38" height="38" rx="8"/><text y="10">L</text></g>
+    <g transform="translate(166 134)"><rect x="-19" y="-19" width="38" height="38" rx="8"/><text y="10">E</text></g>
+    <g transform="translate(110 168)"><rect x="-19" y="-19" width="38" height="38" rx="8"/><text y="10">R</text></g>
+    <g transform="translate(54 134)"><rect x="-19" y="-19" width="38" height="38" rx="8"/><text y="10">M</text></g>
+    <g transform="translate(54 74)"><rect x="-19" y="-19" width="38" height="38" rx="8"/><text y="10">I</text></g>
+    <g transform="translate(110 104)"><rect x="-19" y="-19" width="38" height="38" rx="8"/><text y="10">A</text></g>
+  </g>
+  <g class="lt-w"><rect x="210" y="76" width="96" height="44" rx="10" fill="#3ee6a8"/><text x="258" y="107" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="28" fill="#10262b">CLÉ !</text></g>
+  <text x="258" y="150" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="18" fill="#ffc93c">+50</text>
+</svg>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lettres en vrac · GameVerse</title>
+  <meta name="description" content="Lettres en vrac : sept lettres sur une roue, forme le plus de mots possible contre la montre. Le mot entier vaut gros. Mode zen et tirage du jour. Gratuit, sans pub.">
+  <meta name="theme-color" content="#3a2414">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="GameVerse">
+  <meta property="og:title" content="Lettres en vrac · GameVerse">
+  <meta property="og:description" content="Sept lettres, combien de mots ?">
+  <meta property="og:image" content="https://albangaming.github.io/Lobby-des-jeux/og.png">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+  <link rel="preload" href="../../shared/fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../../shared/fonts/rubik.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="data/mots.json" as="fetch" type="application/json" crossorigin>
+  <link rel="stylesheet" href="../../shared/css/tokens.css">
+  <link rel="stylesheet" href="../../shared/css/base.css">
+  <link rel="stylesheet" href="../../shared/css/components.css">
+  <link rel="stylesheet" href="../../shared/css/shell.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="../../shared/js/fallback.js" defer></script>
+  <script type="module" src="main.js"></script>
+</head>
+<body class="gv-game">
+  <main class="gv-stage" id="stage">
+    <div class="lt-wrap">
+      <section class="lt-play" aria-label="Lettres">
+        <div class="lt-top">
+          <div class="lt-timer" id="timer" role="timer"><i></i><b></b></div>
+          <span class="lt-round" id="round"></span>
+        </div>
+        <p class="lt-word is-empty" id="word" aria-live="polite"></p>
+        <p class="lt-msg" id="msg" aria-live="polite"></p>
+        <div class="lt-wheel" id="wheel" role="group" aria-label="Roue de lettres">
+          <svg class="lt-lines" id="lines" aria-hidden="true"></svg>
+        </div>
+        <div class="lt-tools" id="tools">
+          <button type="button" class="lt-tool" data-act="shuffle" aria-keyshortcuts="Space"><span>Mélanger</span></button>
+          <button type="button" class="lt-tool" data-act="clear" aria-keyshortcuts="Backspace"><span>Effacer</span></button>
+          <button type="button" class="lt-tool lt-tool--ok" data-act="ok" aria-keyshortcuts="Enter"><span>Valider</span></button>
+          <button type="button" class="lt-tool" data-act="hint" hidden><span>Indice</span></button>
+        </div>
+      </section>
+      <aside class="lt-found" id="found" aria-label="Mots trouvés"></aside>
+    </div>
+  </main>
+  <noscript><p style="padding:24px">Lettres en vrac a besoin de JavaScript pour fonctionner.</p></noscript>
+</body>
+</html>
