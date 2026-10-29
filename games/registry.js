@@ -9,9 +9,10 @@
 //   color / ink   couleur principale et couleur sombre de la vignette
 //   description   pitch en une phrase
 //   status        'new' | 'popular' | null
-//   ready         false tant que le jeu n'a pas été refait (le lobby renvoie alors vers legacyPath)
-//   legacyPath    ancienne page, utilisée tant que ready === false
-//   keepLegacy    true = jeu volontairement conservé dans sa version d'origine (pas de refonte prévue)
+//   ready         true pour un jeu de games/<id>/ ; false = page à part (legacyPath), hors socle
+//   legacyPath    page d'un jeu hors socle (seul F1 Manager, conservé tel quel)
+//   keepLegacy    true = jeu volontairement conservé dans sa version d'origine
+//   secret        { cost } = jeu secret, à débloquer à la boutique pour ce prix en crédits
 //   score         { label, unit, higherIsBetter }
 //   xp(result)    XP gagnée pour une partie (result = { score, stats })
 //   achievements  [{ id, title, desc, xp, secret? }]
@@ -38,7 +39,6 @@ export const GAMES = [
     description: 'Volt, petit robot survolté, file sur les toits de la ville au crépuscule. Saute, plonge, remplis ta jauge et passe en Surcharge.',
     status: 'popular',
     ready: true,
-    legacyPath: 'page6.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.04, 5, 250),
     achievements: [
@@ -69,7 +69,6 @@ export const GAMES = [
     description: 'Un oiseau en origami traverse un livre pop-up. Un tap, un battement d’ailes ; chaque chapitre tourne la page vers un nouveau monde.',
     status: 'new',
     ready: true,
-    legacyPath: 'page7.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.05, 5, 250),
     achievements: [
@@ -100,7 +99,6 @@ export const GAMES = [
     description: 'Dans le lagon de nuit, les bulles de même couleur s’agglutinent. Attends la grosse grappe… mais ne la laisse pas filer.',
     status: 'new',
     ready: true,
-    legacyPath: 'page5.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.012, 5, 250),
     achievements: [
@@ -131,7 +129,6 @@ export const GAMES = [
     description: 'Un bouton, une aiguille : touche pile dans la zone. Elle repart dans l’autre sens, toujours plus vite, et chaque heure corse le cadran.',
     status: 'new',
     ready: true,
-    legacyPath: 'page2.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.06, 5, 300),
     achievements: [
@@ -164,7 +161,6 @@ export const GAMES = [
     description: 'Trois pions chacun, pas un de plus : poser le quatrième efface ton plus ancien. Jamais de match nul, que de la tactique.',
     status: 'popular',
     ready: true,
-    legacyPath: 'page3.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.12, 8, 250),
     achievements: [
@@ -196,7 +192,6 @@ export const GAMES = [
     description: 'Déduis le code à 4 chiffres pour ouvrir le coffre. Bien placé, mal placé… et un coffre du jour, le même pour tout le monde.',
     status: null,
     ready: true,
-    legacyPath: 'page10.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.06, 8, 250),
     achievements: [
@@ -227,7 +222,6 @@ export const GAMES = [
     description: 'Le mot du jour en six essais, le même pour tout le monde. Et le mode Série : enchaîne les mots avant la fin du chrono.',
     status: 'popular',
     ready: true,
-    legacyPath: 'page8.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.05, 10, 250),
     achievements: [
@@ -258,7 +252,6 @@ export const GAMES = [
     description: 'Devinettes, questions pièges et logique en rafale contre la montre. Enchaîne pour faire grimper le multiplicateur, garde tes jokers pour les coups durs.',
     status: 'new',
     ready: true,
-    legacyPath: 'page4.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.04, 6, 300),
     achievements: [
@@ -291,7 +284,6 @@ export const GAMES = [
     description: 'Combien coûte ce vélo ? Et cette baguette ? Plus ou moins contre la montre, estimation au plus juste, duel du plus cher et les 5 du jour.',
     status: null,
     ready: true,
-    legacyPath: 'page1.html',
     score: { label: 'Score', unit: '', higherIsBetter: true },
     xp: byScore(0.05, 6, 300),
     achievements: [
@@ -325,7 +317,6 @@ export const GAMES = [
     description: 'Peins, vends, agrandis ton atelier : chaque toile est une œuvre unique qui rejoint ta galerie. Assistants, expositions et gains hors ligne.',
     status: null,
     ready: true,
-    legacyPath: 'page9.html',
     score: { label: 'Fortune', unit: '€', higherIsBetter: true },
     xp: () => 10,
     achievements: [

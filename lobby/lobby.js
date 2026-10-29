@@ -206,10 +206,9 @@ function cardHTML(game, i = 0) {
   const fav = meta.isFavorite(game.id);
   const cat = getCategory(game.category);
   let line;
-  const legacy = game.ready || game.keepLegacy ? '' : ' · ancienne version';
-  if (st?.best !== null && st?.best !== undefined) line = `${icon('trophy')}<span>Record ${esc(formatScore(game, st.best))}${legacy}</span>`;
-  else if (st?.plays) line = `<span>${esc(cat.label)} · ${st.plays} partie${st.plays > 1 ? 's' : ''}${legacy}</span>`;
-  else line = `<span>${esc(cat.label)}${legacy}</span>`;
+  if (st?.best !== null && st?.best !== undefined) line = `${icon('trophy')}<span>Record ${esc(formatScore(game, st.best))}</span>`;
+  else if (st?.plays) line = `<span>${esc(cat.label)} · ${st.plays} partie${st.plays > 1 ? 's' : ''}</span>`;
+  else line = `<span>${esc(cat.label)}</span>`;
   const badges = [];
   const locked = !meta.gameUnlocked(game.id);
   if (locked) line = `${icon('lock')}<span>Jeu secret · ${formatInt(game.secret.cost)} crédits</span>`;
@@ -439,7 +438,7 @@ function renderAchievementsPanel() {
       </div>`,
       )
       .join('')}
-    <p class="lb-help" style="margin-top:var(--s-4)">Chaque jeu refait ajoutera ses propres succès ici.</p>`;
+    <p class="lb-help" style="margin-top:var(--s-4)">Chaque nouveau jeu ajoutera ses propres succès ici.</p>`;
 }
 
 function renderProfile() {
@@ -635,7 +634,7 @@ document.addEventListener('click', (e) => {
   }
 
   if (t.dataset.play) {
-    // Les jeux pas encore refaits ne parlent pas à la méta : on compte le lancement ici
+    // Un jeu hors socle (F1 Manager) ne parle pas à la méta : on compte le lancement ici
     const g = getGame(t.dataset.play);
     if (g && !g.ready) meta.startRun(g.id);
     sfx('confirm');
