@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .pm-c{fill:#2b2d42;animation:3s steps(1) infinite}
+    .pm-c1{animation-name:pm-f1}.pm-c2{animation-name:pm-f2}.pm-c3{animation-name:pm-f3}.pm-c4{animation-name:pm-f4}.pm-c5{animation-name:pm-f5}
+    @keyframes pm-f1{0%,8%{opacity:0}9%,100%{opacity:1}}
+    @keyframes pm-f2{0%,18%{opacity:0}19%,100%{opacity:1}}
+    @keyframes pm-f3{0%,28%{opacity:0}29%,100%{opacity:1}}
+    @keyframes pm-f4{0%,38%{opacity:0}39%,100%{opacity:1}}
+    @keyframes pm-f5{0%,48%{opacity:0}49%,100%{opacity:1}}
+    .pm-art{animation:pm-art 3s ease-out infinite}
+    @keyframes pm-art{0%,55%{opacity:0}65%,92%{opacity:1}100%{opacity:0}}
+    .pm-clue{animation:pm-clue 3s infinite}
+    @keyframes pm-clue{0%,55%{opacity:1}62%,100%{opacity:.25}}
+  </style>
+  <rect width="320" height="200" fill="#e4dccb"/>
+  <g font-family="Rubik, Arial, sans-serif" font-weight="800" font-size="13" fill="#2b2d42" text-anchor="middle" class="pm-clue">
+    <text x="133" y="40">1</text><text x="133" y="24">1</text>
+    <text x="155" y="40">4</text>
+    <text x="177" y="40">4</text>
+    <text x="199" y="40">4</text>
+    <text x="221" y="40">1</text><text x="221" y="24">1</text>
+    <g text-anchor="end"><text x="112" y="66">1 1</text><text x="112" y="88">5</text><text x="112" y="110">5</text><text x="112" y="132">3</text><text x="112" y="154">1</text></g>
+  </g>
+  <rect x="122" y="50" width="110" height="110" fill="#fbf8f1" stroke="#2b2d42" stroke-opacity=".6" stroke-width="2"/>
+  <g stroke="#2b2d42" stroke-opacity=".16"><path d="M144 50v110M166 50v110M188 50v110M210 50v110M122 72h110M122 94h110M122 116h110M122 138h110"/></g>
+  <g>
+    <rect class="pm-c pm-c1" x="144" y="50" width="22" height="22"/><rect class="pm-c pm-c1" x="188" y="50" width="22" height="22"/>
+    <rect class="pm-c pm-c2" x="122" y="72" width="110" height="22"/>
+    <rect class="pm-c pm-c3" x="122" y="94" width="110" height="22"/>
+    <rect class="pm-c pm-c4" x="144" y="116" width="66" height="22"/>
+    <rect class="pm-c pm-c5" x="166" y="138" width="22" height="22"/>
+  </g>
+  <g class="pm-art" fill="#e63946">
+    <rect x="144" y="50" width="22" height="22"/><rect x="188" y="50" width="22" height="22"/>
+    <rect x="122" y="72" width="110" height="44"/><rect x="144" y="116" width="66" height="22"/><rect x="166" y="138" width="22" height="22"/>
+    <rect x="144" y="72" width="22" height="22" fill="#ff8fab"/>
+  </g>
+  <g transform="translate(160 184)"><rect x="-52" y="-12" width="104" height="22" rx="8" fill="#ff8fab"/><text y="4" text-anchor="middle" font-family="Big Shoulders Display, Arial Narrow, sans-serif" font-weight="900" font-size="15" fill="#2b2d42">CŒUR !</text></g>
+</svg>
