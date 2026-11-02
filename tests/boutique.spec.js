@@ -154,7 +154,7 @@ test.describe('boutique', () => {
     await ready(page);
     await openShop(page);
     await page.locator('#stab-coffre').click();
-    await page.locator('[data-chest]').click();
+    await page.locator('[data-chest="bois"]').click();
     await expect(page.locator('.sh-prize')).toBeVisible({ timeout: 4000 });
     const d = await metaData(page);
     // 150 payés ; « Premier achat » (18) et « Chasseur de trésors » (20) rapportent
@@ -169,5 +169,50 @@ test.describe('boutique', () => {
     const slot = { theme: 'theme', frame: 'frame', hat: 'hat', title: 'title', celebration: 'celebration', sound: 'sound' }[kind];
     expect((await metaData(page)).look[slot]).toBe(id);
     w.expectClean();
+  });
+
+  test('coffre de diamant : un légendaire assuré, un objet en plus et un gel', async ({ page }, testInfo) => {
+    const w = watchPage(page);
+    await seedMeta(page, { credits: 2000 });
+    await ready(page);
+    await openShop(page);
+    await page.locator('#stab-coffre').click();
+    await expect(page.locator('[data-chest]')).toHaveCount(4);
+    await page.locator('[data-chest="diamant"]').click();
+    await expect(page.locator('.sh-prize')).toBeVisible({ timeout: 4000 });
+    await expect(page.locator('.sh-prize').getByText('Légendaire', { exact: true }).first()).toBeVisible();
+    const d = await metaData(page);
+    expect(d.owned.length).toBe(2);
+    expect(d.inventory.gel).toBe(1);
+    expect(d.achievements['global:diamant']).toBeTruthy();
+    // Le premier objet gagné est bien légendaire (prix de 400 crédits ou plus)
+    const legend = await page.evaluate(async (key) => {
+      const shop = await import('./shared/js/shop.js');
+      const [kind, id] = key.split(':');
+      return shop.KINDS[kind].list.find((x) => x.id === id).cost;
+    }, d.owned[0]);
+    expect(legend).toBeGreaterThanOrEqual(400);
+    await page.waitForTimeout(400);
+    await shot(page, testInfo, 'boutique-diamant');
+    w.expectClean();
+  });
+
+  test('coffre d’or : épique ou mieux, boost offert', async ({ page }) => {
+    await seedMeta(page, { credits: 800 });
+    await ready(page);
+    await openShop(page);
+    await page.locator('#stab-coffre').click();
+    await page.locator('[data-chest="or"]').click();
+    await expect(page.locator('.sh-prize')).toBeVisible({ timeout: 4000 });
+    const d = await metaData(page);
+    expect(d.boostUntil).toBeGreaterThan(Date.now());
+    const cost = await page.evaluate(async (key) => {
+      const shop = await import('./shared/js/shop.js');
+      const [kind, id] = key.split(':');
+      return shop.KINDS[kind].list.find((x) => x.id === id).cost;
+    }, d.owned[0]);
+    expect(cost).toBeGreaterThanOrEqual(250);
+    // Plus assez de crédits pour un second coffre d'or
+    await expect(page.locator('[data-chest="or"]')).toHaveAttribute('aria-disabled', 'true');
   });
 });

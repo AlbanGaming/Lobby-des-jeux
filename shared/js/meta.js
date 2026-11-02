@@ -60,6 +60,7 @@ export const GLOBAL_ACHIEVEMENTS = [
   { id: 'garde-robe', title: 'Garde-robe', desc: 'Possède 15 objets de la boutique.', xp: 200 },
   { id: 'mecene', title: 'Mécène', desc: 'Débloque tous les jeux secrets de la boutique.', xp: 300 },
   { id: 'gel', title: 'Sauvé par le gel', desc: 'Un gel de série a protégé ta série.', xp: 40 },
+  { id: 'diamant', title: 'Coffre de diamant', desc: 'Ouvre un coffre de diamant.', xp: 100 },
 ];
 
 export function allAchievements() {
@@ -162,11 +163,12 @@ export function grant(itemId) {
 export const gameUnlocked = (id) => !getGame(id)?.secret || owns(`game:${id}`);
 
 // Compteurs et succès de la boutique
-export function noteShopping({ chest = false } = {}) {
+export function noteShopping({ chest = false, chestId = '' } = {}) {
   store.data.shop.purchases++;
   if (chest) store.data.shop.chests++;
   unlockAchievement('global', 'premier-achat', { silentSave: true });
   if (chest) unlockAchievement('global', 'coffre', { silentSave: true });
+  if (chestId === 'diamant') unlockAchievement('global', 'diamant', { silentSave: true });
   if (store.data.owned.filter((k) => !k.startsWith('game:')).length >= 15) unlockAchievement('global', 'garde-robe', { silentSave: true });
   const secrets = GAMES.filter((g) => g.secret);
   if (secrets.length && secrets.every((g) => owns(`game:${g.id}`))) unlockAchievement('global', 'mecene', { silentSave: true });
@@ -174,6 +176,18 @@ export function noteShopping({ chest = false } = {}) {
 }
 
 // ---------- Objets de la boutique ----------
+/** Gel de série offert (coffres) ; false si la réserve est pleine */
+export function giveGel(max = 2) {
+  if (store.data.inventory.gel >= max) return false;
+  store.data.inventory.gel++;
+  save();
+  return true;
+}
+/** Boost d'XP offert (coffres) */
+export function giveBoost(ms) {
+  store.data.boostUntil = Math.max(Date.now(), store.data.boostUntil ?? 0) + ms;
+  save();
+}
 export const boostActive = () => Date.now() < (store.data.boostUntil ?? 0);
 export const rerollsToday = () => (store.data.reroll.day === dayKey() ? store.data.reroll.n : 0);
 

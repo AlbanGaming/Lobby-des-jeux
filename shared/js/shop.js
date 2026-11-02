@@ -75,7 +75,15 @@ export const ITEMS = [
 ];
 export const BOOST_MS = 30 * 60e3;
 export const RELANCES_PER_DAY = 3;
-export const CHEST_COST = 150;
+// Coffres : plus chers, mais une rareté minimale assurée et des bonus
+export const RARITIES = ['commun', 'rare', 'epique', 'legendaire'];
+export const CHESTS = [
+  { id: 'bois', name: 'Coffre en bois', cost: 150, min: 'commun', desc: 'Un objet au hasard, toutes raretés.', wood: '#8a5a2e', lid: '#a66b36', band: '#ffc93c' },
+  { id: 'argent', name: 'Coffre en argent', cost: 350, min: 'rare', desc: 'Un objet rare ou mieux, assuré.', wood: '#6b7386', lid: '#a9b3c4', band: '#e9eef5' },
+  { id: 'or', name: 'Coffre en or', cost: 700, min: 'epique', bonus: ['boost'], desc: 'Un objet épique ou mieux, assuré, et un boost d’XP de 30 min offert.', wood: '#a8770a', lid: '#ffc93c', band: '#fff3c4' },
+  { id: 'diamant', name: 'Coffre de diamant', cost: 1200, min: 'legendaire', bonus: ['objet', 'gel'], desc: 'Un objet légendaire assuré, un second objet au hasard et un gel de série.', wood: '#1a5f8a', lid: '#4cc3ff', band: '#bfe9ff', shine: true },
+];
+export const CHEST_COST = CHESTS[0].cost;
 
 // Catégories d'objets cosmétiques : clé d'équipement, liste
 export const KINDS = {
@@ -128,30 +136,63 @@ export function purchaseGame(id) {
 }
 
 // ---------- Coffre surprise ----------
-export function chestPool() {
+/** Cosmétiques encore à gagner, d'une rareté minimale */
+export function chestPool(min = 'commun') {
+  const floor = RARITIES.indexOf(min);
   const out = [];
-  for (const [kind, k] of Object.entries(KINDS)) for (const item of k.list) if (item.cost && !item.ach && !owned(kind, item)) out.push({ kind, item });
-  return out;
-}
-/** Ouvre le coffre : un cosmétique jamais possédé, plus souvent un commun. Renvoie null si rien à gagner. */
-export function openChest(rng = Math.random) {
-  const pool = chestPool();
-  if (!pool.length || meta.getData().credits < CHEST_COST) return null;
-  // Poids : les objets chers sortent plus rarement
-  const weights = pool.map(({ item }) => 1 / Math.sqrt(item.cost));
-  let r = rng() * weights.reduce((a, b) => a + b, 0);
-  let pick = pool[pool.length - 1];
-  for (let i = 0; i < pool.length; i++) {
-    r -= weights[i];
-    if (r <= 0) {
-      pick = pool[i];
-      break;
+  for (const [kind, k] of Object.entries(KINDS)) {
+    for (const item of k.list) {
+      if (!item.cost || item.ach || owned(kind, item)) continue;
+      if (RARITIES.indexOf(rarityOf(item.cost).id) >= floor) out.push({ kind, item });
     }
   }
-  if (!meta.spendCredits(CHEST_COST)) return null;
+  return out;
+}
+// Tirage pondéré : dans un même coffre, les objets chers sortent plus rarement
+function draw(pool, rng) {
+  const weights = pool.map(({ item }) => 1 / Math.sqrt(item.cost));
+  let r = rng() * weights.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < pool.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
+}
+/**
+ * Ouvre un coffre : un cosmétique jamais possédé, d'au moins la rareté promise, plus les bonus du
+ * coffre. Renvoie null si rien à gagner à ce niveau ou crédits insuffisants.
+ */
+export function openChest(id = 'bois', rng = Math.random) {
+  const chest = CHESTS.find((c) => c.id === id);
+  if (!chest) return null;
+  const pool = chestPool(chest.min);
+  if (!pool.length || meta.getData().credits < chest.cost) return null;
+  if (!meta.spendCredits(chest.cost)) return null;
+  const pick = draw(pool, rng);
   meta.grant(itemKey(pick.kind, pick.item.id));
-  meta.noteShopping({ chest: true });
-  return { ...pick, rarity: rarityOf(pick.item.cost) };
+  const extras = [];
+  for (const b of chest.bonus ?? []) {
+    if (b === 'objet') {
+      const rest = chestPool('commun');
+      if (rest.length) {
+        const e = draw(rest, rng);
+        meta.grant(itemKey(e.kind, e.item.id));
+        extras.push({ type: 'item', ...e, rarity: rarityOf(e.item.cost) });
+      }
+    } else if (b === 'gel') {
+      // Réserve pleine : le gel est remplacé par des crédits
+      if (meta.giveGel(ITEMS.find((x) => x.id === 'gel').max)) extras.push({ type: 'gel' });
+      else {
+        meta.addCredits(60);
+        extras.push({ type: 'credits', n: 60 });
+      }
+    } else if (b === 'boost') {
+      meta.giveBoost(BOOST_MS);
+      extras.push({ type: 'boost' });
+    }
+  }
+  meta.noteShopping({ chest: true, chestId: chest.id });
+  return { ...pick, rarity: rarityOf(pick.item.cost), chest, extras };
 }
 
 // ---------- Application (thème, sons) ----------

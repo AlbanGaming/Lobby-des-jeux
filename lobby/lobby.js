@@ -121,7 +121,7 @@ function renderHeader() {
   s.title = s.getAttribute('aria-label');
 
   const c = $('#hdrCredits');
-  c.innerHTML = `${icon('coin')}<span>${formatInt(d.credits)}</span>`;
+  c.innerHTML = `${icon('coin')}<span>${formatInt(d.credits)}</span><span class="lb-pill__shop" aria-hidden="true">Boutique</span>`;
   c.setAttribute('aria-label', `Boutique : ${formatInt(d.credits)} crédits`);
 
   const C = 2 * Math.PI * 22;

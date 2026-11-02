@@ -963,3 +963,26 @@ button.lb-pill--credits:hover { transform: translateY(-1px); box-shadow: inset 0
   --ink-line: #05060b; --surface-2: rgb(5 6 11 / 0.55); --border: rgb(255 255 255 / 0.18); --border-strong: rgb(255 255 255 / 0.25);
   color: var(--text);
 }
+
+/* Coffres : quatre niveaux */
+.sh-chests { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-2); }
+.sh-chestcard { display: grid; justify-items: center; align-content: start; gap: 6px; padding: var(--s-3) var(--s-2); border-radius: var(--r-lg); background: var(--surface-2); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--rc) 45%, var(--border)); text-align: center; }
+.sh-chestcard .sh-chest__art { width: min(120px, 100%); }
+.sh-chestcard .sh-item__desc { min-height: 3.6em; }
+.sh-chestcard__left { min-height: 0 !important; font-weight: 700; color: var(--text-3); }
+.sh-chestcard .btn { width: 100%; padding-inline: 8px; }
+.sh-chestcard .btn .icon { width: 14px; height: 14px; }
+.sh-chestcard[data-chestcard='diamant'] { background: linear-gradient(180deg, color-mix(in srgb, #4cc3ff 14%, var(--surface-2)), var(--surface-2)); }
+.sh-shine path { transform-box: fill-box; transform-origin: center; animation: sh-twinkle 1.4s ease-in-out infinite alternate; }
+.sh-shine path:nth-child(2) { animation-delay: -0.5s; }
+.sh-shine path:nth-child(3) { animation-delay: -0.9s; }
+@keyframes sh-twinkle { from { transform: scale(0.4); opacity: 0.3; } to { transform: scale(1.2); opacity: 1; } }
+.sh-reveal { display: grid; justify-items: center; margin-top: var(--s-3); }
+.sh-prize__extras { display: grid; gap: 4px; margin: 4px 0; padding: 0; list-style: none; font-size: var(--fs-sm); }
+.sh-prize__extras li { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.sh-prize__extras .icon { width: 16px; height: 16px; color: var(--accent); }
+@media (max-width: 760px) { .sh-chests { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Entrée de la boutique dans l'en-tête */
+.lb-pill__shop { display: none; margin-left: 2px; padding-left: 8px; box-shadow: inset 2px 0 0 var(--border); font-family: var(--font-display); font-weight: 900; font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--coin); }
+@media (min-width: 640px) { .lb-pill__shop { display: inline; } }
