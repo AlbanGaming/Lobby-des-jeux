@@ -11,7 +11,7 @@ import { motion } from './motion.js';
 const DEFAULTS = {
   profile: {
     name: 'JOUEUR',
-    // { kind: 'gen', seed, palette } (avatar généré) ou { kind: 'image', data } (image importée)
+    // { kind: 'gen', seed, palette } : avatar généré (les images importées ne sont plus permises)
     avatar: null,
     createdAt: 0,
   },
@@ -27,7 +27,7 @@ const DEFAULTS = {
   stats: { runs: 0, timeMs: 0, days: 0, firstDay: '' },
   owned: [],
   // Boutique : objets équipés, consommables, boost, relances du défi
-  look: { theme: 'nuit', frame: 'none', hat: 'none', title: 'none', celebration: 'confettis', sound: 'classique' },
+  look: { character: 'robot', theme: 'nuit', frame: 'none', hat: 'none', title: 'none', celebration: 'confettis', sound: 'classique' },
   inventory: { gel: 0 },
   boostUntil: 0,
   reroll: { day: '', n: 0 },
@@ -106,6 +106,11 @@ if (!store.data.migratedLegacy) {
 }
 if (!store.data.profile.createdAt) {
   store.data.profile.createdAt = Date.now();
+  store.save();
+}
+// Les photos de profil importées ne sont plus acceptées : on repasse sur un avatar généré
+if (store.data.profile.avatar?.kind === 'image') {
+  store.data.profile.avatar = { kind: 'gen', seed: Math.random().toString(36).slice(2, 10), palette: 0 };
   store.save();
 }
 if (!store.data.profile.avatar) {

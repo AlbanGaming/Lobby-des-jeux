@@ -99,7 +99,8 @@ test.describe('socle', () => {
     await expect(page.locator('[data-screen="start"]')).toHaveClass(/is-open/);
     const meta = (await readStore(page, 'gv:meta')).data;
     expect(meta.profile.name).toBe('ALBAN');
-    expect(meta.profile.avatar).toEqual({ kind: 'image', data: 'data:image/png;base64,AAAA' });
+    // Les photos importées ne sont plus reprises : un avatar généré les remplace
+    expect(meta.profile.avatar.kind).toBe('gen');
     expect(meta.favorites).toEqual(['morpion', 'motif', 'paddock']);
     expect(meta.games['volt-rush']).toMatchObject({ plays: 4, best: 1543, timeMs: 0 });
     expect(meta.games.plume).toMatchObject({ plays: 2, best: 27 });

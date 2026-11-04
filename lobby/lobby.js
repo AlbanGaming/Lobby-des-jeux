@@ -10,7 +10,7 @@ import { formatInt, formatDuration } from '../shared/js/core/math.js';
 import { createRng, dailySeed, dayKey } from '../shared/js/core/rng.js';
 import { createStore } from '../shared/js/storage.js';
 import { motion } from '../shared/js/motion.js';
-import { applyLook, FRAMES, equipped } from '../shared/js/shop.js';
+import { applyLook, FRAMES, equipped, equip } from '../shared/js/shop.js';
 import { initShop, openShop } from './shop.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -29,7 +29,7 @@ const state = {
 
 const data = () => meta.getData();
 // Look d'avatar acheté à la boutique (cadre, accessoire)
-const look = () => ({ frame: FRAMES.find((f) => f.id === data().look.frame), hat: data().look.hat });
+const look = () => ({ frame: FRAMES.find((f) => f.id === data().look.frame), hat: data().look.hat, character: data().look.character });
 const titleOf = () => (data().look.title !== 'none' ? equipped('title').name : '');
 const stats = (id) => data().games[id];
 
@@ -342,6 +342,7 @@ function renderProfilePanel() {
 
     <div class="lb-group" style="margin-top:var(--s-5)">
       <p class="lb-group__title">Avatar</p>
+      ${d.look.character !== 'robot' ? `<p class="lb-help" style="margin-bottom:var(--s-2)">Tu as équipé le personnage <strong>${esc(equipped('character').name)}</strong>. Choisir un robot ci-dessous le remplace (tes personnages restent dans la boutique).</p>` : ''}
       <div class="lb-avatars">
         ${seeds
           .map((seed) => {
@@ -349,9 +350,7 @@ function renderProfilePanel() {
             return `<button class="lb-avatar-opt" type="button" data-seed="${seed}" aria-pressed="${on}" aria-label="Choisir cet avatar">${avatarSVG({ kind: 'gen', seed, palette }, { size: 60 })}</button>`;
           })
           .join('')}
-        ${av?.kind === 'image' ? `<button class="lb-avatar-opt" type="button" aria-pressed="true" aria-label="Image importée">${avatarSVG(av, { size: 60 })}</button>` : ''}
         <button class="lb-avatar-opt lb-avatar-opt--action" type="button" data-shuffle>${icon('dice')}Mélanger</button>
-        <button class="lb-avatar-opt lb-avatar-opt--action" type="button" data-import-avatar>${icon('image')}Importer</button>
       </div>
     </div>
 
@@ -457,35 +456,8 @@ function setAvatar(patch) {
   const d = data();
   const cur = d.profile.avatar?.kind === 'gen' ? d.profile.avatar : { kind: 'gen', seed: randomSeed(), palette: 0 };
   meta.setProfile({ avatar: { ...cur, ...patch, kind: 'gen' } });
-}
-
-async function importAvatar(file) {
-  if (!file || !file.type.startsWith('image/')) {
-    toast({ title: 'Fichier non reconnu', text: 'Choisis une image (PNG, JPG, WebP…).', iconName: 'info', tone: 'var(--tomato)' });
-    return;
-  }
-  const url = URL.createObjectURL(file);
-  try {
-    const img = new Image();
-    img.src = url;
-    await img.decode();
-    // On réduit l'image à 160×160 pour ne pas saturer le stockage local
-    const size = 160;
-    const c = document.createElement('canvas');
-    c.width = c.height = size;
-    const ctx = c.getContext('2d');
-    const s = Math.min(img.naturalWidth, img.naturalHeight);
-    ctx.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, 0, 0, size, size);
-    let dataUrl = c.toDataURL('image/webp', 0.86);
-    if (!dataUrl.startsWith('data:image/webp')) dataUrl = c.toDataURL('image/jpeg', 0.86);
-    meta.setProfile({ avatar: { kind: 'image', data: dataUrl } });
-    sfx('confirm');
-    toast({ title: 'Avatar importé', text: 'Ton image a été recadrée en carré.', iconName: 'image', tone: 'var(--mint)' });
-  } catch {
-    toast({ title: 'Image illisible', text: 'Essaie avec un autre fichier.', iconName: 'info', tone: 'var(--tomato)' });
-  } finally {
-    URL.revokeObjectURL(url);
-  }
+  // Choisir un robot quitte le personnage des coffres
+  if (data().look.character !== 'robot') equip('character', 'robot');
 }
 
 // ---------- Paramètres ----------
@@ -696,10 +668,6 @@ document.addEventListener('click', (e) => {
     renderProfilePanel();
     return;
   }
-  if (t.matches('[data-import-avatar]')) {
-    $('#fileAvatar').click();
-    return;
-  }
   if (t.dataset.palette !== undefined && t.closest('#dlgProfile')) {
     const p = getPalette(Number(t.dataset.palette));
     const item = `palette:${p.id}`;
@@ -818,11 +786,6 @@ document.addEventListener('change', (e) => {
 });
 
 // Fichiers
-$('#fileAvatar').addEventListener('change', (e) => {
-  const f = e.target.files?.[0];
-  e.target.value = '';
-  if (f) importAvatar(f);
-});
 $('#fileImport').addEventListener('change', (e) => {
   const f = e.target.files?.[0];
   e.target.value = '';

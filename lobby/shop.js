@@ -41,6 +41,13 @@ export function initShop(c) {
   meta.events.addEventListener('change', () => {
     if ($('#dlgShop').open && !holdRender) render();
   });
+  $('#dlgShop').addEventListener('cancel', (e) => {
+    if (!opening) return;
+    e.preventDefault();
+    if (opening.revealed) closeOpening();
+    else revealOpening();
+  });
+  $('#dlgShop').addEventListener('close', () => opening && closeOpening());
 }
 
 export function openShop(t) {
@@ -73,13 +80,15 @@ function action(kind, item) {
   if (on) return `<span class="sh-state is-on">${icon('check')}Équipé</span>`;
   if (own) return `<button type="button" class="btn btn--sm" data-equip="${kind}:${item.id}">Équiper</button>`;
   if (item.ach) return `<span class="sh-state">${icon('trophy')}${esc(item.how)}</span>`;
+  if (item.chest) return `<button type="button" class="sh-state sh-state--chest" data-stab="coffre">${icon('sparkle')}Dans les coffres</button>`;
   const short = credits() < item.cost;
   return `<button type="button" class="btn btn--sm btn--primary" data-buy="${kind}:${item.id}" ${short ? 'aria-disabled="true"' : ''}>${price(item.cost)}</button>`;
 }
 function card(kind, item, preview, extra = '') {
   const on = shop.equipped(kind).id === item.id;
-  const rar = item.cost ? shop.rarityOf(item.cost) : null;
-  return `<div class="sh-item ${on ? 'is-on' : ''}" data-item="${kind}:${item.id}">
+  const rar = item.cost || item.rarity ? shop.rarityFor(item) : null;
+  return `<div class="sh-item ${on ? 'is-on' : ''} ${item.chest ? 'is-exclusive' : ''}" data-item="${kind}:${item.id}">
+    ${item.chest ? '<span class="sh-excl">Exclusif coffre</span>' : ''}
     <div class="sh-item__preview">${preview}</div>
     <div class="sh-item__body">
       <p class="sh-item__name">${esc(item.name)}${rar ? `<span class="sh-rar" style="--r:${rar.color}">${rar.name}</span>` : ''}</p>
@@ -116,9 +125,11 @@ function avatarHTML() {
   const d = meta.getData();
   const av = d.profile.avatar;
   const frameOf = (id) => shop.FRAMES.find((f) => f.id === id);
-  const lookWith = (patch) => ({ frame: frameOf(d.look.frame), hat: d.look.hat, ...patch });
+  const lookWith = (patch) => ({ frame: frameOf(d.look.frame), hat: d.look.hat, character: d.look.character, ...patch });
   return `
     <div class="sh-me">${avatarSVG(av, { size: 96, look: lookWith({}), label: 'Ton avatar équipé' })}<div><p class="sh-me__name">${esc(d.profile.name)}</p>${d.look.title !== 'none' ? `<p class="sh-title-chip">${esc(shop.equipped('title').name)}</p>` : '<p class="sh-item__desc">Pas de titre.</p>'}</div></div>
+    <h3 class="sh-h">Personnages <small>exclusifs aux coffres</small></h3>
+    <div class="sh-grid">${shop.CHARACTERS.map((c) => card('character', c, avatarSVG(av, { size: 64, look: lookWith({ character: c.id }) }))).join('')}</div>
     <h3 class="sh-h">Cadres</h3>
     <div class="sh-grid">${shop.FRAMES.map((f) => card('frame', f, avatarSVG(av, { size: 64, look: lookWith({ frame: f }) }))).join('')}</div>
     <h3 class="sh-h">Accessoires</h3>
@@ -166,16 +177,18 @@ const RAR_COLOR = { commun: '#3ee6a8', rare: '#4cc3ff', epique: '#a68bff', legen
 
 function chestHTML() {
   const total = shop.chestPool('commun').length;
-  return `<p class="sh-lead">Un objet de la boutique que tu n’as pas encore : thème, cadre, accessoire, titre, célébration ou sons. Plus le coffre est précieux, plus la récompense est belle, et c’est garanti.</p>
+  return `<p class="sh-lead">Un objet que tu n’as pas encore : personnage, thème, cadre, accessoire, titre, célébration ou sons. Les personnages et les objets marqués « Exclusif coffre » ne sortent que d’ici. Plus le coffre est précieux, plus la récompense est belle, et c’est garanti.</p>
     <div class="sh-chests">${shop.CHESTS.map((c) => {
-      const left = shop.chestPool(c.min).length;
+      const pool = shop.chestPool(c.min);
+      const left = pool.length;
+      const excl = pool.filter((p) => p.item.chest).length;
       const short = credits() < c.cost;
       return `<div class="sh-chestcard" data-chestcard="${c.id}" style="--rc:${RAR_COLOR[c.min]}">
         <div class="sh-chest__art" id="chestArt-${c.id}">${chestSVG(c)}</div>
         <p class="sh-item__name">${esc(c.name)}</p>
         <span class="sh-rar" style="--r:${RAR_COLOR[c.min]}">${RAR_NAME[c.min]}</span>
         <p class="sh-item__desc">${esc(c.desc)}</p>
-        <p class="sh-item__desc sh-chestcard__left">${left ? `${left} objet${left > 1 ? 's' : ''} possible${left > 1 ? 's' : ''}` : 'Plus rien à gagner à ce niveau'}</p>
+        <p class="sh-item__desc sh-chestcard__left">${left ? `${left} objet${left > 1 ? 's' : ''} possible${left > 1 ? 's' : ''}${excl ? `, dont ${excl} exclusif${excl > 1 ? 's' : ''}` : ''}` : 'Plus rien à gagner à ce niveau'}</p>
         <button type="button" class="btn btn--primary" data-chest="${c.id}" ${left ? (short ? 'aria-disabled="true"' : '') : 'disabled'}>${icon('sparkle')}Ouvrir · ${formatInt(c.cost)}</button>
       </div>`;
     }).join('')}</div>
@@ -205,9 +218,14 @@ async function onClick(e) {
     const [kind, id] = b.dataset.equip.split(':');
     shop.equip(kind, id);
     ctx.sfx('select');
+    if (b.closest('.sh-open')) {
+      b.outerHTML = `<span class="sh-state is-on">${icon('check')}Équipé</span>`;
+      return;
+    }
     render();
     return;
   }
+  if (b.hasAttribute('data-open-close')) return closeOpening();
   if (b.dataset.buy) {
     const [kind, id] = b.dataset.buy.split(':');
     const item = shop.KINDS[kind].list.find((x) => x.id === id);
@@ -268,33 +286,97 @@ function listen(id) {
 }
 
 const EXTRA_TEXT = { gel: 'Gel de série', boost: 'Boost d’XP 30 min' };
+
+// Aperçu d'un objet gagné, dans la scène d'ouverture
+function previewOf(kind, item) {
+  const d = meta.getData();
+  const frame = shop.FRAMES.find((f) => f.id === d.look.frame);
+  const base = { frame, hat: d.look.hat, character: d.look.character };
+  if (kind === 'character') return avatarSVG(d.profile.avatar, { size: 110, look: { ...base, character: item.id } });
+  if (kind === 'frame') return avatarSVG(d.profile.avatar, { size: 110, look: { ...base, frame: item } });
+  if (kind === 'hat') return avatarSVG(d.profile.avatar, { size: 110, look: { ...base, hat: item.id } });
+  if (kind === 'theme') return `<span class="sh-theme sh-theme--big" style="--c1:${item.colors[0]};--c2:${item.colors[1]};--c3:${item.colors[2]}"><i></i><i></i><i></i></span>`;
+  if (kind === 'title') return `<span class="sh-title-chip sh-title-chip--big">${esc(item.name)}</span>`;
+  return `<span class="sh-fx sh-fx--big">${icon(kind === 'sound' ? 'wave' : CELEB_ICON[item.id] ?? 'sparkle')}</span>`;
+}
+
+let opening = null; // { el, timers, revealed }
 function openChest(c) {
-  const art = $(`#chestArt-${c.id}`);
   holdRender = true;
   const res = shop.openChest(c.id);
   if (!res) {
     holdRender = false;
     return ctx.sfx('error');
   }
-  art.classList.add('is-shake');
+  const k = shop.KINDS[res.kind];
+  const extras = res.extras
+    .map((e) => (e.type === 'item' ? `<li><span class="sh-rar" style="--r:${e.rarity.color}">${e.rarity.name}</span> ${esc(shop.KINDS[e.kind].label)} : <strong>${esc(e.item.name)}</strong></li>` : e.type === 'credits' ? `<li>${icon('coin')} +${e.n} crédits (réserve de gels pleine)</li>` : `<li>${icon(e.type === 'gel' ? 'flame' : 'bolt')} ${EXTRA_TEXT[e.type]}</li>`))
+    .join('');
+  const el = document.createElement('div');
+  el.className = 'sh-open';
+  el.style.setProperty('--r', res.rarity.color);
+  el.setAttribute('role', 'dialog');
+  el.setAttribute('aria-label', `Ouverture : ${c.name}`);
+  el.innerHTML = `
+    <div class="sh-open__rays" aria-hidden="true"></div>
+    <div class="sh-open__chest" aria-hidden="true">${chestSVG(c)}</div>
+    <p class="sh-open__hint">${esc(c.name)}…</p>
+    <div class="sh-open__card" hidden>
+      <span class="sh-rar" style="--r:${res.rarity.color}">${res.rarity.name}</span>
+      <div class="sh-open__preview">${previewOf(res.kind, res.item)}</div>
+      <p class="sh-prize__kind">${esc(k.label)}${res.item.chest ? ' · exclusif coffre' : ''}</p>
+      <p class="sh-prize__name">${esc(res.item.name)}</p>
+      ${extras ? `<ul class="sh-prize__extras">${extras}</ul>` : ''}
+      <div class="sh-open__actions">
+        <button type="button" class="btn btn--primary" data-equip="${res.kind}:${res.item.id}">Équiper</button>
+        <button type="button" class="btn btn--ghost" data-open-close>Super !</button>
+      </div>
+    </div>`;
+  $('#dlgShop').append(el);
+  opening = { el, timers: [], revealed: false, res, chest: c };
+  const later = (ms, fn) => opening.timers.push(setTimeout(fn, ms));
+  // Suspense : le coffre tombe, tremble trois fois (de plus en plus fort), puis s'ouvre
+  const reduced = document.documentElement.dataset.motion === 'reduced' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) return revealOpening();
   ctx.sfx('whoosh');
-  const reveal = () => {
-    art.classList.remove('is-shake');
-    art.classList.add('is-open');
-    ctx.sfx(res.rarity.id === 'legendaire' ? 'record' : 'achievement');
-    if (res.rarity.id === 'legendaire' || res.rarity.id === 'epique') celebrate(c.id === 'diamant' ? 'etoiles' : 'feu', { duration: 2000 });
-    const k = shop.KINDS[res.kind];
-    const extras = res.extras
-      .map((e) => (e.type === 'item' ? `<li><span class="sh-rar" style="--r:${e.rarity.color}">${e.rarity.name}</span> ${esc(shop.KINDS[e.kind].label)} : <strong>${esc(e.item.name)}</strong></li>` : e.type === 'credits' ? `<li>${icon('coin')} +${e.n} crédits (réserve de gels pleine)</li>` : `<li>${icon(e.type === 'gel' ? 'flame' : 'bolt')} ${EXTRA_TEXT[e.type]}</li>`))
-      .join('');
-    $('#chestReveal').innerHTML = `<div class="sh-prize" style="--r:${res.rarity.color}"><p class="sh-prize__kind">${esc(c.name)}</p><span class="sh-rar" style="--r:${res.rarity.color}">${res.rarity.name}</span><p class="sh-prize__kind">${esc(k.label)}</p><p class="sh-prize__name">${esc(res.item.name)}</p>${extras ? `<ul class="sh-prize__extras">${extras}</ul>` : ''}<button type="button" class="btn btn--sm btn--primary" data-equip="${res.kind}:${res.item.id}">Équiper</button></div>`;
-    // Les coffres se mettent à jour (crédits, objets restants) ; le gain reste affiché
-    const prize = $('#chestReveal').innerHTML;
-    holdRender = false;
-    render();
-    $(`#chestArt-${c.id}`)?.classList.add('is-open');
-    $('#chestReveal').innerHTML = prize;
-    $('#chestReveal').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  };
-  setTimeout(reveal, 900);
+  [550, 1000, 1400].forEach((ms, i) =>
+    later(ms, () => {
+      el.dataset.bump = String(i + 1);
+      audio.tone({ type: 'triangle', freq: 330 * 1.26 ** i, duration: 0.12, volume: 0.18 });
+    }),
+  );
+  later(1850, revealOpening);
+  // Toucher la scène passe directement au résultat
+  el.addEventListener('click', (e) => {
+    if (!opening?.revealed && !e.target.closest('button')) revealOpening();
+  });
+}
+
+function revealOpening() {
+  if (!opening || opening.revealed) return;
+  const { el, res, chest } = opening;
+  opening.revealed = true;
+  opening.timers.forEach(clearTimeout);
+  el.classList.add('is-open');
+  el.querySelector('.sh-open__hint').hidden = true;
+  el.querySelector('.sh-open__card').hidden = false;
+  ctx.sfx(res.rarity.id === 'legendaire' ? 'record' : res.rarity.id === 'epique' ? 'achievement' : 'powerup');
+  if (res.rarity.id === 'legendaire') celebrate(chest.id === 'diamant' ? 'etoiles' : 'feu', { duration: 2200 });
+  else if (res.rarity.id === 'epique') celebrate('feu', { duration: 1600 });
+  else celebrate('confettis', { duration: 1400 });
+  el.querySelector('[data-equip]')?.focus();
+}
+
+function closeOpening() {
+  if (!opening) return;
+  const { el, res, chest } = opening;
+  opening.timers.forEach(clearTimeout);
+  opening = null;
+  el.remove();
+  holdRender = false;
+  render();
+  // Petit rappel du gain sous les coffres
+  const k = shop.KINDS[res.kind];
+  $('#chestReveal').innerHTML = `<div class="sh-prize" style="--r:${res.rarity.color}"><p class="sh-prize__kind">${esc(chest.name)}</p><span class="sh-rar" style="--r:${res.rarity.color}">${res.rarity.name}</span><p class="sh-prize__kind">${esc(k.label)}</p><p class="sh-prize__name">${esc(res.item.name)}</p></div>`;
+  $(`[data-chest="${chest.id}"]`)?.focus();
 }

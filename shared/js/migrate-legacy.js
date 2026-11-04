@@ -19,11 +19,7 @@ export function migrateLegacy(data) {
     const name = typeof old.username === 'string' ? old.username.trim() : '';
     if (name && name !== 'PLAYER_1') data.profile.name = name.slice(0, 16);
 
-    // Seul l'avatar importé par le joueur est conservé (les emojis et le GIF sous droits disparaissent)
-    if (typeof old.avatar === 'string' && old.avatar.startsWith('data:image/')) {
-      data.profile.avatar = { kind: 'image', data: old.avatar };
-    }
-
+    // L'ancien avatar n'est pas repris : les photos importées ne sont plus permises
     if (Array.isArray(old.favorites)) {
       data.favorites = [...new Set(old.favorites.map((n) => LEGACY_IDS[n]).filter(Boolean))];
     }

@@ -148,27 +148,57 @@ test.describe('boutique', () => {
     expect(d.achievements['global:gel']).toBeTruthy();
   });
 
-  test('coffre surprise : un objet jamais possédé', async ({ page }, testInfo) => {
+  // Rareté d'un objet possédé (« genre:id »), lue dans le catalogue de la page
+  const rarityOfKey = (page, key) =>
+    page.evaluate(async (k) => {
+      const shop = await import('./shared/js/shop.js');
+      const [kind, id] = k.split(':');
+      return shop.rarityFor(shop.KINDS[kind].list.find((x) => x.id === id)).id;
+    }, key);
+  // Ouvre un coffre : la scène se joue, puis la carte du gain apparaît
+  const openChest = async (page, id) => {
+    await page.locator(`[data-chest="${id}"]`).click();
+    await expect(page.locator('.sh-open')).toBeVisible();
+    await expect(page.locator('.sh-open__card')).toBeVisible({ timeout: 5000 });
+  };
+
+  test('coffre en bois : la scène d’ouverture, puis le gain', async ({ page }, testInfo) => {
     const w = watchPage(page);
     await seedMeta(page);
     await ready(page);
     await openShop(page);
     await page.locator('#stab-coffre').click();
     await page.locator('[data-chest="bois"]').click();
-    await expect(page.locator('.sh-prize')).toBeVisible({ timeout: 4000 });
+    await expect(page.locator('.sh-open')).toBeVisible();
+    await page.waitForTimeout(1200);
+    await shot(page, testInfo, 'boutique-coffre-suspense');
+    await expect(page.locator('.sh-open__card')).toBeVisible({ timeout: 5000 });
     const d = await metaData(page);
     // 150 payés ; « Premier achat » (18) et « Chasseur de trésors » (20) rapportent
     expect(d.credits).toBe(1000 - 150 + 18 + 20);
     expect(d.owned.length).toBe(1);
     expect(d.achievements['global:coffre']).toBeTruthy();
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(600);
     await shot(page, testInfo, 'boutique-coffre');
-    // Équiper le gain depuis la révélation
-    await page.locator('.sh-prize [data-equip]').click();
+    // Équiper depuis la scène, puis la refermer
+    await page.locator('.sh-open [data-equip]').click();
+    await expect(page.locator('.sh-open .sh-state.is-on')).toBeVisible();
     const [kind, id] = d.owned[0].split(':');
-    const slot = { theme: 'theme', frame: 'frame', hat: 'hat', title: 'title', celebration: 'celebration', sound: 'sound' }[kind];
-    expect((await metaData(page)).look[slot]).toBe(id);
+    expect((await metaData(page)).look[kind]).toBe(id);
+    await page.locator('[data-open-close]').click();
+    await expect(page.locator('.sh-open')).toHaveCount(0);
+    await expect(page.locator('#chestReveal .sh-prize')).toBeVisible();
     w.expectClean();
+  });
+
+  test('toucher la scène passe directement au gain', async ({ page }) => {
+    await seedMeta(page);
+    await ready(page);
+    await openShop(page);
+    await page.locator('#stab-coffre').click();
+    await page.locator('[data-chest="bois"]').click();
+    await page.locator('.sh-open').click({ position: { x: 10, y: 10 } });
+    await expect(page.locator('.sh-open__card')).toBeVisible({ timeout: 600 });
   });
 
   test('coffre de diamant : un légendaire assuré, un objet en plus et un gel', async ({ page }, testInfo) => {
@@ -178,21 +208,14 @@ test.describe('boutique', () => {
     await openShop(page);
     await page.locator('#stab-coffre').click();
     await expect(page.locator('[data-chest]')).toHaveCount(4);
-    await page.locator('[data-chest="diamant"]').click();
-    await expect(page.locator('.sh-prize')).toBeVisible({ timeout: 4000 });
-    await expect(page.locator('.sh-prize').getByText('Légendaire', { exact: true }).first()).toBeVisible();
+    await openChest(page, 'diamant');
+    await expect(page.locator('.sh-open__card .sh-rar').first()).toHaveText('Légendaire');
     const d = await metaData(page);
     expect(d.owned.length).toBe(2);
     expect(d.inventory.gel).toBe(1);
     expect(d.achievements['global:diamant']).toBeTruthy();
-    // Le premier objet gagné est bien légendaire (prix de 400 crédits ou plus)
-    const legend = await page.evaluate(async (key) => {
-      const shop = await import('./shared/js/shop.js');
-      const [kind, id] = key.split(':');
-      return shop.KINDS[kind].list.find((x) => x.id === id).cost;
-    }, d.owned[0]);
-    expect(legend).toBeGreaterThanOrEqual(400);
-    await page.waitForTimeout(400);
+    expect(await rarityOfKey(page, d.owned[0])).toBe('legendaire');
+    await page.waitForTimeout(700);
     await shot(page, testInfo, 'boutique-diamant');
     w.expectClean();
   });
@@ -202,17 +225,52 @@ test.describe('boutique', () => {
     await ready(page);
     await openShop(page);
     await page.locator('#stab-coffre').click();
-    await page.locator('[data-chest="or"]').click();
-    await expect(page.locator('.sh-prize')).toBeVisible({ timeout: 4000 });
+    await openChest(page, 'or');
     const d = await metaData(page);
     expect(d.boostUntil).toBeGreaterThan(Date.now());
-    const cost = await page.evaluate(async (key) => {
-      const shop = await import('./shared/js/shop.js');
-      const [kind, id] = key.split(':');
-      return shop.KINDS[kind].list.find((x) => x.id === id).cost;
-    }, d.owned[0]);
-    expect(cost).toBeGreaterThanOrEqual(250);
+    expect(['epique', 'legendaire']).toContain(await rarityOfKey(page, d.owned[0]));
+    // Échap referme la scène sans fermer la boutique
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.sh-open')).toHaveCount(0);
+    await expect(page.locator('#dlgShop')).toBeVisible();
     // Plus assez de crédits pour un second coffre d'or
     await expect(page.locator('[data-chest="or"]')).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  test('exclusivités : personnages et objets qui ne s’achètent pas', async ({ page }, testInfo) => {
+    await seedMeta(page, { credits: 5000 });
+    await ready(page);
+    await openShop(page);
+    await page.locator('#stab-avatar').click();
+    await expect(page.locator('[data-item="character:dragon"] .sh-excl')).toBeVisible();
+    await expect(page.locator('[data-buy="character:dragon"]')).toHaveCount(0);
+    await expect(page.locator('[data-buy="theme:galaxie"]')).toHaveCount(0);
+    await shot(page, testInfo, 'boutique-personnages');
+    // « Dans les coffres » mène au rayon des coffres
+    await page.locator('[data-item="character:dragon"] [data-stab="coffre"]').click();
+    await expect(page.locator('#stab-coffre')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('[data-chestcard="diamant"]')).toContainText('exclusif');
+  });
+
+  test('un personnage gagné remplace le robot dans le lobby', async ({ page }) => {
+    await seedMeta(page, { owned: ['character:astronaute', 'theme:galaxie'], look: { character: 'astronaute', theme: 'galaxie' } });
+    await ready(page);
+    await expect(page.locator('html')).toHaveAttribute('data-gv-theme', 'galaxie');
+    // Le fond du personnage astronaute est dessiné dans l'avatar de l'en-tête
+    await expect(page.locator('#btnProfile svg.avatar-svg rect').first()).toHaveAttribute('fill', '#0b1026');
+    // Choisir un robot dans le profil repasse sur le robot
+    await page.locator('#btnProfile').click();
+    await expect(page.locator('#ppanel-me')).toContainText('Astronaute');
+    await page.locator('.lb-avatar-opt[data-seed]').nth(1).click();
+    expect((await metaData(page)).look.character).toBe('robot');
+  });
+
+  test('plus d’import de photo de profil', async ({ page }) => {
+    await seedMeta(page, { profile: { name: 'TESTEUR', createdAt: 1, avatar: { kind: 'image', data: 'data:image/png;base64,AAAA' } } });
+    await ready(page);
+    expect((await metaData(page)).profile.avatar.kind).toBe('gen');
+    await page.locator('#btnProfile').click();
+    await expect(page.locator('[data-import-avatar]')).toHaveCount(0);
+    await expect(page.locator('#fileAvatar')).toHaveCount(0);
   });
 });

@@ -986,3 +986,55 @@ button.lb-pill--credits:hover { transform: translateY(-1px); box-shadow: inset 0
 /* Entrée de la boutique dans l'en-tête */
 .lb-pill__shop { display: none; margin-left: 2px; padding-left: 8px; box-shadow: inset 2px 0 0 var(--border); font-family: var(--font-display); font-weight: 900; font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--coin); }
 @media (min-width: 640px) { .lb-pill__shop { display: inline; } }
+
+/* Exclusivités des coffres */
+.sh-item { position: relative; }
+.sh-item.is-exclusive { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--grape) 55%, var(--border)); background: linear-gradient(160deg, color-mix(in srgb, var(--grape) 12%, var(--surface-2)), var(--surface-2) 60%); }
+.sh-excl { position: absolute; top: -8px; right: 10px; padding: 2px 8px; border-radius: var(--r-pill); background: var(--grape); color: #120a2a; font-size: 10px; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
+button.sh-state--chest { padding: 4px 10px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--grape) 18%, transparent); color: var(--grape); cursor: pointer; }
+button.sh-state--chest:hover { background: color-mix(in srgb, var(--grape) 30%, transparent); }
+
+/* Scène d'ouverture d'un coffre */
+.sh-open {
+  --r: #ffc93c;
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--r) 18%, #05060b), #05060b 70%);
+  animation: sh-open-in 260ms var(--ease-out) both;
+  overflow: hidden;
+}
+@keyframes sh-open-in { from { opacity: 0; } }
+.sh-open__rays { position: absolute; left: 50%; top: 45%; width: 160vmax; height: 160vmax; translate: -50% -50%; opacity: 0; background: repeating-conic-gradient(color-mix(in srgb, var(--r) 30%, transparent) 0 8deg, transparent 8deg 22deg); -webkit-mask: radial-gradient(circle, #000 0, transparent 40%); mask: radial-gradient(circle, #000 0, transparent 40%); pointer-events: none; }
+.sh-open.is-open .sh-open__rays { opacity: 1; transition: opacity 400ms; animation: sh-rays 9s linear infinite; }
+@keyframes sh-rays { to { rotate: 360deg; } }
+.sh-open__chest { position: relative; width: min(220px, 56vw); animation: sh-drop 520ms var(--ease-spring) both; filter: drop-shadow(0 0 0 transparent); transition: filter 300ms; }
+.sh-open__chest svg { width: 100%; overflow: visible; }
+.sh-open__chest .sh-lid { transform-origin: 14px 44px; transition: transform 520ms var(--ease-spring); }
+@keyframes sh-drop { from { transform: translateY(-60vh) scale(0.6); } }
+.sh-open[data-bump='1'] .sh-open__chest { animation: sh-bump 260ms ease-out; filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.35)); }
+.sh-open[data-bump='2'] .sh-open__chest { animation: sh-bump2 300ms ease-out; filter: drop-shadow(0 0 18px rgb(255 255 255 / 0.5)); }
+.sh-open[data-bump='3'] .sh-open__chest { animation: sh-bump3 340ms ease-out; filter: drop-shadow(0 0 26px var(--r)); }
+@keyframes sh-bump { 30% { transform: translateY(-8px) rotate(-4deg); } 60% { transform: rotate(3deg); } }
+@keyframes sh-bump2 { 25% { transform: translateY(-14px) rotate(6deg) scale(1.04); } 55% { transform: rotate(-6deg); } 80% { transform: rotate(3deg); } }
+@keyframes sh-bump3 { 20% { transform: translateY(-22px) rotate(-8deg) scale(1.08); } 45% { transform: rotate(9deg) scale(1.08); } 70% { transform: rotate(-5deg); } }
+.sh-open.is-open .sh-open__chest { width: min(130px, 34vw); filter: drop-shadow(0 0 30px var(--r)); transition: width 400ms var(--ease-out), filter 300ms; }
+.sh-open.is-open .sh-open__chest .sh-lid { transform: rotate(-38deg) translate(-8px, -14px); }
+.sh-open__hint { position: relative; font-family: var(--font-display); font-weight: 900; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.06em; color: #fff8ec; animation: sh-pulse-txt 0.9s ease-in-out infinite alternate; }
+@keyframes sh-pulse-txt { to { opacity: 0.55; } }
+.sh-open__card { position: relative; display: grid; justify-items: center; gap: 6px; width: min(340px, 100%); padding: var(--s-4); border-radius: var(--r-xl); background: var(--surface); box-shadow: inset 0 0 0 3px var(--r), 0 0 50px color-mix(in srgb, var(--r) 45%, transparent); text-align: center; animation: sh-card-pop 520ms var(--ease-spring) both; }
+.sh-open__card[hidden] { display: none; }
+@keyframes sh-card-pop { from { transform: translateY(60px) scale(0.5); opacity: 0; } }
+.sh-open__preview { display: grid; place-items: center; min-height: 110px; }
+.sh-open__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-2); margin-top: var(--s-2); }
+.sh-theme--big { width: 110px; height: 110px; padding: 8px; gap: 6px; border-radius: 18px; }
+.sh-title-chip--big { padding: 8px 16px; font-size: var(--fs-md); }
+.sh-fx--big .icon { width: 64px; height: 64px; }
+@media (prefers-reduced-motion: reduce) {
+  .sh-open, .sh-open__chest, .sh-open__card, .sh-open__rays { animation: none !important; }
+}

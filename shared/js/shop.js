@@ -5,8 +5,18 @@ import * as meta from './meta.js';
 import { audio } from './engine/audio.js';
 import { GAMES } from '../../games/registry.js';
 
-// rareté : déduite du prix pour le coffre
-export const rarityOf = (cost) => (cost >= 400 ? { id: 'legendaire', name: 'Légendaire', color: '#ffc93c' } : cost >= 250 ? { id: 'epique', name: 'Épique', color: '#a68bff' } : cost >= 130 ? { id: 'rare', name: 'Rare', color: '#4cc3ff' } : { id: 'commun', name: 'Commun', color: '#3ee6a8' });
+// Rareté : déduite du prix, ou donnée par l'objet pour les exclusivités des coffres
+export const RARITY = {
+  commun: { id: 'commun', name: 'Commun', color: '#3ee6a8' },
+  rare: { id: 'rare', name: 'Rare', color: '#4cc3ff' },
+  epique: { id: 'epique', name: 'Épique', color: '#a68bff' },
+  legendaire: { id: 'legendaire', name: 'Légendaire', color: '#ffc93c' },
+};
+export const rarityOf = (cost) => (cost >= 400 ? RARITY.legendaire : cost >= 250 ? RARITY.epique : cost >= 130 ? RARITY.rare : RARITY.commun);
+export const rarityFor = (item) => (item.rarity ? RARITY[item.rarity] : rarityOf(item.cost));
+// Valeur d'un objet exclusif pour le tirage pondéré des coffres
+const VALUE = { commun: 100, rare: 200, epique: 320, legendaire: 520 };
+const worth = (item) => item.cost || VALUE[item.rarity] || 100;
 
 export const THEMES = [
   { id: 'nuit', name: 'Nuit d’arcade', cost: 0, colors: ['#0b0c14', '#1a1d2e', '#ffc93c'], desc: 'Le thème d’origine.' },
@@ -17,6 +27,22 @@ export const THEMES = [
   { id: 'neon', name: 'Néon', cost: 300, colors: ['#0d0618', '#22113b', '#ff5fa2'], desc: 'Rose électrique et cyan.' },
   { id: 'retro', name: 'Écran cathodique', cost: 400, colors: ['#030a04', '#0c2210', '#3eff7a'], desc: 'Phosphore vert et lignes de balayage.' },
   { id: 'or', name: 'Or massif', cost: 500, colors: ['#0f0b02', '#241a05', '#ffd15c'], desc: 'Noir laqué et dorures.' },
+  // Exclusivités des coffres
+  { id: 'glacier', name: 'Glacier', chest: true, rarity: 'rare', colors: ['#071a24', '#123547', '#9fe8ff'], desc: 'Bleu polaire et éclats de givre.' },
+  { id: 'sakura', name: 'Sakura', chest: true, rarity: 'epique', colors: ['#1f0d18', '#3a1a2e', '#ff9ec7'], desc: 'Nuit de printemps et pétales roses.' },
+  { id: 'lave', name: 'Volcan', chest: true, rarity: 'epique', colors: ['#160604', '#3a0f08', '#ff6a2b'], desc: 'Roche noire et coulées de lave.' },
+  { id: 'galaxie', name: 'Galaxie', chest: true, rarity: 'legendaire', colors: ['#06041a', '#1c1145', '#c49aff'], desc: 'Un ciel étoilé derrière chaque écran.' },
+];
+
+// Personnages : l'avatar entier change. Le robot est offert, les autres sortent des coffres.
+export const CHARACTERS = [
+  { id: 'robot', name: 'Robot', cost: 0, desc: 'Le robot d’arcade de départ.' },
+  { id: 'chat', name: 'Chat', chest: true, rarity: 'rare', desc: 'Moustaches et oreilles pointues.' },
+  { id: 'renard', name: 'Renard', chest: true, rarity: 'rare', desc: 'Rusé, roux et plein de malice.' },
+  { id: 'fantome', name: 'Fantôme', chest: true, rarity: 'epique', desc: 'Bouh ! Il flotte au-dessus du lobby.' },
+  { id: 'alien', name: 'Alien', chest: true, rarity: 'epique', desc: 'Venu de loin pour battre tes records.' },
+  { id: 'astronaute', name: 'Astronaute', chest: true, rarity: 'legendaire', desc: 'Casque, visière et tête dans les étoiles.' },
+  { id: 'dragon', name: 'Dragon', chest: true, rarity: 'legendaire', desc: 'Cornes dorées et regard de braise.' },
 ];
 
 export const FRAMES = [
@@ -26,6 +52,9 @@ export const FRAMES = [
   { id: 'pixel', name: 'Pixel', cost: 180, color: '#3ee6a8', color2: '#13996a', dashed: true },
   { id: 'laurier', name: 'Laurier', cost: 260, color: '#7fbf5a', color2: '#ffc93c', leaves: true },
   { id: 'or', name: 'Or', cost: 450, color: '#ffd15c', color2: '#c98f00', glow: true },
+  { id: 'cristal', name: 'Cristal', chest: true, rarity: 'rare', color: '#d6f3ff', color2: '#4cc3ff', glow: true },
+  { id: 'flammes', name: 'Flammes', chest: true, rarity: 'epique', color: '#ffb02e', color2: '#e63946', glow: true, flames: true },
+  { id: 'arcenciel', name: 'Arc-en-ciel', chest: true, rarity: 'legendaire', color: '#ffffff', color2: '#1b1626', glow: true, rainbow: true },
 ];
 
 export const HATS = [
@@ -36,6 +65,9 @@ export const HATS = [
   { id: 'casque', name: 'Casque audio', cost: 120 },
   { id: 'couronne', name: 'Couronne', cost: 300 },
   { id: 'aureole', name: 'Auréole', cost: 420 },
+  { id: 'magicien', name: 'Chapeau de magicien', chest: true, rarity: 'rare' },
+  { id: 'licorne', name: 'Corne de licorne', chest: true, rarity: 'epique' },
+  { id: 'diademe', name: 'Couronne de diamants', chest: true, rarity: 'legendaire' },
 ];
 
 // Titres : achetés, ou offerts par un succès (`ach`)
@@ -50,6 +82,9 @@ export const TITLES = [
   { id: 'chasseur', name: 'Chasseur de records', ach: 'global:records-10', how: 'Bats 10 records' },
   { id: 'globe', name: 'Grand explorateur', ach: 'global:explorateur', how: 'Essaie tous les jeux' },
   { id: 'collection', name: 'Collectionneur', ach: 'global:collection-25', how: 'Débloque 25 succès' },
+  { id: 'chanceux', name: 'Chanceux', chest: true, rarity: 'rare' },
+  { id: 'roi-coffres', name: 'Roi des coffres', chest: true, rarity: 'epique' },
+  { id: 'main-or', name: 'Main d’or', chest: true, rarity: 'legendaire' },
 ];
 
 export const CELEBRATIONS = [
@@ -87,6 +122,7 @@ export const CHEST_COST = CHESTS[0].cost;
 
 // Catégories d'objets cosmétiques : clé d'équipement, liste
 export const KINDS = {
+  character: { list: CHARACTERS, slot: 'character', label: 'Personnage' },
   theme: { list: THEMES, slot: 'theme', label: 'Thème' },
   frame: { list: FRAMES, slot: 'frame', label: 'Cadre' },
   hat: { list: HATS, slot: 'hat', label: 'Accessoire' },
@@ -102,6 +138,7 @@ export const itemKey = (kind, id) => `${kind}:${id}`;
 export function owned(kind, item) {
   if (!item) return false;
   if (item.ach) return !!meta.getData().achievements[item.ach];
+  if (item.chest) return meta.owns(itemKey(kind, item.id));
   return !item.cost || meta.owns(itemKey(kind, item.id));
 }
 
@@ -120,7 +157,8 @@ export function equip(kind, id) {
 /** Achat d'un cosmétique ; l'équipe aussitôt */
 export function purchase(kind, id) {
   const item = KINDS[kind].list.find((x) => x.id === id);
-  if (!item || item.ach) return false;
+  // Les exclusivités des coffres ne s'achètent pas
+  if (!item || item.ach || item.chest) return false;
   if (!owned(kind, item) && !meta.buy(itemKey(kind, id), item.cost)) return false;
   meta.noteShopping();
   equip(kind, id);
@@ -142,15 +180,15 @@ export function chestPool(min = 'commun') {
   const out = [];
   for (const [kind, k] of Object.entries(KINDS)) {
     for (const item of k.list) {
-      if (!item.cost || item.ach || owned(kind, item)) continue;
-      if (RARITIES.indexOf(rarityOf(item.cost).id) >= floor) out.push({ kind, item });
+      if ((!item.cost && !item.chest) || item.ach || owned(kind, item)) continue;
+      if (RARITIES.indexOf(rarityFor(item).id) >= floor) out.push({ kind, item });
     }
   }
   return out;
 }
 // Tirage pondéré : dans un même coffre, les objets chers sortent plus rarement
 function draw(pool, rng) {
-  const weights = pool.map(({ item }) => 1 / Math.sqrt(item.cost));
+  const weights = pool.map(({ item }) => 1 / Math.sqrt(worth(item)));
   let r = rng() * weights.reduce((a, b) => a + b, 0);
   for (let i = 0; i < pool.length; i++) {
     r -= weights[i];
@@ -177,7 +215,7 @@ export function openChest(id = 'bois', rng = Math.random) {
       if (rest.length) {
         const e = draw(rest, rng);
         meta.grant(itemKey(e.kind, e.item.id));
-        extras.push({ type: 'item', ...e, rarity: rarityOf(e.item.cost) });
+        extras.push({ type: 'item', ...e, rarity: rarityFor(e.item) });
       }
     } else if (b === 'gel') {
       // Réserve pleine : le gel est remplacé par des crédits
@@ -192,7 +230,7 @@ export function openChest(id = 'bois', rng = Math.random) {
     }
   }
   meta.noteShopping({ chest: true, chestId: chest.id });
-  return { ...pick, rarity: rarityOf(pick.item.cost), chest, extras };
+  return { ...pick, rarity: rarityFor(pick.item), chest, extras };
 }
 
 // ---------- Application (thème, sons) ----------
