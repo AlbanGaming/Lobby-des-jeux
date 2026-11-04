@@ -1,6 +1,6 @@
 // Notifications non bloquantes (succès, niveau, défi du jour) annoncées aux lecteurs d'écran.
-// Dans le lobby : cartes détaillées. En jeu : pastilles compactes, une à la fois, en file
-// d'attente (les rafales sont regroupées) pour ne jamais masquer la partie.
+// Lobby sur grand écran : cartes détaillées. En jeu, et partout sur téléphone : petites
+// pastilles d'une ligne, une à la fois, en file d'attente (les rafales sont regroupées).
 
 import { icon } from './icons.js';
 
@@ -11,6 +11,8 @@ let showing = 0;
 const canPopover = typeof HTMLElement !== 'undefined' && 'showPopover' in HTMLElement.prototype;
 const inGame = () => document.documentElement.classList.contains('gv-game-root');
 const narrow = () => typeof innerWidth === 'number' && innerWidth < 600;
+// Pastilles : en jeu, et sur téléphone même dans le lobby
+const compact = () => inGame() || narrow();
 const QUEUE_MAX = 2; // au-delà, les notifications en attente sont résumées en une seule
 
 function ensureHost() {
@@ -23,7 +25,7 @@ function ensureHost() {
     if (canPopover) host.setAttribute('popover', 'manual');
     document.body.appendChild(host);
   }
-  host.classList.toggle('is-compact', inGame());
+  host.classList.toggle('is-compact', compact());
   if (canPopover) {
     // Ré-ouvrir le popover le remet tout en haut de la pile, devant une modale ouverte entre-temps
     if (host.matches(':popover-open')) host.hidePopover();
@@ -70,8 +72,8 @@ function showNext() {
 }
 
 export function toast({ title, text = '', iconName = 'trophy', duration = 3600, tone } = {}) {
-  // En jeu : pastille compacte, une seule à la fois
-  if (inGame()) {
+  // En jeu ou sur téléphone : pastille compacte, une seule à la fois
+  if (compact()) {
     const t = { title, text, iconName, tone, duration: Math.min(duration, narrow() ? 2000 : 2600) };
     if (queue.length >= QUEUE_MAX) {
       // Rafale : ce qui attend est résumé en une pastille, la plus récente reste affichée en entier
@@ -84,9 +86,7 @@ export function toast({ title, text = '', iconName = 'trophy', duration = 3600, 
   const el = render({ title, text, iconName, tone }, false);
   const h = ensureHost();
   h.appendChild(el);
-  // Sur petit écran, deux notifications à la fois suffisent
-  const max = narrow() ? 2 : 3;
-  while (h.children.length > max) h.firstElementChild.remove();
+  while (h.children.length > 3) h.firstElementChild.remove();
   setTimeout(() => dismiss(el), duration);
   return el;
 }

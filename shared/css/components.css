@@ -353,21 +353,33 @@
 }
 
 /* ---------- Notifications ---------- */
+/* Le conteneur ne prend que la hauteur de ses notifications : sans « bottom », Safari (iOS)
+   ne l'étire plus sur tout l'écran, et les pastilles gardent leur hauteur naturelle. */
 .toasts {
   position: fixed;
   z-index: var(--z-toast);
   top: calc(var(--topbar-h) + var(--s-3));
+  right: auto;
+  bottom: auto;
   left: 50%;
   display: grid;
+  align-content: start;
+  align-items: start;
   gap: var(--s-2);
   width: min(380px, calc(100vw - 32px));
+  height: auto;
+  max-height: calc(100dvh - var(--topbar-h) - 24px);
   transform: translateX(-50%);
   pointer-events: none;
 }
 .toasts[popover] {
   inset: auto;
   top: calc(var(--topbar-h) + var(--s-3));
+  right: auto;
+  bottom: auto;
   left: 50%;
+  height: fit-content;
+  min-height: 0;
   margin: 0;
   padding: 0;
   border: 0;
@@ -377,7 +389,9 @@
 }
 .toast {
   display: flex;
+  align-self: start;
   align-items: center;
+  height: auto;
   gap: var(--s-3);
   padding: var(--s-3) var(--s-4);
   border-radius: var(--r-md);
@@ -418,14 +432,17 @@
 }
 
 /* En jeu : une pastille d'une ligne, sous la barre du haut, qui ne masque pas la partie */
-.toasts.is-compact {
+.toasts.is-compact,
+.toasts.is-compact[popover] {
   top: calc(var(--topbar-h) + 6px);
+  height: fit-content;
   width: max-content;
   max-width: calc(100vw - 24px);
   justify-items: center;
 }
 .toast--compact {
   gap: 8px;
+  max-height: 44px;
   max-width: 100%;
   padding: 4px 14px 4px 4px;
   border-radius: var(--r-pill);
@@ -457,7 +474,13 @@
   text-overflow: ellipsis;
   font-size: var(--fs-xs);
 }
+/* Téléphone : une petite pastille, plus basse et plus étroite, juste sous la barre du haut */
 @media (max-width: 599px) {
+  .toasts.is-compact, .toasts.is-compact[popover] { top: calc(var(--topbar-h) + 4px); max-width: calc(100vw - 48px); }
+  .toast--compact { max-height: 28px; gap: 6px; padding: 2px 11px 2px 2px; box-shadow: 0 2px 0 0 var(--ink-line), 0 6px 16px -8px rgb(0 0 0 / 0.7); }
+  .toast--compact .toast__icon { width: 20px; height: 20px; }
+  .toast--compact .toast__icon .icon { width: 12px; height: 12px; }
+  .toast--compact .toast__title { overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; letter-spacing: 0.02em; }
   .toast--compact .toast__text {
     display: none;
   }

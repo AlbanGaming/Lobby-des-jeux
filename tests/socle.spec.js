@@ -154,13 +154,27 @@ test.describe('socle', () => {
     await expect(page.locator('.toast')).toHaveCount(1);
   });
 
-  test('dans le lobby, les notifications restent détaillées', async ({ page }) => {
+  test('lobby : cartes détaillées sur grand écran, petites pastilles sur téléphone', async ({ page }, testInfo) => {
+    const phone = testInfo.project.name === 'mobile';
     await page.goto('./');
     await page.evaluate(async () => {
       const { toast } = await import('./shared/js/ui/toast.js');
-      toast({ title: 'Titre', text: 'Détail visible' });
+      toast({ title: 'Niveau 2 !', text: '+25 crédits', iconName: 'starFill' });
+      toast({ title: 'Premier achat', text: 'Achète un objet à la boutique.' });
     });
-    await expect(page.locator('.toast')).not.toHaveClass(/toast--compact/);
-    await expect(page.locator('.toast__text')).toBeVisible();
+    if (!phone) {
+      await expect(page.locator('.toast').first()).not.toHaveClass(/toast--compact/);
+      await expect(page.locator('.toast__text').first()).toBeVisible();
+      return;
+    }
+    // Téléphone : une seule pastille à la fois, courte, d'une ligne
+    await expect(page.locator('.toast')).toHaveCount(1);
+    const t = page.locator('.toast');
+    await expect(t).toHaveClass(/toast--compact/);
+    await expect(page.locator('.toast__text')).toBeHidden();
+    const box = await t.boundingBox();
+    expect(box.height).toBeLessThanOrEqual(32);
+    expect(box.width).toBeLessThan(page.viewportSize().width * 0.7);
+    await shot(page, testInfo, 'socle-pastille-lobby');
   });
 });
