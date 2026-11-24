@@ -902,6 +902,37 @@ button.lb-pill--credits { cursor: pointer; transition: transform var(--dur-1), b
 button.lb-pill--credits:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 2px var(--coin); }
 .lb-player__title { margin-top: 2px; font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.04em; color: var(--accent); }
 .badge--secret { background: var(--grape); color: #120a2a; }
+.badge--week { background: var(--coin); color: var(--coin-ink); }
+
+/* Événement de la semaine */
+.lb-week {
+  --g: var(--mint);
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-4);
+  /* Collé au bloc « À la une » plutôt qu'espacé comme une section */
+  margin-top: calc(var(--s-5) - var(--s-7));
+  padding: var(--s-3) var(--s-5) var(--s-3) var(--s-3);
+  border-radius: var(--r-xl);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--g) 24%, var(--surface)) 0%, var(--surface) 55%);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--g) 45%, transparent), var(--shadow-hard);
+}
+.lb-week:empty { display: none; }
+.lb-week__art { aspect-ratio: 4 / 3; border-radius: var(--r-md); overflow: hidden; background: var(--g); }
+.lb-week__kicker { display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); }
+.lb-week__kicker .icon { width: 14px; height: 14px; color: var(--coin); }
+.lb-week__title { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0; font-family: var(--font-display); font-size: 1.7rem; font-weight: 900; line-height: 1; text-transform: uppercase; }
+.lb-week__x2 { padding: 3px 9px; border-radius: var(--r-pill); background: var(--coin); color: var(--coin-ink); font-family: var(--font-body); font-size: var(--fs-xs); font-weight: 900; letter-spacing: 0.02em; }
+.lb-week__text { font-size: var(--fs-sm); color: var(--text-2); }
+.lb-week__text .icon { width: 16px; height: 16px; vertical-align: -3px; color: var(--mint); }
+.lb-week__progress { display: flex; align-items: center; gap: var(--s-2); max-width: 380px; margin-top: var(--s-2); font-size: var(--fs-xs); font-weight: 800; font-variant-numeric: tabular-nums; }
+.lb-week__progress .meter { flex: 1; }
+@media (max-width: 640px) {
+  .lb-week { grid-template-columns: 76px minmax(0, 1fr); gap: var(--s-3); padding: var(--s-3); }
+  .lb-week__title { font-size: 1.3rem; }
+  .lb-week__play { grid-column: 1 / -1; justify-content: center; }
+}
 .gcard.is-locked .gcard__thumb > svg { filter: grayscale(0.85) brightness(0.55) blur(1.5px); }
 .gcard.is-locked .gcard__play { opacity: 1; transform: none; background: var(--surface-2); color: var(--coin); box-shadow: inset 0 0 0 2px var(--coin); }
 .gcard.is-locked .gcard__play .icon { margin-left: 0; }
@@ -1008,6 +1039,7 @@ button.lb-pill--credits:hover { transform: translateY(-1px); box-shadow: inset 0
 /* Exclusivités des coffres */
 .sh-item { position: relative; }
 .sh-item.is-exclusive { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--grape) 55%, var(--border)); background: linear-gradient(160deg, color-mix(in srgb, var(--grape) 12%, var(--surface-2)), var(--surface-2) 60%); }
+.sh-excl--event { background: var(--coin); color: var(--coin-ink); }
 .sh-excl { position: absolute; top: -8px; right: 10px; padding: 2px 8px; border-radius: var(--r-pill); background: var(--grape); color: #120a2a; font-size: 10px; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; }
 button.sh-state--chest { padding: 4px 10px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--grape) 18%, transparent); color: var(--grape); cursor: pointer; }
 button.sh-state--chest:hover { background: color-mix(in srgb, var(--grape) 30%, transparent); }

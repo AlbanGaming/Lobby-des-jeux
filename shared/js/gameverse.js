@@ -58,6 +58,9 @@ export function bootGame(id, opts = {}) {
     audio.play('levelUp');
     toast({ title: `Niveau ${e.detail.level} !`, text: '+25 crédits', iconName: 'starFill', tone: 'var(--mint)' });
   });
+  meta.events.addEventListener('weekly', (e) => {
+    toast({ title: 'Événement de la semaine réussi', text: e.detail.reward ? 'Nouvel objet : va l’équiper à la boutique !' : `+${meta.WEEKLY_CREDITS} crédits`, iconName: 'calendar', tone: 'var(--coin)' });
+  });
   meta.events.addEventListener('daily', () => {
     toast({ title: 'Défi du jour réussi', text: '+150 XP · +40 crédits', iconName: 'calendar', tone: 'var(--sky)' });
   });

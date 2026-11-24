@@ -10,7 +10,7 @@ import { formatInt, formatDuration } from '../shared/js/core/math.js';
 import { createRng, dailySeed, dayKey } from '../shared/js/core/rng.js';
 import { createStore } from '../shared/js/storage.js';
 import { motion } from '../shared/js/motion.js';
-import { applyLook, FRAMES, equipped, equip } from '../shared/js/shop.js';
+import { applyLook, FRAMES, equipped, equip, KINDS } from '../shared/js/shop.js';
 import { initShop, openShop } from './shop.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -171,6 +171,33 @@ function renderFeature() {
   hydrateThumbs(el);
 }
 
+// ---------- Événement de la semaine ----------
+function rewardLabel(key) {
+  if (!key) return `${meta.WEEKLY_CREDITS} crédits`;
+  const [kind, id] = key.split(':');
+  const item = KINDS[kind].list.find((x) => x.id === id);
+  return `${KINDS[kind].label.toLowerCase()} « ${item.name} »`;
+}
+function renderWeekly() {
+  const ev = meta.weeklyEvent();
+  const game = getGame(ev.gameId);
+  const el = $('#weekly');
+  el.style.setProperty('--g', game.color);
+  el.style.setProperty('--gi', game.ink);
+  const left = Math.max(1, Math.ceil((ev.ends - Date.now()) / 864e5));
+  const reward = esc(rewardLabel(ev.reward));
+  el.innerHTML = `
+    <div class="lb-week__art" data-thumb="${game.id}" aria-hidden="true"></div>
+    <div class="lb-week__body">
+      <p class="lb-week__kicker">${icon('calendar')}Événement de la semaine · encore ${left} jour${left > 1 ? 's' : ''}</p>
+      <h2 class="lb-week__title" id="weeklyTitle">${esc(game.title)}<span class="lb-week__x2">XP ×2</span></h2>
+      <p class="lb-week__text">${ev.done ? `${icon('check')} Gagné : ${reward}. Un nouvel événement commence lundi !` : `Joue ${ev.goal} parties cette semaine pour gagner le ${reward}.`}</p>
+      <div class="lb-week__progress"><div class="meter" style="--value:${(ev.plays / ev.goal).toFixed(3)};--meter-color:var(--mint)" role="progressbar" aria-label="Parties jouées pour l’événement" aria-valuemin="0" aria-valuemax="${ev.goal}" aria-valuenow="${ev.plays}"><div class="meter__fill"></div></div><span>${ev.plays} / ${ev.goal}</span></div>
+    </div>
+    <a class="btn btn--primary lb-week__play" href="${gamePath(game)}" data-play="${game.id}">${icon('play')}Jouer</a>`;
+  hydrateThumbs(el);
+}
+
 // ---------- Carte joueur ----------
 function renderPlayer() {
   const d = data();
@@ -201,6 +228,7 @@ function renderPlayer() {
 }
 
 // ---------- Cartes de jeu ----------
+let weeklyId = '';
 function cardHTML(game, i = 0) {
   const st = stats(game.id);
   const fav = meta.isFavorite(game.id);
@@ -213,6 +241,7 @@ function cardHTML(game, i = 0) {
   const locked = !meta.gameUnlocked(game.id);
   if (locked) line = `${icon('lock')}<span>Jeu secret · ${formatInt(game.secret.cost)} crédits</span>`;
   else if (game.secret) badges.push('<span class="badge badge--secret">Secret</span>');
+  if (game.id === weeklyId) badges.push('<span class="badge badge--week">XP ×2</span>');
   if (game.status === 'new') badges.push('<span class="badge badge--new">Nouveau</span>');
   if (game.status === 'popular') badges.push('<span class="badge badge--hot">Populaire</span>');
   return `
@@ -624,8 +653,10 @@ function confirmAction({ title, text, ok }) {
 
 // ---------- Rendu global ----------
 function renderAll() {
+  weeklyId = meta.weeklyEvent().gameId;
   renderHeader();
   renderFeature();
+  renderWeekly();
   renderPlayer();
   renderPicks();
   renderFilters();

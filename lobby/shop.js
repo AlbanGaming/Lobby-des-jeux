@@ -81,14 +81,15 @@ function action(kind, item) {
   if (own) return `<button type="button" class="btn btn--sm" data-equip="${kind}:${item.id}">Équiper</button>`;
   if (item.ach) return `<span class="sh-state">${icon('trophy')}${esc(item.how)}</span>`;
   if (item.chest) return `<button type="button" class="sh-state sh-state--chest" data-stab="coffre">${icon('sparkle')}Dans les coffres</button>`;
+  if (item.event) return `<span class="sh-state">${icon('calendar')}Événement de la semaine</span>`;
   const short = credits() < item.cost;
   return `<button type="button" class="btn btn--sm btn--primary" data-buy="${kind}:${item.id}" ${short ? 'aria-disabled="true"' : ''}>${price(item.cost)}</button>`;
 }
 function card(kind, item, preview, extra = '') {
   const on = shop.equipped(kind).id === item.id;
   const rar = item.cost || item.rarity ? shop.rarityFor(item) : null;
-  return `<div class="sh-item ${on ? 'is-on' : ''} ${item.chest ? 'is-exclusive' : ''}" data-item="${kind}:${item.id}">
-    ${item.chest ? '<span class="sh-excl">Exclusif coffre</span>' : ''}
+  return `<div class="sh-item ${on ? 'is-on' : ''} ${item.chest || item.event ? 'is-exclusive' : ''}" data-item="${kind}:${item.id}">
+    ${item.chest ? '<span class="sh-excl">Exclusif coffre</span>' : item.event ? '<span class="sh-excl sh-excl--event">Événement</span>' : ''}
     <div class="sh-item__preview">${preview}</div>
     <div class="sh-item__body">
       <p class="sh-item__name">${esc(item.name)}${rar ? `<span class="sh-rar" style="--r:${rar.color}">${rar.name}</span>` : ''}</p>

@@ -308,11 +308,12 @@ export function createShell({
           <div class="gv-stats">${stats.map((s) => `<div class="gv-stat"><div class="gv-stat__label">${esc(s.label)}</div><div class="gv-stat__value">${esc(s.value)}</div></div>`).join('')}</div>
           ${r.extraHtml ? `<div class="gv-extra">${r.extraHtml}</div>` : ''}
           <div class="gv-progress">
-            <div class="gv-progress__row"><span>${lvlUp ? `<strong>Niveau ${r.levelAfter.level} atteint !</strong>` : `Niveau <strong>${r.levelAfter.level}</strong>`}</span><span><strong>+${formatInt(r.xp)} XP${r.boosted ? ' (boost ×2)' : ''}</strong> · +${formatInt(r.credits)} ${icon('coin')}</span></div>
+            <div class="gv-progress__row"><span>${lvlUp ? `<strong>Niveau ${r.levelAfter.level} atteint !</strong>` : `Niveau <strong>${r.levelAfter.level}</strong>`}</span><span><strong>+${formatInt(r.xp)} XP${r.boosted ? ' (boost ×2)' : ''}${r.weeklyBonus ? ' (semaine ×2)' : ''}</strong> · +${formatInt(r.credits)} ${icon('coin')}</span></div>
             <div class="meter" data-meter="xp" style="--value:${lvlUp ? 0 : r.levelBefore.progress}"><div class="meter__fill"></div></div>
             ${nu ? `
               <div class="gv-progress__row"><span>Prochain déblocage : <strong>${esc(nu.label)}</strong></span><span>${esc(formatInt(Math.min(nu.current, nu.target)))} / ${esc(formatInt(nu.target))}</span></div>
               <div class="meter" style="--meter-color:var(--sky);--value:${Math.min(1, nu.current / nu.target)}"><div class="meter__fill"></div></div>` : ''}
+            ${r.weekly ? `<div class="gv-progress__row"><span>${icon('calendar')} ${r.weekly.completed ? '<strong>Événement de la semaine réussi !</strong>' : 'Événement de la semaine'}</span><span>${r.weekly.plays} / ${r.weekly.goal} parties</span></div>` : ''}
             ${r.daily ? `<div class="gv-progress__row"><span>${icon('calendar')} <strong>Défi du jour réussi !</strong></span><span>+${r.daily.reward.xp} XP</span></div>` : ''}
           </div>
           <div class="gv-actions gv-actions--row">

@@ -55,6 +55,10 @@ export const FRAMES = [
   { id: 'cristal', name: 'Cristal', chest: true, rarity: 'rare', color: '#d6f3ff', color2: '#4cc3ff', glow: true },
   { id: 'flammes', name: 'Flammes', chest: true, rarity: 'epique', color: '#ffb02e', color2: '#e63946', glow: true, flames: true },
   { id: 'arcenciel', name: 'Arc-en-ciel', chest: true, rarity: 'legendaire', color: '#ffffff', color2: '#1b1626', glow: true, rainbow: true },
+  // Récompenses de l'événement de la semaine
+  { id: 'emeraude', name: 'Émeraude', event: true, rarity: 'epique', color: '#3ee6a8', color2: '#0b6b4a', glow: true },
+  { id: 'saphir', name: 'Saphir', event: true, rarity: 'epique', color: '#4cc3ff', color2: '#1b4f9c', glow: true },
+  { id: 'rubis', name: 'Rubis', event: true, rarity: 'epique', color: '#ff5d73', color2: '#8f1730', glow: true },
 ];
 
 export const HATS = [
@@ -85,6 +89,9 @@ export const TITLES = [
   { id: 'chanceux', name: 'Chanceux', chest: true, rarity: 'rare' },
   { id: 'roi-coffres', name: 'Roi des coffres', chest: true, rarity: 'epique' },
   { id: 'main-or', name: 'Main d’or', chest: true, rarity: 'legendaire' },
+  { id: 'champion', name: 'Champion de la semaine', event: true, rarity: 'epique' },
+  { id: 'marathonien', name: 'Marathonien', event: true, rarity: 'epique' },
+  { id: 'etoile-montante', name: 'Étoile montante', event: true, rarity: 'epique' },
 ];
 
 export const CELEBRATIONS = [
@@ -147,7 +154,7 @@ export const itemKey = (kind, id) => `${kind}:${id}`;
 export function owned(kind, item) {
   if (!item) return false;
   if (item.ach) return !!meta.getData().achievements[item.ach];
-  if (item.chest) return meta.owns(itemKey(kind, item.id));
+  if (item.chest || item.event) return meta.owns(itemKey(kind, item.id));
   return !item.cost || meta.owns(itemKey(kind, item.id));
 }
 
@@ -166,8 +173,8 @@ export function equip(kind, id) {
 /** Achat d'un cosmétique ; l'équipe aussitôt */
 export function purchase(kind, id) {
   const item = KINDS[kind].list.find((x) => x.id === id);
-  // Les exclusivités des coffres ne s'achètent pas
-  if (!item || item.ach || item.chest) return false;
+  // Les exclusivités des coffres et les récompenses d'événement ne s'achètent pas
+  if (!item || item.ach || item.chest || item.event) return false;
   if (!owned(kind, item) && !meta.buy(itemKey(kind, id), item.cost)) return false;
   meta.noteShopping();
   equip(kind, id);

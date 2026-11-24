@@ -31,6 +31,8 @@ const DEFAULTS = {
   inventory: { gel: 0 },
   boostUntil: 0,
   reroll: { day: '', n: 0 },
+  // Événement de la semaine : parties jouées sur le jeu vedette, récompense touchée
+  weekly: { week: '', plays: 0, done: false },
   shop: { purchases: 0, chests: 0, gelsUsed: 0 },
   settings: { sound: true, music: false, volume: 0.8, motion: 'system' },
   // Dernière sauvegarde (code ou fichier) et dernier rappel affiché
@@ -64,6 +66,7 @@ export const GLOBAL_ACHIEVEMENTS = [
   { id: 'gel', title: 'Sauvé par le gel', desc: 'Un gel de série a protégé ta série.', xp: 40 },
   { id: 'diamant', title: 'Coffre de diamant', desc: 'Ouvre un coffre de diamant.', xp: 100 },
   { id: 'collection-coffres', title: 'Collection complète', desc: 'Obtiens toutes les exclusivités des coffres.', xp: 1000 },
+  { id: 'semaine', title: 'Rendez-vous de la semaine', desc: 'Termine un événement de la semaine.', xp: 150 },
 ];
 
 export function allAchievements() {
@@ -304,6 +307,65 @@ export function dailyChallenge(date = new Date()) {
   };
 }
 
+// ---------- Événement de la semaine ----------
+// Du lundi au dimanche, un jeu rapporte le double d'XP ; 5 parties dessus offrent un objet
+// exclusif (cadres et titres d'événement, un nouveau chaque semaine tant qu'il en reste).
+export const WEEKLY_GOAL = 5;
+export const WEEKLY_REWARDS = ['frame:emeraude', 'title:champion', 'frame:saphir', 'title:marathonien', 'frame:rubis', 'title:etoile-montante'];
+export const WEEKLY_CREDITS = 150; // quand tous les objets d'événement sont déjà gagnés
+
+const mondayOf = (date) => {
+  const d = new Date(date);
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return d;
+};
+// Jeux à parties (pas les jeux de gestion, ni les secrets, ni les pages d'origine)
+const weeklyPool = () => GAMES.filter((g) => g.ready && !g.secret && !g.keepLegacy && g.category !== 'gestion');
+function weeklyGameOf(monday) {
+  const pool = weeklyPool();
+  const rng = createRng(dailySeed('semaine', monday));
+  return rng.pick(pool);
+}
+
+export function weeklyEvent(date = new Date()) {
+  const monday = mondayOf(date);
+  const week = dayKey(monday);
+  // Jamais deux semaines de suite sur le même jeu
+  const prev = new Date(monday);
+  prev.setDate(prev.getDate() - 7);
+  let game = weeklyGameOf(monday);
+  if (game.id === weeklyGameOf(prev).id) {
+    const pool = weeklyPool();
+    game = pool[(pool.indexOf(game) + 1) % pool.length];
+  }
+  const end = new Date(monday);
+  end.setDate(end.getDate() + 7);
+  end.setHours(0, 0, 0, 0);
+  const mine = store.data.weekly.week === week ? store.data.weekly : { plays: 0, done: false };
+  // Récompense : la suivante dans la rotation qui n'est pas encore gagnée
+  const n = Math.floor(monday.getTime() / (7 * 864e5));
+  const reward = WEEKLY_REWARDS.map((_, i) => WEEKLY_REWARDS[(n + i) % WEEKLY_REWARDS.length]).find((k) => !owns(k)) ?? null;
+  return { week, gameId: game.id, goal: WEEKLY_GOAL, plays: Math.min(mine.plays, WEEKLY_GOAL), done: mine.done, reward, ends: end.getTime() };
+}
+
+// Une partie jouée : compte pour l'événement, et le termine à la 5e
+function noteWeekly(id) {
+  const ev = weeklyEvent();
+  if (ev.gameId !== id) return null;
+  if (store.data.weekly.week !== ev.week) store.data.weekly = { week: ev.week, plays: 0, done: false };
+  const w = store.data.weekly;
+  w.plays++;
+  if (w.done || w.plays < WEEKLY_GOAL) return { ...ev, plays: Math.min(w.plays, WEEKLY_GOAL), completed: false };
+  w.done = true;
+  if (ev.reward) grant(ev.reward);
+  else store.data.credits += WEEKLY_CREDITS;
+  const out = { ...ev, plays: WEEKLY_GOAL, done: true, completed: true };
+  emit('weekly', out);
+  unlockAchievement('global', 'semaine', { silentSave: true });
+  return out;
+}
+
 // ---------- XP, crédits, succès ----------
 export function addXP(amount) {
   if (!amount) return null;
@@ -397,6 +459,9 @@ export function reportRun(id, result) {
   if (isRecord && prevBest !== null) xp = Math.round(xp * 1.25);
   const boosted = boostActive();
   if (boosted) xp *= 2;
+  // Jeu de la semaine : XP doublée aussi
+  const weeklyBonus = weeklyEvent().gameId === id;
+  if (weeklyBonus) xp *= 2;
   g.xp += xp;
   addXP(xp);
   const credits = Math.max(1, Math.round(xp / 6)) + (isRecord && prevBest !== null ? 5 : 0);
@@ -419,6 +484,8 @@ export function reportRun(id, result) {
     }
   }
 
+  const weekly = noteWeekly(id);
+
   // Succès globaux
   unlockAchievement('global', 'premiers-pas', { silentSave: true });
   // Les jeux secrets de la boutique ne comptent pas pour « essayer tous les jeux »
@@ -439,6 +506,8 @@ export function reportRun(id, result) {
     xp,
     credits,
     boosted,
+    weeklyBonus,
+    weekly,
     daily,
     levelBefore,
     levelAfter: levelInfo(store.data.xp),
