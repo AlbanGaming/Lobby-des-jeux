@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .sv-r{transform-origin:160px 104px;animation:sv-spin 3s linear infinite}
+    @keyframes sv-spin{to{transform:rotate(360deg)}}
+    .sv-w{transform-box:fill-box;transform-origin:center;animation:sv-wave 1.6s ease-out infinite}
+    @keyframes sv-wave{from{transform:scale(.3);opacity:.9}to{transform:scale(1.4);opacity:0}}
+    .sv-e{animation:sv-in 2s ease-in-out infinite alternate}
+    @keyframes sv-in{to{transform:translate(6px,4px)}}
+  </style>
+  <rect width="320" height="200" fill="#08060f"/>
+  <g stroke="#a68bff" stroke-opacity=".12"><path d="M0 40h320M0 104h320M0 168h320M32 0v200M96 0v200M160 0v200M224 0v200M288 0v200"/></g>
+  <circle class="sv-w" cx="160" cy="104" r="60" fill="none" stroke="#3ee6a8" stroke-width="4"/>
+  <g class="sv-e">
+    <circle cx="52" cy="60" r="11" fill="#ff5fa2"/><circle cx="80" cy="150" r="11" fill="#ff5fa2"/><circle cx="262" cy="70" r="11" fill="#ff5fa2"/><circle cx="270" cy="150" r="11" fill="#ff5fa2"/>
+    <path d="M232 112l18-9v18z" fill="#ffc93c"/><path d="M40 112l18-9v18z" fill="#ffc93c"/>
+    <rect x="110" y="16" width="30" height="30" rx="6" fill="#a68bff"/><path d="M210 168l12-12 12 12-12 12z" fill="#4cc3ff"/>
+  </g>
+  <circle cx="160" cy="104" r="34" fill="#4cc3ff" opacity=".18"/>
+  <path d="M173 104l-6.5 11.3h-13L147 104l6.5-11.3h13z" fill="#4cc3ff"/>
+  <g class="sv-r"><circle cx="220" cy="104" r="8" fill="#c4b0ff"/><circle cx="100" cy="104" r="8" fill="#c4b0ff"/></g>
+  <path d="M180 96l44-30" stroke="#4cc3ff" stroke-width="3" stroke-linecap="round"/>
+  <g transform="translate(250 24)"><rect x="-62" y="-13" width="124" height="27" rx="9" fill="#1a050b" stroke="#ff3b5c" stroke-width="2"/><ellipse cx="-45" cy="0.5" rx="8" ry="5" fill="#ff3b5c"/><circle cx="-45" cy="0.5" r="2.4" fill="#08060f"/><text x="8" y="5" text-anchor="middle" font-family="Rubik, Arial, sans-serif" font-weight="800" font-size="10" fill="#ffd6de">Je t’observe…</text></g>
+</svg>

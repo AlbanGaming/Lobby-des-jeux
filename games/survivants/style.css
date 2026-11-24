@@ -1,0 +1,51 @@
+/* Survivants néon — l'arène est dessinée sur le canvas ; ici, les choix de niveau et l'accueil */
+
+.gv-stage { background: #08060f; }
+
+/* Choix d'amélioration, par-dessus la partie figée */
+.sv-pick { position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; justify-items: center; gap: var(--s-4); padding: var(--s-4); background: rgb(8 6 15 / 0.78); backdrop-filter: blur(3px); animation: sv-in var(--dur-2) var(--ease-out); }
+.sv-pick[hidden] { display: none; }
+@keyframes sv-in { from { opacity: 0; } }
+.sv-pick__title { font-family: var(--font-display); font-size: clamp(1.8rem, 6vw, 2.6rem); font-weight: 900; text-transform: uppercase; color: #ffc93c; text-shadow: 0 3px 0 #05060b; }
+.sv-pick__list { display: grid; grid-template-columns: repeat(3, minmax(0, 220px)); gap: var(--s-3); }
+.sv-card { --c: #4cc3ff; position: relative; display: grid; justify-items: start; align-content: start; gap: 4px; min-height: 170px; padding: var(--s-4); border-radius: var(--r-lg); background: var(--surface); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 55%, transparent), var(--shadow-hard); text-align: left; transition: transform var(--dur-1) var(--ease-out); }
+.sv-card:hover, .sv-card:focus-visible { transform: translateY(-4px); box-shadow: inset 0 0 0 3px var(--c), 0 0 24px -6px var(--c); }
+.sv-card.is-evo { background: linear-gradient(160deg, color-mix(in srgb, #ffc93c 22%, var(--surface)), var(--surface)); }
+.sv-card__icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 4px; border-radius: 12px; background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--c); }
+.sv-card__icon .icon { width: 22px; height: 22px; }
+.sv-card__tag { font-size: var(--fs-2xs); font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--c); }
+.sv-card__name { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; line-height: 1; text-transform: uppercase; }
+.sv-card__text { font-size: var(--fs-xs); color: var(--text-2); }
+.sv-card kbd { position: absolute; top: 10px; right: 10px; padding: 1px 7px; border-radius: 6px; background: var(--ink-950); font-size: 11px; font-weight: 800; color: var(--text-3); }
+@media (max-width: 640px) {
+  .sv-pick__list { grid-template-columns: minmax(0, 340px); }
+  .sv-card { grid-template-columns: auto 1fr; column-gap: var(--s-3); min-height: 0; padding: var(--s-3); }
+  .sv-card__icon { grid-row: span 3; margin: 0; }
+  .sv-card kbd { display: none; }
+}
+
+/* Accueil : héros et améliorations permanentes */
+.sv-options { display: grid; gap: var(--s-2); margin-top: var(--s-4); padding: var(--s-3); border-radius: var(--r-md); background: var(--ink-950); text-align: left; }
+.sv-label { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-family: var(--font-pixel); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.sv-shards { display: inline-flex; align-items: center; gap: 4px; color: #ffc93c; }
+.sv-shards .icon { width: 12px; height: 12px; }
+.sv-heroes { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-2); }
+.sv-hero { --c: #4cc3ff; display: grid; justify-items: center; gap: 2px; padding: 8px 4px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); font-weight: 800; font-size: var(--fs-sm); }
+.sv-hero small { font-size: 10px; font-weight: 600; color: var(--text-3); text-align: center; line-height: 1.2; }
+.sv-hero__dot { display: grid; place-items: center; width: 26px; height: 26px; background: var(--c); color: #08060f; clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%); }
+.sv-hero__dot .icon { width: 14px; height: 14px; }
+.sv-hero[aria-checked='true'] { box-shadow: inset 0 0 0 2px var(--c); background: color-mix(in srgb, var(--c) 12%, var(--surface-2)); }
+.sv-hero[aria-checked='true'] small { color: var(--text-2); }
+.sv-hero[aria-disabled='true'] { background: var(--ink-950); box-shadow: inset 0 0 0 2px var(--border); outline: 2px dashed var(--border); outline-offset: -6px; cursor: not-allowed; }
+.sv-hero[aria-disabled='true'] .sv-hero__dot { background: var(--ink-700); color: var(--text-2); }
+.sv-ups { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s-2); }
+.sv-up { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 6px; padding: 6px 10px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); text-align: left; }
+.sv-up__name { font-weight: 800; font-size: var(--fs-sm); }
+.sv-up__name em { font-style: normal; font-weight: 600; color: var(--text-3); font-size: var(--fs-2xs); }
+.sv-up small { grid-column: 1; font-size: 10px; color: var(--text-3); }
+.sv-up b { grid-row: 1 / span 2; grid-column: 2; display: inline-flex; align-items: center; gap: 3px; font-size: var(--fs-xs); color: #ffc93c; }
+.sv-up b .icon { width: 12px; height: 12px; }
+.sv-up[aria-disabled='true'] { background: var(--ink-950); }
+.sv-up[aria-disabled='true'] b { color: var(--text-2); }
+.sv-hint { font-size: var(--fs-xs); color: var(--text-2); }
+@media (max-width: 520px) { .sv-heroes { grid-template-columns: repeat(2, 1fr); } }
