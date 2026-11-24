@@ -63,6 +63,7 @@ export const GLOBAL_ACHIEVEMENTS = [
   { id: 'mecene', title: 'Mécène', desc: 'Débloque tous les jeux secrets de la boutique.', xp: 300 },
   { id: 'gel', title: 'Sauvé par le gel', desc: 'Un gel de série a protégé ta série.', xp: 40 },
   { id: 'diamant', title: 'Coffre de diamant', desc: 'Ouvre un coffre de diamant.', xp: 100 },
+  { id: 'collection-coffres', title: 'Collection complète', desc: 'Obtiens toutes les exclusivités des coffres.', xp: 1000 },
 ];
 
 export function allAchievements() {
@@ -170,12 +171,13 @@ export function grant(itemId) {
 export const gameUnlocked = (id) => !getGame(id)?.secret || owns(`game:${id}`);
 
 // Compteurs et succès de la boutique
-export function noteShopping({ chest = false, chestId = '' } = {}) {
+export function noteShopping({ chest = false, chestId = '', collection = false } = {}) {
   store.data.shop.purchases++;
   if (chest) store.data.shop.chests++;
   unlockAchievement('global', 'premier-achat', { silentSave: true });
   if (chest) unlockAchievement('global', 'coffre', { silentSave: true });
   if (chestId === 'diamant') unlockAchievement('global', 'diamant', { silentSave: true });
+  if (collection) unlockAchievement('global', 'collection-coffres', { silentSave: true });
   if (store.data.owned.filter((k) => !k.startsWith('game:')).length >= 15) unlockAchievement('global', 'garde-robe', { silentSave: true });
   const secrets = GAMES.filter((g) => g.secret);
   if (secrets.length && secrets.every((g) => owns(`game:${g.id}`))) unlockAchievement('global', 'mecene', { silentSave: true });

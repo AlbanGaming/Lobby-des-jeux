@@ -193,7 +193,29 @@ function chestHTML() {
       </div>`;
     }).join('')}</div>
     ${total ? '' : '<p class="sh-lead">Tu possèdes déjà tout : bravo !</p>'}
-    <div class="sh-reveal" id="chestReveal" aria-live="polite"></div>`;
+    <div class="sh-reveal" id="chestReveal" aria-live="polite"></div>
+    ${collectionHTML()}`;
+}
+
+// Collection : les exclusivités gagnées, et une case mystère pour les autres
+function collectionHTML() {
+  const all = shop.collection();
+  const n = all.filter((c) => c.owned).length;
+  const done = n === all.length;
+  return `<section class="sh-coll" aria-labelledby="collTitle">
+    <h3 class="sh-h" id="collTitle">Collection <small>${n} / ${all.length} exclusivités</small></h3>
+    <div class="meter sh-coll__meter" style="--value:${(n / all.length).toFixed(3)}" role="progressbar" aria-label="Collection des coffres" aria-valuemin="0" aria-valuemax="${all.length}" aria-valuenow="${n}"><div class="meter__fill"></div></div>
+    <p class="sh-lead">${done ? 'Collection complète : tu as tout trouvé !' : 'Tout trouver débloque le succès « Collection complète » (+1 000 XP).'}</p>
+    <ul class="sh-coll__grid">${all
+      .map(
+        (c) => `<li class="sh-coll__tile ${c.owned ? 'is-owned' : ''}" style="--r:${c.rarity.color}" data-coll="${c.kind}:${c.item.id}">
+        <span class="sh-coll__art" aria-hidden="true">${c.owned ? previewOf(c.kind, c.item, 56) : '<span class="sh-coll__ph"></span><b>?</b>'}</span>
+        <span class="sh-coll__name">${c.owned ? esc(c.item.name) : '???'}</span>
+        <span class="sh-coll__kind">${esc(shop.KINDS[c.kind].label)} · ${c.rarity.name}</span>
+      </li>`,
+      )
+      .join('')}</ul>
+  </section>`;
 }
 // Un coffre aux couleurs de son métal ; le diamant scintille
 const chestSVG = (c) => `<svg viewBox="0 0 120 100" aria-hidden="true"><ellipse cx="60" cy="92" rx="46" ry="6" fill="#000" opacity=".3"/><rect x="14" y="40" width="92" height="48" rx="8" fill="${c.wood}" stroke="#1b1626" stroke-width="4"/><path d="M14 46h92" stroke="#1b1626" stroke-opacity=".5" stroke-width="4"/><path class="sh-lid" d="M14 44V34a22 22 0 0 1 22-22h48a22 22 0 0 1 22 22v10z" fill="${c.lid}" stroke="#1b1626" stroke-width="4"/><rect x="50" y="36" width="20" height="22" rx="4" fill="${c.band}" stroke="#1b1626" stroke-width="3"/><circle cx="60" cy="47" r="3" fill="#1b1626"/><path d="M30 40v48M90 40v48" stroke="${c.band}" stroke-width="5"/>${c.shine ? '<g class="sh-shine" fill="#fff"><path d="M24 20l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M98 8l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5z"/><path d="M104 56l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>' : ''}</svg>`;
@@ -288,16 +310,18 @@ function listen(id) {
 const EXTRA_TEXT = { gel: 'Gel de série', boost: 'Boost d’XP 30 min' };
 
 // Aperçu d'un objet gagné, dans la scène d'ouverture
-function previewOf(kind, item) {
+// (en petit pour la collection)
+function previewOf(kind, item, size = 110) {
   const d = meta.getData();
   const frame = shop.FRAMES.find((f) => f.id === d.look.frame);
   const base = { frame, hat: d.look.hat, character: d.look.character };
-  if (kind === 'character') return avatarSVG(d.profile.avatar, { size: 110, look: { ...base, character: item.id } });
-  if (kind === 'frame') return avatarSVG(d.profile.avatar, { size: 110, look: { ...base, frame: item } });
-  if (kind === 'hat') return avatarSVG(d.profile.avatar, { size: 110, look: { ...base, hat: item.id } });
-  if (kind === 'theme') return `<span class="sh-theme sh-theme--big" style="--c1:${item.colors[0]};--c2:${item.colors[1]};--c3:${item.colors[2]}"><i></i><i></i><i></i></span>`;
-  if (kind === 'title') return `<span class="sh-title-chip sh-title-chip--big">${esc(item.name)}</span>`;
-  return `<span class="sh-fx sh-fx--big">${icon(kind === 'sound' ? 'wave' : CELEB_ICON[item.id] ?? 'sparkle')}</span>`;
+  const big = size >= 100 ? '--big' : '';
+  if (kind === 'character') return avatarSVG(d.profile.avatar, { size, look: { ...base, character: item.id } });
+  if (kind === 'frame') return avatarSVG(d.profile.avatar, { size, look: { ...base, frame: item } });
+  if (kind === 'hat') return avatarSVG(d.profile.avatar, { size, look: { ...base, hat: item.id } });
+  if (kind === 'theme') return `<span class="sh-theme ${big && 'sh-theme' + big}" style="--c1:${item.colors[0]};--c2:${item.colors[1]};--c3:${item.colors[2]}"><i></i><i></i><i></i></span>`;
+  if (kind === 'title') return `<span class="sh-title-chip ${big && 'sh-title-chip' + big}">${esc(item.name)}</span>`;
+  return `<span class="sh-fx ${big && 'sh-fx' + big}">${icon(kind === 'sound' ? 'wave' : CELEB_ICON[item.id] ?? 'sparkle')}</span>`;
 }
 
 let opening = null; // { el, timers, revealed }

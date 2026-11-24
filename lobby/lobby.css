@@ -952,6 +952,20 @@ button.lb-pill--credits:hover { transform: translateY(-1px); box-shadow: inset 0
 .sh-chest__art.is-open .sh-lid { transform: rotate(-28deg) translate(-4px, -6px); }
 @keyframes sh-shake { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
 .sh-reveal:empty { display: none; }
+
+/* Collection des exclusivités : une case mystère pour ce qui manque */
+.sh-coll { margin-top: var(--s-5); padding-top: var(--s-2); border-top: 2px dashed var(--border); }
+.sh-coll__meter { margin-bottom: var(--s-2); --meter-color: var(--coin); }
+.sh-coll__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--s-2); padding: 0; list-style: none; }
+.sh-coll__tile { display: grid; justify-items: center; gap: 4px; padding: var(--s-3) var(--s-2); border-radius: var(--r-md); background: var(--ink-950); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--r) 22%, transparent); text-align: center; }
+.sh-coll__tile.is-owned { box-shadow: inset 0 0 0 2px var(--r), 0 0 18px -8px var(--r); }
+.sh-coll__art { position: relative; display: grid; place-items: center; width: 64px; height: 64px; }
+.sh-coll__art .avatar-svg { width: 56px; height: 56px; }
+.sh-coll__ph { width: 56px; height: 56px; border-radius: 14px; background: color-mix(in srgb, var(--r) 10%, transparent); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--r) 25%, transparent); }
+.sh-coll__art b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-display); font-size: 1.6rem; color: var(--r); }
+.sh-coll__name { font-weight: 800; font-size: var(--fs-sm); line-height: 1.2; }
+.sh-coll__tile:not(.is-owned) .sh-coll__name { color: var(--text-3); letter-spacing: 0.1em; }
+.sh-coll__kind { font-size: var(--fs-2xs); font-weight: 600; color: var(--r); }
 .sh-prize { display: grid; justify-items: center; gap: 4px; padding: var(--s-3) var(--s-5); border-radius: var(--r-lg); background: var(--surface-2); box-shadow: inset 0 0 0 3px var(--r), 0 0 30px color-mix(in srgb, var(--r) 40%, transparent); animation: sh-prize 500ms var(--ease-spring); }
 .sh-prize__kind { font-size: var(--fs-2xs); font-weight: 800; text-transform: uppercase; color: var(--text-3); }
 .sh-prize__name { font-family: var(--font-display); font-weight: 900; font-size: 1.6rem; }

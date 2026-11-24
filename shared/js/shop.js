@@ -132,6 +132,15 @@ export const KINDS = {
 };
 
 export const secretGames = () => GAMES.filter((g) => g.secret);
+
+// Collection : toutes les exclusivités des coffres, de la plus commune à la plus rare
+export function collection() {
+  const out = [];
+  for (const [kind, k] of Object.entries(KINDS)) {
+    for (const item of k.list) if (item.chest) out.push({ kind, item, rarity: rarityFor(item), owned: owned(kind, item) });
+  }
+  return out.sort((a, b) => RARITIES.indexOf(a.rarity.id) - RARITIES.indexOf(b.rarity.id));
+}
 export const itemKey = (kind, id) => `${kind}:${id}`;
 
 /** Possédé ? (gratuit, acheté, ou titre gagné par un succès) */
@@ -229,7 +238,7 @@ export function openChest(id = 'bois', rng = Math.random) {
       extras.push({ type: 'boost' });
     }
   }
-  meta.noteShopping({ chest: true, chestId: chest.id });
+  meta.noteShopping({ chest: true, chestId: chest.id, collection: collection().every((c) => c.owned) });
   return { ...pick, rarity: rarityFor(pick.item), chest, extras };
 }
 

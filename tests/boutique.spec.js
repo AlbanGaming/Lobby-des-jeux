@@ -202,6 +202,7 @@ test.describe('boutique', () => {
   });
 
   test('coffre de diamant : un légendaire assuré, un objet en plus et un gel', async ({ page }, testInfo) => {
+    test.slow(); // scène d'ouverture et célébration : lent quand toute la suite tourne en parallèle
     const w = watchPage(page);
     await seedMeta(page, { credits: 2000 });
     await ready(page);
@@ -272,5 +273,47 @@ test.describe('boutique', () => {
     await page.locator('#btnProfile').click();
     await expect(page.locator('[data-import-avatar]')).toHaveCount(0);
     await expect(page.locator('#fileAvatar')).toHaveCount(0);
+  });
+
+  test('collection : les exclusivités gagnées, les autres cachées', async ({ page }, testInfo) => {
+    const w = watchPage(page);
+    await seedMeta(page, { owned: ['character:chat', 'theme:galaxie', 'hat:licorne'] });
+    await ready(page);
+    await openShop(page);
+    await page.locator('#stab-coffre').click();
+    const total = await page.evaluate(async () => (await import('./shared/js/shop.js')).collection().length);
+    expect(total).toBeGreaterThanOrEqual(15);
+    await expect(page.locator('.sh-coll__tile')).toHaveCount(total);
+    await expect(page.locator('.sh-coll__tile.is-owned')).toHaveCount(3);
+    await expect(page.locator('#collTitle')).toContainText(`3 / ${total}`);
+    await expect(page.locator('[data-coll="character:dragon"] .sh-coll__name')).toHaveText('???');
+    await expect(page.locator('[data-coll="character:chat"] .sh-coll__name')).toHaveText('Chat');
+    await page.locator('.sh-coll').scrollIntoViewIfNeeded();
+    await shot(page, testInfo, 'boutique-collection');
+    w.expectClean();
+  });
+
+  test('collection complète : le dernier exclusif débloque le succès', async ({ page }) => {
+    test.slow(); // scène d'ouverture et célébration : lent quand toute la suite tourne en parallèle
+    await seedMeta(page);
+    await ready(page);
+    // Tout possédé sauf un exclusif légendaire : le coffre de diamant ne peut donner que lui
+    await page.evaluate(async () => {
+      const shop = await import('./shared/js/shop.js');
+      const owned = [];
+      for (const [kind, k] of Object.entries(shop.KINDS)) for (const item of k.list) if ((item.cost || item.chest) && !item.ach) owned.push(`${kind}:${item.id}`);
+      const raw = JSON.parse(localStorage.getItem('gv:meta'));
+      raw.data.owned = owned.filter((key) => key !== 'character:dragon');
+      raw.data.credits = 2000;
+      localStorage.setItem('gv:meta', JSON.stringify(raw));
+    });
+    await ready(page);
+    await openShop(page);
+    await page.locator('#stab-coffre').click();
+    await openChest(page, 'diamant');
+    await expect(page.locator('.sh-open__card .sh-prize__name')).toHaveText('Dragon');
+    expect((await metaData(page)).achievements['global:collection-coffres']).toBeTruthy();
+    await page.locator('[data-open-close]').click();
+    await expect(page.locator('.sh-coll')).toContainText('Collection complète');
   });
 });
