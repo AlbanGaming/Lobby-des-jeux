@@ -33,6 +33,8 @@ const DEFAULTS = {
   reroll: { day: '', n: 0 },
   shop: { purchases: 0, chests: 0, gelsUsed: 0 },
   settings: { sound: true, music: false, volume: 0.8, motion: 'system' },
+  // Dernière sauvegarde (code ou fichier) et dernier rappel affiché
+  backup: { last: 0, nudged: 0 },
   migratedLegacy: false,
 };
 
@@ -454,6 +456,13 @@ export function submitBest(id, score) {
 }
 
 // ---------- Données : export / import / réinitialisation ----------
+// Note la sauvegarde, et demande au navigateur de ne pas effacer les données de lui-même
+export function markBackup() {
+  store.data.backup.last = Date.now();
+  store.save();
+  navigator.storage?.persist?.().catch(() => {});
+}
+
 export function exportAll() {
   const out = {};
   try {
@@ -477,6 +486,44 @@ export function importAll(payload) {
   store.reload();
   motion.setPreference(store.data.settings.motion);
   emit('change', store.data);
+}
+
+// ---------- Code de sauvegarde ----------
+// Toute la progression dans un texte à copier-coller : JSON compressé (gzip) puis base64url.
+// « GV1. » = compressé, « GV0. » = brut (navigateur sans CompressionStream).
+const toB64 = (bytes) => {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+const fromB64 = (str) => {
+  const bin = atob(str.replace(/-/g, '+').replace(/_/g, '/'));
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+};
+const pipe = async (bytes, stream) => new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(stream)).arrayBuffer());
+
+export async function exportCode() {
+  markBackup();
+  const bytes = new TextEncoder().encode(JSON.stringify(exportAll()));
+  if (typeof CompressionStream === 'function') return 'GV1.' + toB64(await pipe(bytes, new CompressionStream('gzip')));
+  return 'GV0.' + toB64(bytes);
+}
+
+export async function importCode(code) {
+  const clean = String(code ?? '').replace(/\s+/g, '');
+  const m = /^GV([01])\.([A-Za-z0-9_-]+)$/.exec(clean);
+  if (!m) throw new Error('Ce n’est pas un code de sauvegarde GameVerse.');
+  let payload;
+  try {
+    let bytes = fromB64(m[2]);
+    if (m[1] === '1') bytes = await pipe(bytes, new DecompressionStream('gzip'));
+    payload = JSON.parse(new TextDecoder().decode(bytes));
+  } catch {
+    throw new Error('Code incomplet ou abîmé : recopie-le en entier.');
+  }
+  importAll(payload);
 }
 
 export function resetAll() {

@@ -704,7 +704,7 @@ html.is-ready .lb-main { animation: lb-reveal var(--dur-3) var(--ease-out); }
 .lb-dtabs { padding: 0 var(--s-5) var(--s-4); position: sticky; top: 76px; z-index: 2; background: var(--surface); }
 @media (max-width: 520px) {
   .lb-dialog { width: 100vw; max-width: 100vw; max-height: 100dvh; height: 100dvh; border-radius: 0; margin: 0; }
-  .lb-dialog--narrow { height: auto; border-radius: var(--r-xl); width: calc(100vw - 24px); margin: auto; }
+  .lb-dialog--narrow { height: fit-content; border-radius: var(--r-xl); width: calc(100vw - 24px); margin: auto; }
   .dialog__head { padding: var(--s-4) var(--s-4) var(--s-3); }
   .dialog__body { padding: 0 var(--s-4) var(--s-5); }
   .lb-dtabs { padding: 0 var(--s-4) var(--s-3); top: 68px; }
@@ -889,6 +889,10 @@ html.is-ready .lb-main { animation: lb-reveal var(--dur-3) var(--ease-out); }
   accent-color: var(--coin);
 }
 .lb-data-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.lb-backup { display: flex; align-items: center; gap: var(--s-2); margin-bottom: var(--s-3); font-size: var(--fs-sm); font-weight: 600; color: var(--text-2); }
+.lb-backup .icon { width: 16px; height: 16px; color: var(--mint); }
+.lb-backup.is-stale .icon { color: var(--coin); }
+.lb-code { min-height: 120px; margin: var(--s-3) 0 var(--s-2); padding: var(--s-3); resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: 12px; line-height: 1.4; word-break: break-all; }
 
 .lb-confirm__text { color: var(--text-2); }
 .lb-confirm__actions { display: flex; justify-content: flex-end; gap: var(--s-2); margin-top: var(--s-5); }

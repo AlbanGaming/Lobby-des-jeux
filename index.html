@@ -144,6 +144,20 @@
     <div class="dialog__body" id="settingsBody"></div>
   </dialog>
 
+  <!-- Code de sauvegarde : copier le sien, ou en coller un -->
+  <dialog class="dialog lb-dialog lb-dialog--narrow" id="dlgCode" aria-labelledby="codeTitle">
+    <div class="dialog__head">
+      <h2 class="dialog__title" id="codeTitle"></h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer"></button>
+    </div>
+    <div class="dialog__body">
+      <p class="lb-help" id="codeHelp"></p>
+      <textarea class="input lb-code" id="codeText" rows="5" spellcheck="false" autocomplete="off" autocapitalize="off" aria-labelledby="codeTitle" aria-describedby="codeHelp"></textarea>
+      <p class="lb-help" id="codeMsg" role="status"></p>
+      <div class="lb-confirm__actions"><button class="btn btn--primary" type="button" id="codeGo"></button></div>
+    </div>
+  </dialog>
+
   <!-- Confirmation -->
   <dialog class="dialog lb-dialog lb-dialog--narrow" id="dlgConfirm" aria-labelledby="confirmTitle">
     <div class="dialog__head">

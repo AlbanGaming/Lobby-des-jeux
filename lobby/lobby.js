@@ -487,16 +487,100 @@ function renderSettings() {
     </div>
     <div class="lb-group">
       <p class="lb-group__title">Données</p>
-      <p class="lb-help" style="margin-bottom:var(--s-3)">Ta progression est enregistrée uniquement dans ce navigateur. Exporte-la pour la sauvegarder ou la transférer sur un autre appareil.</p>
+      <p class="lb-help" style="margin-bottom:var(--s-3)">Ta progression est enregistrée uniquement dans ce navigateur, et Safari peut l’effacer si tu ne viens pas pendant quelques jours. Garde ton code de sauvegarde : colle-le ici, sur cet appareil ou un autre, pour tout retrouver.</p>
+      <p class="lb-backup ${backupStale() ? 'is-stale' : ''}" id="backupLast">${icon('clock')}Dernière sauvegarde : ${backupWhen()}</p>
       <div class="lb-data-actions">
-        <button class="btn btn--sm" type="button" data-export>${icon('download')}Exporter</button>
-        <button class="btn btn--sm" type="button" data-import>${icon('upload')}Importer</button>
+        <button class="btn btn--sm btn--primary" type="button" data-code="copy">${icon('share')}Copier mon code</button>
+        <button class="btn btn--sm" type="button" data-code="paste">${icon('upload')}Coller un code</button>
+      </div>
+      <div class="lb-data-actions" style="margin-top:var(--s-2)">
+        <button class="btn btn--sm btn--ghost" type="button" data-export>${icon('download')}Fichier</button>
+        <button class="btn btn--sm btn--ghost" type="button" data-import>${icon('upload')}Ouvrir un fichier</button>
         <button class="btn btn--sm btn--danger" type="button" data-reset>${icon('trash')}Réinitialiser</button>
       </div>
     </div>`;
 }
 
+// ---------- Sauvegarde ----------
+const DAY_MS = 864e5;
+function backupWhen() {
+  const last = data().backup.last;
+  if (!last) return 'jamais';
+  const days = Math.floor((Date.now() - last) / DAY_MS);
+  return days <= 0 ? 'aujourd’hui' : days === 1 ? 'hier' : `il y a ${days} jours`;
+}
+const backupStale = () => Date.now() - data().backup.last > 14 * DAY_MS;
+
+async function openCode(mode) {
+  const dlg = $('#dlgCode');
+  const ta = $('#codeText');
+  dlg.dataset.mode = mode;
+  setCodeMsg('');
+  if (mode === 'copy') {
+    $('#codeTitle').textContent = 'Ton code de sauvegarde';
+    $('#codeHelp').textContent = 'Garde-le dans tes notes ou envoie-le toi : il contient toute ta progression (niveau, crédits, objets, records et parties en cours).';
+    $('#codeGo').innerHTML = `${icon('check')}Copier`;
+    ta.readOnly = true;
+    ta.value = '…';
+    dlg.showModal();
+    ta.value = await meta.exportCode();
+    ta.select();
+    if ($('#dlgSettings').open) renderSettings();
+  } else {
+    $('#codeTitle').textContent = 'Coller un code';
+    $('#codeHelp').textContent = 'Colle ici un code de sauvegarde GameVerse. Il remplace la progression de ce navigateur.';
+    $('#codeGo').innerHTML = `${icon('upload')}Restaurer`;
+    ta.readOnly = false;
+    ta.value = '';
+    dlg.showModal();
+    ta.focus();
+  }
+}
+function setCodeMsg(text, error = false) {
+  $('#codeMsg').textContent = text;
+  $('#codeMsg').classList.toggle('is-error', error);
+}
+$('#codeGo').addEventListener('click', async () => {
+  const ta = $('#codeText');
+  if ($('#dlgCode').dataset.mode === 'copy') {
+    try {
+      await navigator.clipboard.writeText(ta.value);
+      sfx('select');
+      setCodeMsg('Code copié ! Colle-le dans tes notes.');
+    } catch {
+      ta.select();
+      setCodeMsg('Copie automatique impossible : sélectionne le code et copie-le.');
+    }
+    return;
+  }
+  if (!ta.value.trim()) return setCodeMsg('Colle d’abord ton code.', true);
+  const yes = await confirmAction({ title: 'Remplacer ta progression ?', text: 'La progression de ce navigateur sera remplacée par celle du code.', ok: 'Remplacer' });
+  if (!yes) return;
+  try {
+    await meta.importCode(ta.value);
+    $('#dlgCode').close();
+    if ($('#dlgSettings').open) renderSettings();
+    sfx('achievement');
+    toast({ title: 'Progression restaurée', text: 'Content de te revoir !', iconName: 'upload', tone: 'var(--mint)' });
+  } catch (err) {
+    sfx('error');
+    setCodeMsg(err.message, true);
+  }
+});
+
+// Rappel discret, au plus une fois toutes les deux semaines, dès qu'il y a une vraie progression
+function backupNudge() {
+  const d = data();
+  const since = Math.max(d.backup.last, d.backup.nudged);
+  if (meta.levelInfo(d.xp).level < 3 || Date.now() - since < 14 * DAY_MS) return;
+  d.backup.nudged = Date.now();
+  meta.save();
+  toast({ title: 'Pense à sauvegarder', text: 'Paramètres › Données : copie ton code de sauvegarde.', iconName: 'download', tone: 'var(--sky)' });
+}
+
 function exportData() {
+  meta.markBackup();
+  renderSettings();
   const blob = new Blob([JSON.stringify(meta.exportAll(), null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -708,6 +792,7 @@ document.addEventListener('click', (e) => {
     $(`[data-motion="${t.dataset.motion}"]`).focus();
     return;
   }
+  if (t.dataset.code && t.closest('#dlgSettings')) return openCode(t.dataset.code);
   if (t.matches('[data-export]')) return exportData();
   if (t.matches('[data-import]')) return $('#fileImport').click();
   if (t.matches('[data-reset]')) {
@@ -859,5 +944,6 @@ initShop({ confirmAction: (o) => confirmAction(o), sfx, hydrateThumbs });
 renderAll();
 // Lien direct vers la boutique (depuis un jeu secret verrouillé)
 if (location.hash === '#boutique') openDialog('shop', { stab: 'jeux' });
+setTimeout(backupNudge, 4000);
 document.documentElement.classList.add('is-ready');
 document.documentElement.setAttribute('data-gv-ready', '');
