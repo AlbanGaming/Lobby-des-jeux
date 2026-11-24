@@ -34,7 +34,8 @@ test.describe('serpentin', () => {
 
   test('débloqué depuis le lobby : carte à cadenas, achat, jeu ouvert', async ({ page }, testInfo) => {
     const w = watchPage(page);
-    await seedMeta(page, { credits: 500 });
+    // L'autre jeu secret est déjà à lui : acheter Serpentin complète la collection (Mécène)
+    await seedMeta(page, { credits: 500, owned: ['game:brique'] });
     await page.goto('./');
     const card = page.locator('#grid .gcard[data-id="serpentin"]');
     await expect(card).toHaveClass(/is-locked/);

@@ -11,7 +11,7 @@ navigateur (localStorage).
 
 | Catégorie | Jeux |
 |---|---|
-| Arcade | Volt Rush, Plume, Bubble Pop, Tic Tac, Gratte-Ciel, Orbite, Serpentin *(jeu secret)* |
+| Arcade | Volt Rush, Plume, Bubble Pop, Tic Tac, Gratte-Ciel, Orbite, Serpentin et Brique-à-brac *(jeux secrets)* |
 | Réflexion | Code Secret, Alchimie, Pixel Mystère, Banquise |
 | Quiz & mots | Motif, Énigmes Éclair, Le Juste Prix, Globe-trotteur, Lettres en vrac |
 | Stratégie | Morpion Dynamique, Conquête, Rempart |
@@ -29,9 +29,14 @@ pas le socle commun et **ne doit pas être modifié, déplacé ni supprimé**.
   niveau et à chaque succès.
 - **Série de jours** : jouer chaque jour la prolonge.
 - **Défi du jour** : un défi tiré chaque jour parmi les jeux (+150 XP, +40 crédits).
+- **Événement de la semaine** : un jeu à XP ×2 du lundi au dimanche ; 5 parties dessus offrent
+  un cadre ou un titre d'événement.
 - **Boutique** (bouton crédits du lobby) : thèmes du portail, cadres, accessoires et titres
   d'avatar, célébrations de record, packs de sons, objets (gel de série, relance du défi, boost
-  d'XP), coffre surprise et jeux secrets.
+  d'XP), quatre coffres (avec des personnages et objets exclusifs, et leur collection) et jeux
+  secrets.
+- **Code de sauvegarde** (Paramètres › Données) : toute la progression dans un texte à copier,
+  à recoller sur un autre appareil ou après un effacement des données du navigateur.
 
 ## Organisation du dépôt
 
