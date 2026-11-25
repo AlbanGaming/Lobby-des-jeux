@@ -1,0 +1,51 @@
+/* Pixel Quest — le niveau est dessiné sur le canvas ; ici, les boutons tactiles, l'éditeur
+   et le choix des niveaux */
+
+.gv-stage { background: #7fd0ff; }
+
+/* Boutons tactiles */
+.pq-pad { position: absolute; inset: auto 0 0; z-index: 4; display: flex; justify-content: space-between; align-items: flex-end; padding: 12px 14px calc(14px + env(safe-area-inset-bottom)); pointer-events: none; }
+.pq-pad[hidden] { display: none; }
+.pq-pad button { pointer-events: auto; display: grid; place-items: center; border-radius: 50%; background: rgb(5 6 11 / 0.45); color: #fff; box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.35); touch-action: none; user-select: none; -webkit-user-select: none; }
+.pq-pad button.is-down { background: rgb(255 255 255 / 0.35); }
+.pq-pad__dirs { display: flex; gap: 12px; }
+.pq-pad__dirs button { width: 68px; height: 68px; }
+.pq-pad__dirs .icon { width: 30px; height: 30px; }
+.pq-pad__jump { width: 84px; height: 84px; font-family: var(--font-display); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; }
+
+/* Éditeur */
+.pq-editor { position: absolute; inset: 0; z-index: 4; display: grid; grid-template-rows: auto 1fr auto; pointer-events: none; }
+.pq-editor[hidden] { display: none; }
+.pq-editor > * { pointer-events: auto; }
+.pq-tools { display: flex; gap: 6px; padding: 8px; overflow-x: auto; background: rgb(5 6 11 / 0.72); }
+.pq-tool { flex: none; display: grid; justify-items: center; gap: 2px; min-width: 64px; padding: 6px 8px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); font-size: 11px; font-weight: 700; }
+.pq-tool .icon { width: 18px; height: 18px; }
+.pq-tool[aria-checked='true'] { box-shadow: inset 0 0 0 2px #ffc93c; background: rgb(255 201 60 / 0.16); color: #ffc93c; }
+.pq-edbar { grid-row: 3; display: grid; gap: 6px; padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); background: rgb(5 6 11 / 0.78); }
+.pq-scroll input { width: 100%; accent-color: #ffc93c; }
+.pq-edmsg { font-size: var(--fs-xs); color: var(--text-2); }
+.pq-edbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+.pq-codebox { grid-row: 2; align-self: center; justify-self: center; display: grid; gap: 8px; width: min(520px, calc(100% - 24px)); padding: 12px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-pop); }
+.pq-codebox[hidden] { display: none; }
+.pq-codebox textarea, .pq-playcode textarea { font-family: ui-monospace, Consolas, monospace; font-size: 12px; word-break: break-all; padding: 8px; min-height: 64px; resize: vertical; }
+
+/* Accueil : mondes et niveaux */
+.pq-options { display: grid; gap: var(--s-2); margin-top: var(--s-4); padding: var(--s-3); border-radius: var(--r-md); background: var(--ink-950); text-align: left; }
+.pq-world { display: grid; gap: 6px; padding: 8px; border-radius: var(--r-md); background: linear-gradient(100deg, color-mix(in srgb, var(--b) 20%, var(--surface-2)), var(--surface-2)); }
+.pq-world.is-locked { background: var(--surface-2); }
+.pq-world__name { display: flex; align-items: center; gap: 6px; font-weight: 800; font-size: var(--fs-sm); }
+.pq-world__name .icon { width: 14px; height: 14px; }
+.pq-levels { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+.pq-lv { position: relative; display: grid; place-items: center; aspect-ratio: 1; min-height: 32px; border-radius: 8px; background: var(--ink-950); box-shadow: inset 0 0 0 2px var(--border); font-weight: 800; font-size: var(--fs-sm); }
+.pq-lv .icon { width: 15px; height: 15px; color: #ff5fa2; }
+.pq-lv.is-done { background: color-mix(in srgb, var(--a) 30%, var(--ink-950)); }
+.pq-lv[aria-pressed='true'] { box-shadow: inset 0 0 0 2px #ffc93c, 0 0 0 2px #ffc93c; }
+.pq-lv[aria-disabled='true'] { color: var(--text-3); background: var(--ink-950); box-shadow: inset 0 0 0 2px var(--ink-700); cursor: not-allowed; }
+.pq-crown, .pq-coin { position: absolute; width: 9px; height: 9px; border-radius: 50%; }
+.pq-crown { top: -3px; right: -3px; background: #ffc93c; box-shadow: 0 0 0 2px var(--ink-950); }
+.pq-coin { bottom: -3px; right: -3px; background: #3ee6a8; box-shadow: 0 0 0 2px var(--ink-950); }
+.pq-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.pq-playcode { display: grid; gap: 6px; }
+.pq-playcode[hidden] { display: none; }
+.pq-hint, .pq-over-hint { font-size: var(--fs-xs); color: var(--text-2); }
+@media (max-width: 520px) { .pq-levels { grid-template-columns: repeat(5, 1fr); } }

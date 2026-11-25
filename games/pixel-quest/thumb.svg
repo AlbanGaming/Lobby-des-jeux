@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .pq-h{animation:pq-jump 1.4s ease-in-out infinite}
+    @keyframes pq-jump{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-46px)}}
+    .pq-r{animation:pq-run 1.4s linear infinite;opacity:.5}
+    @keyframes pq-run{0%{transform:translate(0,0)}50%{transform:translate(24px,-40px)}100%{transform:translate(48px,0)}}
+    .pq-c{transform-box:fill-box;transform-origin:center;animation:pq-spin 1s linear infinite}
+    @keyframes pq-spin{50%{transform:scaleX(.25)}}
+  </style>
+  <defs><linearGradient id="pq-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fd0ff"/><stop offset="1" stop-color="#d9f2ff"/></linearGradient></defs>
+  <rect width="320" height="200" fill="url(#pq-sky)"/>
+  <ellipse cx="80" cy="170" rx="120" ry="80" fill="#3ee6a8" opacity=".3"/><ellipse cx="270" cy="176" rx="110" ry="70" fill="#3ee6a8" opacity=".3"/>
+  <g fill="#5a3a22"><rect x="0" y="160" width="128" height="40"/><rect x="176" y="160" width="144" height="40"/><rect x="224" y="128" width="32" height="32"/></g>
+  <g fill="#3ee6a8"><rect x="0" y="160" width="128" height="7"/><rect x="176" y="160" width="48" height="7"/><rect x="256" y="160" width="64" height="7"/><rect x="224" y="128" width="32" height="7"/></g>
+  <g fill="#e8e2d0"><path d="M64 160l5-18 5 18zM74 160l5-18 5 18z"/></g>
+  <g class="pq-c"><ellipse cx="152" cy="96" rx="9" ry="10" fill="#ffc93c"/></g>
+  <g class="pq-c"><ellipse cx="240" cy="96" rx="9" ry="10" fill="#ffc93c"/></g>
+  <rect x="290" y="96" width="4" height="64" fill="#e8e2d0"/><path d="M294 98l26 10-26 10z" fill="#ff5fa2"/>
+  <g class="pq-r"><rect x="100" y="134" width="22" height="26" fill="#c9d2e3"/><rect x="103" y="139" width="16" height="7" fill="#1b1626"/><rect x="110" y="126" width="2" height="9" fill="#c9d2e3"/></g>
+  <g class="pq-h"><rect x="112" y="132" width="22" height="28" fill="#4cc3ff"/><rect x="110" y="126" width="26" height="8" fill="#ffc93c"/><rect x="126" y="138" width="4" height="6" fill="#1b1626"/><rect x="119" y="138" width="4" height="6" fill="#1b1626"/></g>
+</svg>
