@@ -1,0 +1,58 @@
+/* Turbo circuit — la course est dessinée sur le canvas ; ici, les commandes tactiles, les
+   résultats et l'accueil (course rapide, coupes, garage) */
+
+.gv-stage { background: #2f8a4a; }
+
+/* Commandes tactiles */
+.tc-pad { position: absolute; inset: auto 0 0; z-index: 4; display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; padding: 12px 12px calc(12px + env(safe-area-inset-bottom)); pointer-events: none; }
+.tc-pad[hidden] { display: none; }
+.tc-pad button { pointer-events: auto; display: grid; place-items: center; border-radius: 18px; background: rgb(5 6 11 / 0.5); color: #fff; box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.3); font-weight: 800; font-size: 12px; touch-action: none; user-select: none; -webkit-user-select: none; }
+.tc-pad button.is-down { background: rgb(255 255 255 / 0.35); }
+.tc-pad__steer { display: flex; gap: 10px; }
+.tc-pad__steer button { width: 76px; height: 76px; }
+.tc-pad__steer .icon { width: 32px; height: 32px; }
+.tc-pad__act { display: grid; grid-template-columns: auto auto; gap: 8px; }
+.tc-pad__act button { width: 72px; height: 52px; }
+.tc-pad__act .tc-turbo { grid-column: span 2; width: 100%; background: rgb(201 143 0 / 0.7); }
+
+/* Résultats et classement de coupe */
+.tc-results, .tc-table ol { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; text-align: left; }
+.tc-results li, .tc-table li { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 8px; background: var(--ink-950); font-size: var(--fs-sm); }
+.tc-table li { grid-template-columns: 1fr auto; }
+.tc-results li.is-me, .tc-table li.is-me { box-shadow: inset 0 0 0 2px #ffc93c; }
+.tc-results b, .tc-table b { font-variant-numeric: tabular-nums; }
+.tc-dot { width: 12px; height: 12px; border-radius: 4px; }
+.tc-table { display: grid; gap: 6px; margin-top: var(--s-3); }
+.tc-table__title, .tc-table__end { font-weight: 800; font-size: var(--fs-sm); }
+.tc-table__end { color: #ffc93c; }
+
+/* Accueil */
+.tc-options { display: grid; gap: var(--s-2); margin-top: var(--s-4); padding: var(--s-3); border-radius: var(--r-md); background: var(--ink-950); text-align: left; }
+.tc-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.tc-tab { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 42px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); font-weight: 800; font-size: var(--fs-sm); }
+.tc-tab .icon { width: 16px; height: 16px; }
+.tc-tab[aria-selected='true'] { box-shadow: inset 0 0 0 2px #ffc93c; color: #ffc93c; background: rgb(255 201 60 / 0.1); }
+.tc-circuits { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.tc-circuit { display: grid; gap: 2px; padding: 8px 10px; border-radius: var(--r-md); background: linear-gradient(110deg, color-mix(in srgb, var(--g) 40%, var(--surface-2)), var(--surface-2) 70%); box-shadow: inset 0 0 0 2px var(--border); text-align: left; font-weight: 800; font-size: var(--fs-sm); }
+.tc-circuit small { font-size: 10px; font-weight: 600; color: var(--text-2); }
+.tc-circuit[aria-pressed='true'] { box-shadow: inset 0 0 0 2px #ffc93c; }
+.tc-levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.tc-level { min-height: 40px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); font-weight: 800; }
+.tc-level[aria-checked='true'] { box-shadow: inset 0 0 0 2px #4cc3ff; background: rgb(76 195 255 / 0.12); }
+.tc-cups { display: grid; gap: 6px; }
+.tc-cup { --c: #ffc93c; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 0 10px; padding: 10px 12px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 60%, transparent); text-align: left; font-weight: 800; }
+.tc-cup .icon { grid-row: span 2; width: 26px; height: 26px; color: var(--c); }
+.tc-cup small { font-size: var(--fs-2xs); font-weight: 600; color: var(--text-2); }
+.tc-cup[aria-disabled='true'] { background: var(--ink-950); box-shadow: inset 0 0 0 2px var(--border); outline: 2px dashed var(--border); outline-offset: -6px; cursor: not-allowed; }
+.tc-cup[aria-disabled='true'] .icon { color: var(--text-2); }
+.tc-cash { display: inline-flex; align-items: center; gap: 6px; font-weight: 900; color: #ffc93c; }
+.tc-cash .icon { width: 18px; height: 18px; }
+.tc-garage { display: grid; gap: 6px; }
+.tc-upg { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 8px; padding: 8px 12px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: inset 0 0 0 2px var(--border); text-align: left; font-weight: 800; }
+.tc-upg em { font-style: normal; color: #ffc93c; letter-spacing: 2px; }
+.tc-upg small { grid-column: 1; font-size: var(--fs-2xs); font-weight: 600; color: var(--text-2); }
+.tc-upg b { grid-row: 1 / span 2; grid-column: 2; color: #ffc93c; }
+.tc-upg[aria-disabled='true'] { background: var(--ink-950); }
+.tc-upg[aria-disabled='true'] b { color: var(--text-2); }
+.tc-hint { font-size: var(--fs-xs); color: var(--text-2); }
+@media (max-width: 420px) { .tc-circuits { grid-template-columns: 1fr; } }

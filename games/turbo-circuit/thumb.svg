@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .tc-a{offset-path:path('M60 150C20 150 20 50 80 50H240C300 50 300 150 240 150Z');animation:tc-go 3s linear infinite}
+    .tc-b{offset-path:path('M60 150C20 150 20 50 80 50H240C300 50 300 150 240 150Z');animation:tc-go 3s linear infinite;animation-delay:-.35s}
+    .tc-c{offset-path:path('M60 150C20 150 20 50 80 50H240C300 50 300 150 240 150Z');animation:tc-go 3s linear infinite;animation-delay:-.7s}
+    @keyframes tc-go{to{offset-distance:100%}}
+  </style>
+  <rect width="320" height="200" fill="#2f8a4a"/>
+  <g fill="#287a40"><rect x="0" y="0" width="40" height="40"/><rect x="80" y="0" width="40" height="40"/><rect x="160" y="0" width="40" height="40"/><rect x="240" y="0" width="40" height="40"/><rect x="40" y="40" width="40" height="40"/><rect x="120" y="40" width="40" height="40"/><rect x="200" y="40" width="40" height="40"/><rect x="280" y="40" width="40" height="40"/><rect x="0" y="80" width="40" height="40"/><rect x="80" y="80" width="40" height="40"/><rect x="160" y="80" width="40" height="40"/><rect x="240" y="80" width="40" height="40"/><rect x="40" y="120" width="40" height="40"/><rect x="120" y="120" width="40" height="40"/><rect x="200" y="120" width="40" height="40"/><rect x="280" y="120" width="40" height="40"/><rect x="0" y="160" width="40" height="40"/><rect x="80" y="160" width="40" height="40"/><rect x="160" y="160" width="40" height="40"/><rect x="240" y="160" width="40" height="40"/></g>
+  <path d="M60 150C20 150 20 50 80 50H240C300 50 300 150 240 150Z" fill="none" stroke="#e8e2d0" stroke-width="44"/>
+  <path d="M60 150C20 150 20 50 80 50H240C300 50 300 150 240 150Z" fill="none" stroke="#ff3b5c" stroke-width="44" stroke-dasharray="10 10"/>
+  <path d="M60 150C20 150 20 50 80 50H240C300 50 300 150 240 150Z" fill="none" stroke="#3b3f4c" stroke-width="36"/>
+  <path d="M60 150C20 150 20 50 80 50H240C300 50 300 150 240 150Z" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2" stroke-dasharray="12 14"/>
+  <g transform="translate(150 150)"><rect x="-3" y="-18" width="6" height="36" fill="#fff"/><rect x="-3" y="-18" width="3" height="6" fill="#1b1626"/><rect x="0" y="-12" width="3" height="6" fill="#1b1626"/><rect x="-3" y="-6" width="3" height="6" fill="#1b1626"/><rect x="0" y="0" width="3" height="6" fill="#1b1626"/><rect x="-3" y="6" width="3" height="6" fill="#1b1626"/><rect x="0" y="12" width="3" height="6" fill="#1b1626"/></g>
+  <g class="tc-a"><rect x="-13" y="-7" width="26" height="14" rx="5" fill="#ffffff" stroke="#ffc93c" stroke-width="2"/></g>
+  <g class="tc-b"><rect x="-13" y="-7" width="26" height="14" rx="5" fill="#4cc3ff"/></g>
+  <g class="tc-c"><rect x="-13" y="-7" width="26" height="14" rx="5" fill="#ff3b5c"/></g>
+  <circle cx="160" cy="100" r="22" fill="#ffc93c"/><path d="M150 88l18 12-18 12z" fill="#2a1d00"/>
+</svg>

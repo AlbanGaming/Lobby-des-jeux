@@ -30,6 +30,36 @@ const byScore = (perPoint, base = 5, cap = 400) => ({ score = 0 }) => Math.min(c
 
 export const GAMES = [
   {
+    id: 'turbo-circuit',
+    title: 'Turbo circuit',
+    category: 'arcade',
+    tags: ['course', 'voiture', 'IA', 'dérapage', 'turbo', 'coupe'],
+    color: '#ff3b5c',
+    ink: '#14162a',
+    description: 'Course vue de dessus contre cinq pilotes IA au caractère bien trempé. Dérape pour charger ton turbo, gagne les coupes, améliore ta voiture.',
+    status: 'new',
+    ready: true,
+    score: { label: 'Score', unit: '', higherIsBetter: true },
+    xp: byScore(0.12, 10, 200),
+    achievements: [
+      { id: 'premiere-course', title: 'Premier départ', desc: 'Termine une course.', xp: 20 },
+      { id: 'podium', title: 'Sur la boîte', desc: 'Finis dans les trois premiers.', xp: 60 },
+      { id: 'victoire', title: 'Drapeau à damier', desc: 'Gagne une course.', xp: 120 },
+      { id: 'chrono', title: 'Plus rapide que Chrono', desc: 'Finis devant Chrono, le champion IA.', xp: 150 },
+      { id: 'expert', title: 'Pilote expert', desc: 'Gagne une course en Expert.', xp: 300 },
+      { id: 'turbo-5', title: 'Nitro humain', desc: 'Lance 5 turbos dans une course.', xp: 80 },
+      { id: 'coupe-bronze', title: 'Coupe de bronze', desc: 'Remporte la coupe de bronze.', xp: 150 },
+      { id: 'coupe-argent', title: 'Coupe d’argent', desc: 'Remporte la coupe d’argent.', xp: 250 },
+      { id: 'coupe-or', title: 'Coupe d’or', desc: 'Remporte la coupe d’or.', xp: 500 },
+      { id: 'garage', title: 'Mécano', desc: 'Pousse une amélioration du garage au maximum.', xp: 100 },
+    ],
+    daily: [
+      { text: 'Finis sur le podium dans Turbo circuit.', stat: 'podium', min: 1 },
+      { text: 'Gagne une course de Turbo circuit.', stat: 'win', min: 1 },
+      { text: 'Finis devant Chrono dans Turbo circuit.', stat: 'chrono', min: 1 },
+    ],
+  },
+  {
     id: 'volt-rush',
     title: 'Volt Rush',
     category: 'arcade',
