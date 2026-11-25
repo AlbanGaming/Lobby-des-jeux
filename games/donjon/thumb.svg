@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <style>
+    .dj-c{transform-box:fill-box;transform-origin:50% 100%;animation:dj-up 2.4s ease-in-out infinite}
+    .dj-c2{animation-delay:.4s}.dj-c3{animation-delay:.8s}
+    @keyframes dj-up{0%,70%,100%{transform:translateY(0)}35%{transform:translateY(-10px)}}
+    .dj-e{transform-box:fill-box;transform-origin:center;animation:dj-blink 3s infinite}
+    @keyframes dj-blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+  </style>
+  <rect width="320" height="200" fill="#120e1f"/>
+  <ellipse cx="160" cy="40" rx="160" ry="70" fill="#a68bff" opacity=".14"/>
+  <g transform="translate(160 62)">
+    <path d="M0-44l38 22v40L0 40l-38-22v-40z" fill="#1c1145" stroke="#ffc93c" stroke-width="4"/>
+    <ellipse class="dj-e" cx="0" cy="-2" rx="16" ry="10" fill="#0b0a14" stroke="#ffc93c" stroke-width="3"/>
+    <circle cx="0" cy="-2" r="5" fill="#ff3b5c"/>
+  </g>
+  <g transform="translate(160 22)"><rect x="-26" y="-11" width="52" height="20" rx="10" fill="#ff3b5c"/><text y="4" text-anchor="middle" font-family="Rubik, Arial, sans-serif" font-weight="900" font-size="12" fill="#2b0610">ATK 18</text></g>
+  <g class="dj-c" transform="rotate(-12 96 170)"><rect x="66" y="112" width="60" height="84" rx="8" fill="#3a2230" stroke="#ff8a5b" stroke-width="3"/><circle cx="68" cy="114" r="10" fill="#ffc93c"/><text x="68" y="118.5" text-anchor="middle" font-family="Arial" font-weight="900" font-size="12" fill="#2a1d00">1</text><rect x="76" y="140" width="40" height="5" rx="2" fill="#ff8a5b"/><rect x="76" y="152" width="34" height="4" rx="2" fill="#8d93b3"/></g>
+  <g class="dj-c dj-c2"><rect x="130" y="118" width="60" height="84" rx="8" fill="#1c2a3a" stroke="#4cc3ff" stroke-width="3"/><circle cx="132" cy="120" r="10" fill="#ffc93c"/><text x="132" y="124.5" text-anchor="middle" font-family="Arial" font-weight="900" font-size="12" fill="#2a1d00">1</text><rect x="140" y="146" width="40" height="5" rx="2" fill="#4cc3ff"/><rect x="140" y="158" width="34" height="4" rx="2" fill="#8d93b3"/></g>
+  <g class="dj-c dj-c3" transform="rotate(12 224 170)"><rect x="194" y="112" width="60" height="84" rx="8" fill="#2a2142" stroke="#a68bff" stroke-width="3"/><circle cx="196" cy="114" r="10" fill="#ffc93c"/><text x="196" y="118.5" text-anchor="middle" font-family="Arial" font-weight="900" font-size="12" fill="#2a1d00">2</text><rect x="204" y="140" width="40" height="5" rx="2" fill="#a68bff"/><rect x="204" y="152" width="34" height="4" rx="2" fill="#8d93b3"/></g>
+  <circle cx="40" cy="168" r="20" fill="#ffc93c"/><text x="40" y="175" text-anchor="middle" font-family="Arial" font-weight="900" font-size="18" fill="#2a1d00">3</text>
+</svg>
