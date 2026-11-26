@@ -42,7 +42,7 @@ test.describe('orbite', () => {
 
   test('un lâcher dans le vide : partie perdue', async ({ page }, testInfo) => {
     const w = watchPage(page);
-    await open(page);
+    await open(page, '?seed=21'); // une carte fixe : rien d'autre sur la trajectoire
     await play(page);
     // Lâcher quand le vaisseau file à l'opposé de la planète suivante
     await page.waitForFunction(() => {
@@ -50,9 +50,12 @@ test.describe('orbite', () => {
       const n = window.__or.planets[s.p.i + 1];
       const dx = -Math.sin(s.angle) * s.dir;
       const dy = Math.cos(s.angle) * s.dir;
-      return (n.x - s.x) * dx + (n.y - s.y) * dy < -100;
-    });
-    await page.keyboard.press('Space');
+      if ((n.x - s.x) * dx + (n.y - s.y) * dy >= -100) return false;
+      // Appui envoyé dans la page, au bon moment même si la machine est chargée
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space' }));
+      setTimeout(() => window.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', code: 'Space' })), 50);
+      return true;
+    }, null, { polling: 'raf' });
     await expect(page.locator('[data-screen="over"]')).toHaveClass(/is-open/, { timeout: 8000 });
     await expect(page.locator('[data-screen="over"]')).toContainText('Perdu dans le vide');
     await page.waitForTimeout(600);
