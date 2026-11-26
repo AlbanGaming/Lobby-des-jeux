@@ -46,8 +46,11 @@ test.describe('lobby', () => {
     await page.keyboard.type('enigme');
     await expect(cards(page)).toHaveCount(1);
     await expect(cards(page).first()).toContainText('Énigmes Éclair');
+    // « course » : plusieurs jeux (titre, description ou mots-clés), dont Turbo circuit
     await page.locator('#search').fill('course');
-    await expect(cards(page)).toHaveCount(2);
+    await expect(cards(page).filter({ hasText: 'Turbo circuit' })).toHaveCount(1);
+    expect(await cards(page).count()).toBeGreaterThanOrEqual(2);
+    expect(await cards(page).count()).toBeLessThan(GAMES.length);
     await page.locator('#search').fill('xylophone');
     await expect(cards(page)).toHaveCount(0);
     await expect(page.locator('#empty')).toBeVisible();
@@ -139,6 +142,8 @@ test.describe('lobby', () => {
   test('paramètres : son, animations, export, réinitialisation', async ({ page }, testInfo) => {
     const w = watchPage(page);
     await ready(page);
+    // Un favori, pour vérifier que la réinitialisation l'efface
+    await page.locator('#grid [data-fav="plume"]').click();
     await page.locator('#btnSettings').click();
     const dlg = page.locator('#dlgSettings');
     await expect(dlg).toBeVisible();
@@ -151,7 +156,6 @@ test.describe('lobby', () => {
     const [download] = await Promise.all([page.waitForEvent('download'), dlg.locator('[data-export]').click()]);
     expect(download.suggestedFilename()).toMatch(/^gameverse-sauvegarde-\d{4}-\d{2}-\d{2}\.json$/);
 
-    await page.locator('#grid [data-fav="plume"]').click({ force: true }).catch(() => {});
     await dlg.locator('[data-reset]').click();
     await expect(page.locator('#dlgConfirm')).toBeVisible();
     await page.locator('#confirmYes').click();

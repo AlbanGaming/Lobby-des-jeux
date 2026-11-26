@@ -567,9 +567,11 @@ function drawCar(ctx, c) {
 
 function hudCanvas(ctx, W, H) {
   // Jauge de turbo
-  const bw = 150;
-  const bx = (W - bw) / 2;
-  const by = H - (touchy ? 150 : 46);
+  // Sur téléphone, en haut à gauche : les boutons occupent le bas de l'écran
+  const bw = 240;
+  const bx = touchy ? 24 : (W - bw) / 2;
+  const by = touchy ? 92 : H - 46;
+  const seg = bw / 3;
   ctx.fillStyle = 'rgba(5,6,11,0.65)';
   ctx.beginPath();
   ctx.roundRect(bx - 8, by - 22, bw + 16, 40, 10);
@@ -577,9 +579,9 @@ function hudCanvas(ctx, W, H) {
   for (let k = 0; k < 3; k++) {
     const fill = clamp(me.charge - k, 0, 1);
     ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.fillRect(bx + k * 52, by, 46, 10);
+    ctx.fillRect(bx + k * seg, by, seg - 6, 10);
     ctx.fillStyle = fill >= 1 ? '#ffc93c' : '#ff8a5b';
-    ctx.fillRect(bx + k * 52, by, 46 * fill, 10);
+    ctx.fillRect(bx + k * seg, by, (seg - 6) * fill, 10);
   }
   ctx.fillStyle = me.boostT > 0 ? '#ffc93c' : '#fff8ec';
   ctx.font = '800 11px Rubik, sans-serif';

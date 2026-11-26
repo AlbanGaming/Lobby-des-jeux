@@ -11,14 +11,21 @@ navigateur (localStorage).
 
 | Catégorie | Jeux |
 |---|---|
-| Arcade | Volt Rush, Plume, Bubble Pop, Tic Tac, Gratte-Ciel, Orbite, Serpentin et Brique-à-brac *(jeux secrets)* |
+| Arcade | Volt Rush, Plume, Bubble Pop, Tic Tac, Gratte-Ciel, Orbite, Survivants néon, Pixel Quest, Turbo circuit, Serpentin et Brique-à-brac *(jeux secrets)* |
 | Réflexion | Code Secret, Alchimie, Pixel Mystère, Banquise |
 | Quiz & mots | Motif, Énigmes Éclair, Le Juste Prix, Globe-trotteur, Lettres en vrac |
-| Stratégie | Morpion Dynamique, Conquête, Rempart |
+| Stratégie | Morpion Dynamique, Donjon de cartes, Conquête, Rempart |
 | Gestion & idle | Paint Empire, Le Potager, F1 Manager |
 
 Chaque jeu a une vignette animée au survol, des succès, des choses à débloquer, un défi du jour
 (souvent un « … du jour » identique pour tous) et une relance rapide (Espace ou R).
+
+Quatre jeux opposent le joueur à une IA qu’on peut battre :
+
+- **Survivants néon** : le Directeur observe où tu fuis et quelles armes tu joues, adapte ses vagues, puis t’affronte à 10:00.
+- **Donjon de cartes** : l’Architecte lit ton paquet avant le combat pour te contrer, puis change de plan à mi-vie.
+- **Pixel Quest** : Robo trouve seul son chemin dans chaque niveau (y compris ceux de l’éditeur) et court en fantôme à côté de toi ; Robo-Boss garde chaque monde.
+- **Turbo circuit** : cinq pilotes IA au caractère différent (Nitro, Prudence, Zigzag, Bloqueur, Chrono), trois niveaux de difficulté.
 
 **F1 Manager** (`page-11/`) est conservé volontairement dans sa version d'origine : il n'utilise
 pas le socle commun et **ne doit pas être modifié, déplacé ni supprimé**.
