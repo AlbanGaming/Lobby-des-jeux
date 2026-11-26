@@ -731,111 +731,128 @@ function drawEnemy(ctx, x, y, dir = -1) {
 }
 
 // ---------- Le chevalier ----------
-// anim : phase de course, écrasement (sx, sy), clignement ; le tout autour des pieds
+// Un petit chevalier tout rond : grosse tête dans un casque en dôme, visage visible, grands
+// yeux, joues roses, corps en boule, pieds ronds, pompon sur le casque et cape arrondie.
+// anim : phase de course, écrasement (sx, sy), clignement ; le tout autour des pieds.
+const KN = { steel: '#eef2f8', steelDeep: '#a9b4c8', skin: '#ffe0c4', cape: '#ff4d6d', capeDeep: '#d12f52', tabard: '#4cc3ff', boot: '#5a4670', plume: '#ffc93c', plumeDeep: '#f2a516' };
+function blob(ctx, x, y, rx, ry, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx, ry, 0, 0, TAU);
+  ctx.fill();
+}
 function drawHero(ctx, x, y, still = false) {
-  const X = x * T;
-  const Y = y * T;
-  const cx = X + 0.35 * T;
-  const fy = Y + 0.9 * T;
+  const cx = x * T + 0.35 * T;
+  const fy = y * T + 0.9 * T;
   const moving = !still && S && Math.abs(S.vx) > 0.5;
   const ground = still || !S || S.ground;
+  const rising = !ground && S && S.vy < 0;
   const run = still ? 0 : anim.run;
+  const bob = ground && moving ? Math.abs(Math.sin(run)) * 1.6 : 0;
   ctx.save();
   ctx.translate(cx, fy);
   ctx.scale((still ? 1 : face) * anim.sx, anim.sy);
-  // Ombre
-  if (ground) {
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 10, 2.5, 0, 0, TAU);
-    ctx.fill();
-  }
-  // Cape qui flotte derrière
-  const wave = Math.sin(time * 10) * 1.5 + (moving ? 5 : 1) + (!ground ? 3 : 0);
-  ctx.fillStyle = '#c8243d';
+  // Ombre douce
+  if (ground) blob(ctx, 0, 0, 10, 2.6, 'rgba(0,0,0,0.18)');
+  // Cape arrondie qui flotte derrière
+  const wave = Math.sin(time * 9) * 1.2 + (moving ? 4 : 0.5) + (!ground ? 3 : 0);
+  ctx.fillStyle = KN.capeDeep;
   ctx.beginPath();
-  ctx.moveTo(-4, -20);
-  ctx.quadraticCurveTo(-10 - wave, -14, -11 - wave * 1.3, -5 + (!ground && S?.vy < 0 ? 3 : 0));
-  ctx.lineTo(-2, -8);
+  ctx.moveTo(-3, -19 - bob);
+  ctx.bezierCurveTo(-10 - wave, -17 - bob, -13 - wave * 1.2, -8 + (rising ? 3 : 0), -9 - wave, -4 + (rising ? 2 : 0));
+  ctx.bezierCurveTo(-6, -2, -2, -5, -1, -8 - bob);
   ctx.closePath();
   ctx.fill();
-  ctx.fillStyle = '#ff3b5c';
-  ctx.beginPath();
-  ctx.moveTo(-4, -20);
-  ctx.quadraticCurveTo(-8 - wave * 0.8, -15, -8 - wave, -7);
-  ctx.lineTo(-2, -9);
-  ctx.closePath();
-  ctx.fill();
-  // Jambes : pas alternés au sol, repliées en l'air
-  ctx.fillStyle = '#4a3a5a';
+  // Pieds ronds : ils trottinent au sol, se replient en l'air
   if (ground && moving) {
-    const a = Math.sin(run) * 3.5;
-    const lift = (p) => Math.max(0, Math.sin(run + p)) * 2.5;
-    ctx.fillRect(-6 + a, -7 - lift(0), 5, 7);
-    ctx.fillRect(1 - a, -7 - lift(Math.PI), 5, 7);
+    const a = Math.sin(run) * 3.2;
+    blob(ctx, -3.5 + a, -2.6 - Math.max(0, Math.sin(run)) * 2.2, 3.8, 2.8, KN.boot);
+    blob(ctx, 3.5 - a, -2.6 - Math.max(0, -Math.sin(run)) * 2.2, 3.8, 2.8, KN.boot);
   } else if (!ground) {
-    ctx.fillRect(-6, -8, 5, 6);
-    ctx.fillRect(2, -6, 5, 5);
+    blob(ctx, -3.5, -4, 3.6, 2.8, KN.boot);
+    blob(ctx, 4, -2.5, 3.6, 2.8, KN.boot);
   } else {
-    ctx.fillRect(-5, -7, 5, 7);
-    ctx.fillRect(1, -7, 5, 7);
+    blob(ctx, -3.8, -2.6, 3.8, 2.8, KN.boot);
+    blob(ctx, 3.8, -2.6, 3.8, 2.8, KN.boot);
   }
-  // Corps : armure, tabard bleu, ceinture
-  ctx.fillStyle = '#aab3c5';
+  // Corps en boule (l'ombre d'abord, décalée), petit plastron bleu
+  blob(ctx, 0, -9.5 - bob, 8, 7, KN.steelDeep);
+  blob(ctx, -0.6, -10.5 - bob, 7.4, 6.4, KN.steel);
+  ctx.fillStyle = KN.tabard;
   ctx.beginPath();
-  ctx.roundRect(-7, -21, 14, 14, 4);
+  ctx.ellipse(0.8, -9.5 - bob, 3.6, 4.6, 0, 0, TAU);
   ctx.fill();
-  ctx.fillStyle = '#d6dde8';
-  ctx.beginPath();
-  ctx.roundRect(-7, -21, 12, 13, 4);
-  ctx.fill();
-  ctx.fillStyle = '#4cc3ff';
-  ctx.fillRect(-2.5, -20, 5, 12);
-  ctx.fillStyle = '#ffc93c';
-  ctx.fillRect(-1, -17, 2, 2);
-  ctx.fillStyle = '#8a5a2e';
-  ctx.fillRect(-7, -10, 14, 2.5);
-  // Bras et épée : balancée en courant, levée en l'air
-  const swing = !ground ? -1.1 : moving ? -0.5 + Math.sin(run) * 0.35 : -0.25;
+  blob(ctx, 0.8, -11 - bob, 1.3, 1.3, KN.plume);
+  // Main et épée courte, arrondie
+  const swing = !ground ? -1.0 : moving ? -0.45 + Math.sin(run) * 0.3 : -0.2;
   ctx.save();
-  ctx.translate(4, -15);
+  ctx.translate(6, -10 - bob);
   ctx.rotate(swing);
-  ctx.fillStyle = '#e8eef5';
-  ctx.fillRect(4, -1.5, 13, 3);
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(4, -1.5, 13, 1);
-  ctx.fillStyle = '#ffc93c';
-  ctx.fillRect(3, -4, 2.5, 8);
-  ctx.fillStyle = '#8d96aa';
+  ctx.fillStyle = '#f7fbff';
   ctx.beginPath();
-  ctx.arc(1, 0, 3, 0, TAU);
+  ctx.roundRect(3, -1.6, 11, 3.2, 1.6);
   ctx.fill();
+  ctx.fillStyle = KN.plume;
+  ctx.beginPath();
+  ctx.roundRect(2, -3.6, 2.6, 7.2, 1.3);
+  ctx.fill();
+  blob(ctx, 0.5, 0, 2.8, 2.8, KN.steelDeep);
   ctx.restore();
-  // Casque, visière, regard
-  ctx.fillStyle = '#aab3c5';
+  // Grosse tête : casque en dôme, visage dans la fenêtre
+  const hy = -24 - bob;
+  blob(ctx, 0, hy + 1.2, 10.6, 10, KN.steelDeep);
+  blob(ctx, -0.5, hy, 10.2, 9.6, KN.steel);
+  ctx.fillStyle = KN.skin;
   ctx.beginPath();
-  ctx.roundRect(-7, -33, 14, 13, 5);
+  ctx.ellipse(2.6, hy + 2, 6.4, 5.4, 0, 0, TAU);
   ctx.fill();
-  ctx.fillStyle = '#e8eef5';
+  // Bord du casque au-dessus du visage
+  ctx.strokeStyle = KN.steelDeep;
+  ctx.lineWidth = 1.6;
   ctx.beginPath();
-  ctx.roundRect(-7, -33, 13, 12, 5);
-  ctx.fill();
-  ctx.fillStyle = '#1b1626';
-  ctx.fillRect(-1, -29, 8, 4);
-  ctx.fillStyle = '#ffc93c';
-  const blink = anim.blink > 0;
-  ctx.fillRect(3, blink ? -27.5 : -28.5, 2.4, blink ? 0.8 : 2.4);
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.fillRect(-5, -31, 3, 2);
-  // Plumet qui ondule
-  const pw = Math.sin(time * 8) * 1.5 + (moving ? 2.5 : 0);
-  ctx.strokeStyle = '#ffc93c';
-  ctx.lineWidth = 3.5;
-  ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(0, -33);
-  ctx.quadraticCurveTo(-3, -39, -8 - pw, -37 + pw * 0.3);
+  ctx.ellipse(2.6, hy + 2, 6.4, 5.4, 0, Math.PI * 1.05, Math.PI * 1.95);
   ctx.stroke();
+  // Grands yeux brillants, qui clignent ; joues roses
+  const blink = anim.blink > 0;
+  const look = !ground ? -0.6 : 0;
+  for (const ex of [0.2, 5.4]) {
+    if (blink) {
+      ctx.strokeStyle = '#2a1d3a';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(ex - 1.6, hy + 2.2);
+      ctx.quadraticCurveTo(ex, hy + 3.4, ex + 1.6, hy + 2.2);
+      ctx.stroke();
+    } else {
+      blob(ctx, ex, hy + 1.8 + look, 1.7, 2.3, '#2a1d3a');
+      blob(ctx, ex + 0.6, hy + 1 + look, 0.7, 0.7, '#ffffff');
+    }
+  }
+  blob(ctx, -1.2, hy + 4.6, 1.6, 1, 'rgba(255,120,150,0.55)');
+  blob(ctx, 7.4, hy + 4.6, 1.6, 1, 'rgba(255,120,150,0.55)');
+  // Petite bouche : sourire au sol, « o » en l'air
+  ctx.strokeStyle = '#2a1d3a';
+  ctx.lineWidth = 1.1;
+  ctx.beginPath();
+  if (!ground) ctx.arc(3, hy + 5.4, 0.9, 0, TAU);
+  else {
+    ctx.moveTo(2, hy + 5);
+    ctx.quadraticCurveTo(3, hy + 6, 4, hy + 5);
+  }
+  ctx.stroke();
+  // Crête du casque : un petit arc doré au-dessus du front
+  ctx.strokeStyle = KN.plume;
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.arc(-0.5, hy + 1, 8.6, Math.PI * 1.32, Math.PI * 1.62);
+  ctx.stroke();
+  // Reflet sur le dôme
+  blob(ctx, -4.5, hy - 4.5, 2.4, 1.6, 'rgba(255,255,255,0.9)');
+  // Pompon qui rebondit
+  const pw = Math.sin(time * 8) * 1.2 + (moving ? 1.5 : 0) + (rising ? 1.5 : 0);
+  blob(ctx, -2 - pw * 0.4, hy - 10.5, 3.4, 3.4, KN.plumeDeep);
+  blob(ctx, -5 - pw, hy - 9 + pw * 0.2, 3, 3, KN.plume);
+  blob(ctx, -1.5 - pw * 0.4, hy - 11.2, 3, 3, KN.plume);
   ctx.restore();
 }
 
