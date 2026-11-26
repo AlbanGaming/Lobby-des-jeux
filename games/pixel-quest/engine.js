@@ -349,14 +349,16 @@ const cache = new Map();
 export function campaignLevel(w, n) {
   const key = `${w}-${n}`;
   if (cache.has(key)) return cache.get(key);
-  const bot = n === 10 ? ROBO_BOSS : ROBO;
+  // Robo accélère de niveau en niveau ; Robo-Boss garde la fin de chaque monde
+  const bot = n === 10 ? { ...ROBO_BOSS, speed: 0.92 + (w - 1) * 0.02 } : { ...ROBO, speed: 0.8 + (n - 1) * 0.01 + (w - 1) * 0.02 };
   for (let v = 0; v < 40; v++) {
     const rows = build(w, n, createRng(w * 7919 + n * 104729 + v * 15485863));
     const L = parse(rows);
     // Faisable par le Robo normal (donc par un joueur), puis la course du robo de ce niveau
     const check = solve(L, ROBO);
     if (!check) continue;
-    const sol = bot === ROBO ? check : solve(L, bot) ?? check;
+    const sol = solve(L, bot);
+    if (!sol) continue;
     const out = { rows, sol, bot: sol.bot };
     cache.set(key, out);
     return out;

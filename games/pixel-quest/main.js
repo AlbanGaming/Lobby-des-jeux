@@ -31,7 +31,7 @@ const gv = bootGame('pixel-quest', {
   ],
   howTo: [
     { keys: ['←', '→'], text: 'Cours aux flèches (ou Q et D), saute avec Espace, ↑ ou Z. Sur téléphone, les boutons en bas de l’écran.' },
-    { keys: ['icon:user'], text: 'Le fantôme de Robo court à côté de toi : arrive avant lui pour gagner la couronne.' },
+    { keys: ['icon:user'], text: 'Le fantôme de Robo court à côté de toi : arrive avant lui pour valider le niveau et ouvrir le suivant.' },
     { keys: ['icon:grid'], text: 'Crée tes niveaux dans l’éditeur et partage-les avec un code. Robo peut les essayer aussi.' },
   ],
   onStart: () => startLevel(),
@@ -57,6 +57,7 @@ let acc = 0;
 let time = 0;
 let deadT = 0;
 let face = 1;
+const anim = { run: 0, sx: 1, sy: 1, ground: true, blink: 0, blinkT: 2 };
 const keys = { l: false, r: false, j: false };
 let jumpQueued = false;
 let autoInputs = null; // tests : commandes imposées image par image
@@ -91,7 +92,7 @@ function startLevel() {
   respawn();
   state = 'play';
   showPad(true);
-  if (current.kind === 'campaign' && current.n === 10) gv.banner('Duel contre Robo-Boss', { color: '#ff5fa2' });
+  if (ghost) gv.banner(current.kind === 'campaign' && current.n === 10 ? `Duel contre Robo-Boss : ${secs(ghost.frames)} s` : `Bats Robo : ${secs(ghost.frames)} s`, { color: current.n === 10 ? '#ff5fa2' : '#ffc93c' });
 }
 
 function respawn() {
@@ -100,6 +101,7 @@ function respawn() {
   coins = new Set();
   acc = 0;
   face = 1;
+  Object.assign(anim, { run: 0, sx: 1, sy: 1, ground: true });
   jumpQueued = false;
   fx.particles.clear();
   gv.hud('time', '0,00');
@@ -112,7 +114,7 @@ function die(reason) {
   deadT = 0.6;
   deaths++;
   const p = px(S.x + 0.35, S.y + 0.45);
-  fx.particles.emit(p.x, p.y, { count: 24, colors: ['#ff5fa2', '#ffffff', '#ffc93c'], speed: [60, 260], gravity: 500, size: [3, 6], shape: 'square', life: [0.3, 0.8] });
+  fx.particles.emit(p.x, p.y, { count: 26, colors: ['#d6dde8', '#ff3b5c', '#4cc3ff', '#ffc93c'], speed: [60, 260], gravity: 500, size: [3, 6], shape: 'square', life: [0.3, 0.8] });
   fx.shake.add(0.4);
   gv.audio.play(reason === 'vide' ? 'lose' : 'hit');
 }
@@ -138,14 +140,14 @@ function finish() {
   if (camp) {
     const k = key(current.w, current.n);
     const p = store.data.progress[k] ?? {};
-    // Le duel de fin de monde ne se valide qu'en battant Robo-Boss
-    p.done = p.done || !boss || beat;
+    // Un niveau ne se valide qu'en arrivant avant Robo (ou Robo-Boss)
+    p.done = p.done || beat;
     p.coins = p.coins || all;
     p.crown = p.crown || beat;
     p.best = Math.min(p.best ?? Infinity, f);
     store.data.progress[k] = p;
     store.save();
-    gv.unlock('premier-niveau');
+    if (beat) gv.unlock('premier-niveau');
     if (boss && beat) {
       gv.unlock('robo-boss');
       gv.unlock(`monde-${current.w}`);
@@ -158,11 +160,11 @@ function finish() {
   if (all && L.coins.length) gv.unlock('pieces');
   const next = camp ? nextLevel() : null;
   const extra = camp
-    ? next && (!boss || beat)
-      ? `<button type="button" class="btn btn--primary btn--block" data-pq="next">${icon('forward')}Niveau ${next.w}-${next.n}</button>`
-      : boss && !beat
-        ? `<p class="pq-over-hint">Bats Robo-Boss pour ouvrir le monde suivant.</p>`
+    ? beat
+      ? next
+        ? `<button type="button" class="btn btn--primary btn--block" data-pq="next">${icon('forward')}Niveau ${next.w}-${next.n}</button>`
         : ''
+      : `<p class="pq-over-hint">Arrive avant ${ghost.bot.name} pour valider le niveau${boss ? ' et ouvrir le monde suivant' : ''} : il lui a fallu ${secs(ghost.frames)} s, à toi ${secs(f)} s.</p>`
     : `<button type="button" class="btn btn--block" data-pq="editor">${icon('grid')}Retour à l’éditeur</button>`;
   gv.gameOver({
     score,
@@ -174,8 +176,8 @@ function finish() {
       { label: 'Chutes', value: formatInt(deaths) },
     ],
     kicker: camp ? `${world.name} · niveau ${current.n}` : 'Niveau perso',
-    title: !ghost ? 'Niveau terminé' : beat ? `Plus rapide que ${ghost.bot.name} !` : `${ghost.bot.name} a été plus rapide`,
-    sound: 'win',
+    title: !ghost ? 'Niveau terminé' : beat ? `Plus rapide que ${ghost.bot.name} : niveau validé !` : `${ghost.bot.name} a été plus rapide`,
+    sound: beat || !ghost ? 'win' : 'lose',
     extraHtml: extra,
   });
   state = 'menu';
@@ -203,6 +205,15 @@ function update(dt, realDt) {
     }
     return;
   }
+  // Retour en douceur de l'écrasement, clignement des yeux
+  anim.sx += (1 - anim.sx) * Math.min(1, realDt * 12);
+  anim.sy += (1 - anim.sy) * Math.min(1, realDt * 12);
+  anim.blink -= realDt;
+  anim.blinkT -= realDt;
+  if (anim.blinkT <= 0) {
+    anim.blink = 0.12;
+    anim.blinkT = 2 + Math.random() * 3;
+  }
   if (state !== 'play') return;
   acc += dt;
   while (acc >= DT && state === 'play') {
@@ -211,6 +222,7 @@ function update(dt, realDt) {
     jumpQueued = false;
     if (inp.r !== inp.l) face = inp.r ? 1 : -1;
     step(S, inp, L);
+    animate();
     if (S.jumped) gv.audio.play('jump', { volume: 0.5 });
     if (S.sprung) gv.audio.play('powerup', { volume: 0.5, pitch: 1.4 });
     if (S.stomped >= 0) {
@@ -234,6 +246,25 @@ function update(dt, realDt) {
     if (S.dead) return die(S.dead);
     if (S.won) return win();
   }
+}
+
+// Course, saut, atterrissage : la phase des jambes, l'écrasement et un peu de poussière
+function animate() {
+  anim.run += Math.abs(S.vx) * DT * 1.7;
+  const feet = px(S.x + 0.35, S.y + 0.9);
+  const dust = (n) => fx.particles.emit(feet.x, feet.y, { count: n, colors: [world.id === 3 ? '#ffffff' : 'rgba(232,226,208,0.8)'], speed: [20, 90], gravity: -40, size: [2, 4], shape: 'circle', life: [0.2, 0.4] });
+  if (S.jumped) {
+    anim.sx = 0.78;
+    anim.sy = 1.24;
+    dust(6);
+  }
+  if (S.ground && !anim.ground) {
+    anim.sx = 1.28;
+    anim.sy = 0.74;
+    dust(8);
+  }
+  if (S.ground && Math.abs(S.vx) > 6 && Math.floor(anim.run) % 3 === 0 && Math.random() < 0.15) dust(1);
+  anim.ground = S.ground;
 }
 
 // ---------- Rendu ----------
@@ -309,12 +340,14 @@ function render() {
     const f = S ? S.f : 0;
     L.enemies.forEach((e, i) => {
       if (S && S.killed & (1 << i)) return;
-      drawEnemy(ctx, enemyX(L, i, f), e.y);
+      const ex = enemyX(L, i, f);
+      drawEnemy(ctx, ex, e.y, ex >= enemyX(L, i, Math.max(0, f - 1)) ? 1 : -1);
     });
     // Fantôme de Robo
     if (ghost && S && (state === 'play' || state === 'dead' || state === 'won')) {
       const k = Math.min(S.f, ghost.xs.length - 1);
-      drawRobo(ctx, ghost.xs[k], ghost.ys[k], S.f >= ghost.frames);
+      const k0 = Math.max(0, k - 1);
+      drawRobo(ctx, ghost.xs[k], ghost.ys[k], S.f >= ghost.frames, ghost.xs[k] * 3.2, ghost.xs[k] >= ghost.xs[k0] ? 1 : -1);
     }
     if (S && state !== 'dead') drawHero(ctx, S.x, S.y);
   }
@@ -340,154 +373,511 @@ function render() {
   fx.flash.draw(ctx, W, VH);
 }
 
+// Décor en plusieurs plans (parallaxe), propre à chaque monde
+const hash = (n) => {
+  const s = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+  return s - Math.floor(s);
+};
 function decor(ctx, wd, W, VH) {
-  const off = cam * 0.3;
+  const base = top() + H * T;
   if (wd.deco === 'hill') {
-    ctx.fillStyle = 'rgba(62,230,168,0.25)';
-    for (let k = -1; k < W / 260 + 2; k++) {
-      const x = k * 260 - (off % 260);
+    // Soleil, montagnes au loin, nuages, collines
+    ctx.fillStyle = 'rgba(255,241,184,0.9)';
+    ctx.beginPath();
+    ctx.arc(W - 110, top() + 70, 34, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,241,184,0.25)';
+    ctx.beginPath();
+    ctx.arc(W - 110, top() + 70, 52, 0, TAU);
+    ctx.fill();
+    layer(ctx, W, 0.12, 300, (x, k) => {
+      ctx.fillStyle = 'rgba(126,164,214,0.55)';
       ctx.beginPath();
-      ctx.ellipse(x + 130, top() + H * T - 60, 170, 120, 0, Math.PI, 0);
+      ctx.moveTo(x - 40, base - 70);
+      ctx.lineTo(x + 110, base - 230 - hash(k) * 70);
+      ctx.lineTo(x + 260, base - 70);
       ctx.fill();
-    }
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      const h = base - 230 - hash(k) * 70;
+      ctx.beginPath();
+      ctx.moveTo(x + 110, h);
+      ctx.lineTo(x + 84, h + 36);
+      ctx.lineTo(x + 136, h + 36);
+      ctx.fill();
+    });
+    clouds(ctx, W, 0.06, top() + 40, 'rgba(255,255,255,0.85)');
+    layer(ctx, W, 0.3, 240, (x, k) => {
+      ctx.fillStyle = k % 2 ? '#7fd89a' : '#6ccb8a';
+      ctx.beginPath();
+      ctx.ellipse(x + 120, base - 30, 170, 110 + hash(k) * 40, 0, Math.PI, 0);
+      ctx.fill();
+    });
   } else if (wd.deco === 'crystal') {
-    ctx.fillStyle = 'rgba(166,139,255,0.22)';
-    for (let k = -1; k < W / 140 + 2; k++) {
-      const x = k * 140 - (off % 140);
+    // Stalactites, cristaux qui luisent, poussière en suspension
+    layer(ctx, W, 0.15, 90, (x, k) => {
+      ctx.fillStyle = '#2a2044';
       ctx.beginPath();
-      ctx.moveTo(x, top() + 70);
-      ctx.lineTo(x + 16, top() + 70 + 40 + (k % 3) * 14);
-      ctx.lineTo(x + 32, top() + 70);
+      ctx.moveTo(x, top() + 50);
+      ctx.lineTo(x + 22, top() + 50 + 50 + hash(k) * 70);
+      ctx.lineTo(x + 44, top() + 50);
       ctx.fill();
+    });
+    layer(ctx, W, 0.35, 210, (x, k) => {
+      const y = base - 60 - hash(k) * 120;
+      const c = k % 3 ? '#a68bff' : '#4cc3ff';
+      ctx.fillStyle = c;
+      ctx.globalAlpha = 0.18 + Math.sin(time * 2 + k) * 0.06;
+      ctx.beginPath();
+      ctx.arc(x + 30, y, 46, 0, TAU);
+      ctx.fill();
+      ctx.globalAlpha = 0.55;
+      for (const [dx, h] of [[0, 46], [18, 64], [36, 40]]) {
+        ctx.beginPath();
+        ctx.moveTo(x + dx, y + 30);
+        ctx.lineTo(x + dx + 8, y + 30 - h);
+        ctx.lineTo(x + dx + 16, y + 30);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    });
+    ctx.fillStyle = 'rgba(196,176,255,0.5)';
+    for (let k = 0; k < 24; k++) {
+      const x = ((hash(k) * W * 1.3 - cam * 0.5 + time * 8 * (1 + hash(k + 9))) % (W + 40) + W + 40) % (W + 40) - 20;
+      const y = top() + 40 + hash(k + 3) * H * T * 0.8 + Math.sin(time + k) * 6;
+      ctx.fillRect(x, y, 2, 2);
     }
   } else {
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    for (let k = -1; k < W / 220 + 2; k++) {
-      const x = k * 220 - (off % 220);
-      const y = top() + 60 + (k % 3) * 40;
-      ctx.beginPath();
-      ctx.arc(x, y, 22, 0, TAU);
-      ctx.arc(x + 26, y - 10, 28, 0, TAU);
-      ctx.arc(x + 56, y, 20, 0, TAU);
-      ctx.fill();
-    }
+    // Ciel de fin d'après-midi : grand soleil, bancs de nuages
+    ctx.fillStyle = 'rgba(255,241,184,0.8)';
+    ctx.beginPath();
+    ctx.arc(W * 0.3, base - 40, 90, 0, TAU);
+    ctx.fill();
+    clouds(ctx, W, 0.08, top() + 70, 'rgba(255,255,255,0.55)');
+    clouds(ctx, W, 0.2, base - 70, 'rgba(255,255,255,0.75)');
   }
 }
+// Un plan qui se répète tous les `gap` unités, décalé avec la caméra
+function layer(ctx, W, k, gap, draw) {
+  const off = cam * k;
+  const first = Math.floor(off / gap) - 1;
+  for (let i = first; i < first + W / gap + 3; i++) draw(i * gap - off, i);
+}
+function clouds(ctx, W, k, y, color) {
+  ctx.fillStyle = color;
+  layer(ctx, W, k, 260, (x, i) => {
+    const yy = y + hash(i) * 50;
+    const dx = time * 6;
+    ctx.beginPath();
+    ctx.arc(x + dx, yy, 20, 0, TAU);
+    ctx.arc(x + 24 + dx, yy - 12, 28, 0, TAU);
+    ctx.arc(x + 54 + dx, yy, 22, 0, TAU);
+    ctx.arc(x + 30 + dx, yy + 6, 22, 0, TAU);
+    ctx.fill();
+  });
+}
 
+const solidAt = (rows, x, y) => {
+  const t = rows ? rows[y]?.[x] : tile(L, x, y);
+  return t === '#' || t === 'B';
+};
 function drawTile(ctx, t, x, y, wd, rows) {
   const X = x * T;
   const Y = y * T;
   if (t === '#') {
-    ctx.fillStyle = wd.ground;
-    ctx.fillRect(X, Y, T, T);
-    const above = rows ? rows[y - 1]?.[x] : tile(L, x, y - 1);
-    if (y > 0 && above !== '#') {
-      ctx.fillStyle = wd.top;
-      ctx.fillRect(X, Y, T, 7);
+    const up = y > 0 && !solidAt(rows, x, y - 1);
+    const left = !solidAt(rows, x - 1, y);
+    const right = !solidAt(rows, x + 1, y);
+    if (wd.id === 1) {
+      ctx.fillStyle = '#6b4426';
+      ctx.fillRect(X, Y, T + 0.6, T + 0.6); // léger chevauchement : pas de jointures visibles
+      ctx.fillStyle = '#5a381f';
+      for (let k = 0; k < 3; k++) {
+        const h = hash(x * 13 + y * 7 + k);
+        ctx.fillRect(X + 3 + h * 22, Y + 6 + hash(h * 99) * 20, 5, 4);
+      }
+      ctx.fillStyle = '#7d5230';
+      ctx.fillRect(X + 4 + hash(x + y) * 18, Y + 18, 4, 3);
+      if (up) {
+        ctx.fillStyle = '#2fa85a';
+        ctx.fillRect(X, Y, T, 10);
+        ctx.fillStyle = '#3ee68a';
+        ctx.fillRect(X, Y, T, 6);
+        // Brins d'herbe et quelques fleurs
+        ctx.fillStyle = '#3ee68a';
+        for (let k = 0; k < 4; k++) {
+          const bx = X + 3 + k * 8 + hash(x * 3 + k) * 3;
+          ctx.beginPath();
+          ctx.moveTo(bx, Y + 1);
+          ctx.lineTo(bx + 2, Y - 5 - hash(x + k) * 3);
+          ctx.lineTo(bx + 4, Y + 1);
+          ctx.fill();
+        }
+        if (hash(x * 31) > 0.8) {
+          ctx.fillStyle = hash(x) > 0.5 ? '#ffc93c' : '#ff8fb8';
+          ctx.beginPath();
+          ctx.arc(X + 16, Y - 4, 3, 0, TAU);
+          ctx.fill();
+        }
+      }
+    } else if (wd.id === 2) {
+      ctx.fillStyle = '#3a3050';
+      ctx.fillRect(X, Y, T + 0.6, T + 0.6);
+      ctx.strokeStyle = '#2a2240';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(X, Y + 16);
+      ctx.lineTo(X + T, Y + 16);
+      const o = y % 2 ? 0 : 16;
+      ctx.moveTo(X + o + 1, Y);
+      ctx.lineTo(X + o + 1, Y + 16);
+      ctx.moveTo(X + ((o + 16) % 32) + 1, Y + 16);
+      ctx.lineTo(X + ((o + 16) % 32) + 1, Y + T);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      ctx.fillRect(X + 2, Y + 2, T - 4, 3);
+      if (up) {
+        ctx.fillStyle = '#7a5fd0';
+        ctx.fillRect(X, Y, T, 6);
+        ctx.fillStyle = '#a68bff';
+        ctx.fillRect(X, Y, T, 3);
+        if (hash(x * 17) > 0.82) {
+          ctx.fillStyle = '#4cc3ff';
+          ctx.beginPath();
+          ctx.moveTo(X + 10, Y);
+          ctx.lineTo(X + 14, Y - 12);
+          ctx.lineTo(X + 18, Y);
+          ctx.fill();
+        }
+      }
+    } else {
+      ctx.fillStyle = '#fdf8f0';
+      ctx.fillRect(X, Y, T + 0.6, T + 0.6);
+      ctx.fillStyle = '#efe3d0';
+      ctx.fillRect(X, Y + T - 8, T, 8);
+      ctx.fillStyle = 'rgba(255,201,160,0.35)';
+      ctx.beginPath();
+      ctx.arc(X + 8 + hash(x + y) * 16, Y + 14, 5, 0, TAU);
+      ctx.fill();
+      if (up) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(X + 8, Y + 2, 9, Math.PI, 0);
+        ctx.arc(X + 24, Y + 2, 9, Math.PI, 0);
+        ctx.fill();
+      }
     }
-    ctx.fillStyle = 'rgba(0,0,0,0.12)';
-    ctx.fillRect(X + 6, Y + 14, 6, 6);
-    ctx.fillRect(X + 20, Y + 22, 5, 5);
+    // Arêtes à nu, un peu plus sombres
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    if (left) ctx.fillRect(X, Y, 3, T);
+    if (right) ctx.fillRect(X + T - 3, Y, 3, T);
   } else if (t === '=') {
-    ctx.fillStyle = '#c8955a';
-    ctx.fillRect(X, Y, T, 9);
-    ctx.fillStyle = '#8a5a2e';
-    ctx.fillRect(X, Y + 9, T, 3);
-  } else if (t === '^') {
-    ctx.fillStyle = '#e8e2d0';
-    ctx.beginPath();
-    for (let k = 0; k < 3; k++) {
-      ctx.moveTo(X + k * 10 + 1, Y + T);
-      ctx.lineTo(X + k * 10 + 6, Y + 12);
-      ctx.lineTo(X + k * 10 + 11, Y + T);
+    if (wd.sky3) {
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(X + 9, Y + 6, 8, 0, TAU);
+      ctx.arc(X + 23, Y + 6, 8, 0, TAU);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,170,140,0.35)';
+      ctx.fillRect(X + 2, Y + 10, T - 4, 3);
+    } else {
+      ctx.fillStyle = '#b87a40';
+      ctx.fillRect(X, Y, T, 10);
+      ctx.fillStyle = '#d99a58';
+      ctx.fillRect(X, Y, T, 3);
+      ctx.fillStyle = '#7a4a22';
+      ctx.fillRect(X, Y + 10, T, 3);
+      ctx.fillRect(X + 15, Y + 2, 2, 8);
+      ctx.fillStyle = '#e8e2d0';
+      ctx.fillRect(X + 5, Y + 5, 2, 2);
+      ctx.fillRect(X + 25, Y + 5, 2, 2);
     }
-    ctx.fill();
+  } else if (t === '^') {
+    for (let k = 0; k < 3; k++) {
+      const bx = X + k * 10 + 1;
+      ctx.fillStyle = '#e8eef5';
+      ctx.beginPath();
+      ctx.moveTo(bx, Y + T);
+      ctx.lineTo(bx + 5, Y + 11);
+      ctx.lineTo(bx + 5, Y + T);
+      ctx.fill();
+      ctx.fillStyle = '#9aa5b8';
+      ctx.beginPath();
+      ctx.moveTo(bx + 5, Y + 11);
+      ctx.lineTo(bx + 10, Y + T);
+      ctx.lineTo(bx + 5, Y + T);
+      ctx.fill();
+    }
+    ctx.fillStyle = '#5b6478';
+    ctx.fillRect(X, Y + T - 3, T, 3);
   } else if (t === 'B') {
+    ctx.fillStyle = '#c8243d';
+    ctx.fillRect(X + 2, Y + 20, T - 4, 12);
     ctx.fillStyle = '#ff3b5c';
-    ctx.fillRect(X + 2, Y + 18, T - 4, 14);
-    ctx.strokeStyle = '#ffc93c';
+    ctx.fillRect(X + 2, Y + 20, T - 4, 4);
+    ctx.strokeStyle = '#e8eef5';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(X + 6, Y + 18);
-    ctx.lineTo(X + 26, Y + 12);
-    ctx.lineTo(X + 6, Y + 6);
-    ctx.lineTo(X + 26, Y + 2);
+    ctx.moveTo(X + 8, Y + 20);
+    ctx.lineTo(X + 24, Y + 16);
+    ctx.lineTo(X + 8, Y + 12);
+    ctx.lineTo(X + 24, Y + 8);
     ctx.stroke();
+    ctx.fillStyle = '#ffc93c';
+    ctx.fillRect(X + 3, Y + 3, T - 6, 5);
   } else if (rows) {
     // Dans l'éditeur : pièces, ennemis, départ et arrivée en place
     if (t === 'o') drawCoin(ctx, x, y);
-    else if (t === 'E') drawEnemy(ctx, x + 0.1, y + 0.2);
-    else if (t === 'S') drawHero(ctx, x + 0.15, y + 0.1);
+    else if (t === 'E') drawEnemy(ctx, x + 0.1, y + 0.2, -1);
+    else if (t === 'S') drawHero(ctx, x + 0.15, y + 0.1, true);
     else if (t === 'F') drawFlag(ctx, x, y);
   }
 }
 
 function drawCoin(ctx, x, y) {
-  const s = Math.abs(Math.sin(time * 4 + x));
+  const cx = x * T + T / 2;
+  const cy = y * T + T / 2 + Math.sin(time * 3 + x) * 2;
+  const s = Math.max(0.2, Math.abs(Math.cos(time * 3.5 + x * 0.7)));
+  ctx.fillStyle = 'rgba(255,201,60,0.22)';
+  ctx.beginPath();
+  ctx.arc(cx, cy, 15, 0, TAU);
+  ctx.fill();
+  ctx.fillStyle = '#c98f00';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, 10 * s, 11, 0, 0, TAU);
+  ctx.fill();
   ctx.fillStyle = '#ffc93c';
   ctx.beginPath();
-  ctx.ellipse(x * T + T / 2, y * T + T / 2, 9 * Math.max(0.25, s), 10, 0, 0, TAU);
+  ctx.ellipse(cx, cy, 8 * s, 9, 0, 0, TAU);
   ctx.fill();
   ctx.fillStyle = '#fff1b8';
-  ctx.fillRect(x * T + T / 2 - 1.5, y * T + 10, 3, 12 * Math.max(0.3, s));
+  ctx.fillRect(cx - 1.5 * s, cy - 5, 3 * s, 10);
+  // Petit éclat de temps en temps
+  const k = (time * 0.7 + x * 0.37) % 1;
+  if (k < 0.12) {
+    ctx.fillStyle = '#ffffff';
+    const r = Math.sin((k / 0.12) * Math.PI) * 5;
+    ctx.fillRect(cx + 5 - r / 2, cy - 7, r, 1.5);
+    ctx.fillRect(cx + 5 - 0.75, cy - 7 - r / 2 + 0.75, 1.5, r);
+  }
 }
+
 function drawFlag(ctx, x, y) {
-  ctx.fillStyle = '#e8e2d0';
-  ctx.fillRect(x * T + 14, (y - 2) * T, 4, 3 * T);
-  ctx.fillStyle = '#ff5fa2';
-  ctx.beginPath();
-  ctx.moveTo(x * T + 18, (y - 2) * T + 2);
-  ctx.lineTo(x * T + 18 + 26 + Math.sin(time * 6) * 3, (y - 2) * T + 12);
-  ctx.lineTo(x * T + 18, (y - 2) * T + 22);
-  ctx.fill();
-}
-function drawEnemy(ctx, x, y) {
-  const X = x * T;
-  const Y = y * T;
-  ctx.fillStyle = '#ff5fa2';
-  ctx.beginPath();
-  ctx.roundRect(X, Y + 2, 0.8 * T, 0.8 * T - 2, [12, 12, 4, 4]);
-  ctx.fill();
-  ctx.fillStyle = '#1b1626';
-  ctx.fillRect(X + 6, Y + 9, 4, 6);
-  ctx.fillRect(X + 16, Y + 9, 4, 6);
-  const step = Math.floor(time * 8) % 2;
-  ctx.fillRect(X + 2 + step * 3, Y + 0.8 * T - 3, 7, 4);
-  ctx.fillRect(X + 16 - step * 3, Y + 0.8 * T - 3, 7, 4);
-}
-function drawHero(ctx, x, y) {
-  const X = x * T;
-  const Y = y * T;
-  const w = 0.7 * T;
-  const h = 0.9 * T;
-  ctx.fillStyle = '#4cc3ff';
-  ctx.fillRect(X, Y + 6, w, h - 6);
+  const px = x * T + 14;
+  const base = (y + 1) * T;
+  ctx.fillStyle = '#8d96aa';
+  ctx.fillRect(px - 6, base - 6, 16, 6);
+  ctx.fillStyle = '#e8eef5';
+  ctx.fillRect(px, base - 3.2 * T, 4, 3.2 * T - 6);
   ctx.fillStyle = '#ffc93c';
-  ctx.fillRect(X - 2, Y, w + 4, 8);
-  ctx.fillStyle = '#1b1626';
-  const ex = face > 0 ? X + w - 9 : X + 4;
-  ctx.fillRect(ex, Y + 11, 4, 6);
-  ctx.fillRect(ex - 7 * face, Y + 11, 4, 6);
+  ctx.beginPath();
+  ctx.arc(px + 2, base - 3.2 * T, 5, 0, TAU);
+  ctx.fill();
+  // Fanion qui ondule, aux couleurs du chevalier
+  const fy = base - 3.1 * T + 4;
+  ctx.fillStyle = '#ff3b5c';
+  ctx.beginPath();
+  ctx.moveTo(px + 4, fy);
+  for (let k = 0; k <= 6; k++) ctx.lineTo(px + 4 + k * 6, fy + Math.sin(time * 6 - k * 0.8) * 3 + k * 0.6);
+  for (let k = 6; k >= 0; k--) ctx.lineTo(px + 4 + k * 6, fy + 20 + Math.sin(time * 6 - k * 0.8) * 3 - k * 0.6);
+  ctx.fill();
+  ctx.fillStyle = '#ffc93c';
+  ctx.beginPath();
+  ctx.arc(px + 20, fy + 10 + Math.sin(time * 6 - 2.2) * 3, 4, 0, TAU);
+  ctx.fill();
 }
-function drawRobo(ctx, x, y, done) {
+
+// Ennemi : une gelée qui rebondit en avançant, les yeux tournés vers où elle va
+function drawEnemy(ctx, x, y, dir = -1) {
+  const colors = { 1: ['#ff5fa2', '#c8246e'], 2: ['#a68bff', '#6b4fd0'], 3: ['#4cc3ff', '#1a7fb8'] }[world.id];
+  const cx = x * T + 0.4 * T;
+  const fy = (y + 0.8) * T;
+  const bounce = Math.abs(Math.sin(time * 7 + x));
+  const sy = 0.85 + bounce * 0.25;
+  const sx = 1.15 - bounce * 0.2;
+  const w = 13 * sx;
+  const h = 22 * sy;
+  ctx.fillStyle = 'rgba(0,0,0,0.2)';
+  ctx.beginPath();
+  ctx.ellipse(cx, fy, 12, 3, 0, 0, TAU);
+  ctx.fill();
+  ctx.fillStyle = colors[1];
+  ctx.beginPath();
+  ctx.moveTo(cx - w, fy);
+  ctx.quadraticCurveTo(cx - w - 2, fy - h, cx, fy - h);
+  ctx.quadraticCurveTo(cx + w + 2, fy - h, cx + w, fy);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = colors[0];
+  ctx.beginPath();
+  ctx.moveTo(cx - w + 2, fy - 3);
+  ctx.quadraticCurveTo(cx - w, fy - h + 2, cx, fy - h + 2);
+  ctx.quadraticCurveTo(cx + w, fy - h + 2, cx + w - 2, fy - 3);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.beginPath();
+  ctx.ellipse(cx - w * 0.4, fy - h * 0.7, 3, 4, -0.4, 0, TAU);
+  ctx.fill();
+  for (const ex of [-4, 4]) {
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(cx + ex + dir, fy - h * 0.55, 3.6, 0, TAU);
+    ctx.fill();
+    ctx.fillStyle = '#1b1626';
+    ctx.beginPath();
+    ctx.arc(cx + ex + dir * 2.2, fy - h * 0.55, 1.8, 0, TAU);
+    ctx.fill();
+  }
+}
+
+// ---------- Le chevalier ----------
+// anim : phase de course, écrasement (sx, sy), clignement ; le tout autour des pieds
+function drawHero(ctx, x, y, still = false) {
   const X = x * T;
   const Y = y * T;
-  const w = 0.7 * T;
-  const h = 0.9 * T;
-  ctx.globalAlpha = 0.45;
-  ctx.fillStyle = '#c9d2e3';
-  ctx.fillRect(X, Y + 5, w, h - 5);
+  const cx = X + 0.35 * T;
+  const fy = Y + 0.9 * T;
+  const moving = !still && S && Math.abs(S.vx) > 0.5;
+  const ground = still || !S || S.ground;
+  const run = still ? 0 : anim.run;
+  ctx.save();
+  ctx.translate(cx, fy);
+  ctx.scale((still ? 1 : face) * anim.sx, anim.sy);
+  // Ombre
+  if (ground) {
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 10, 2.5, 0, 0, TAU);
+    ctx.fill();
+  }
+  // Cape qui flotte derrière
+  const wave = Math.sin(time * 10) * 1.5 + (moving ? 5 : 1) + (!ground ? 3 : 0);
+  ctx.fillStyle = '#c8243d';
+  ctx.beginPath();
+  ctx.moveTo(-4, -20);
+  ctx.quadraticCurveTo(-10 - wave, -14, -11 - wave * 1.3, -5 + (!ground && S?.vy < 0 ? 3 : 0));
+  ctx.lineTo(-2, -8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#ff3b5c';
+  ctx.beginPath();
+  ctx.moveTo(-4, -20);
+  ctx.quadraticCurveTo(-8 - wave * 0.8, -15, -8 - wave, -7);
+  ctx.lineTo(-2, -9);
+  ctx.closePath();
+  ctx.fill();
+  // Jambes : pas alternés au sol, repliées en l'air
+  ctx.fillStyle = '#4a3a5a';
+  if (ground && moving) {
+    const a = Math.sin(run) * 3.5;
+    const lift = (p) => Math.max(0, Math.sin(run + p)) * 2.5;
+    ctx.fillRect(-6 + a, -7 - lift(0), 5, 7);
+    ctx.fillRect(1 - a, -7 - lift(Math.PI), 5, 7);
+  } else if (!ground) {
+    ctx.fillRect(-6, -8, 5, 6);
+    ctx.fillRect(2, -6, 5, 5);
+  } else {
+    ctx.fillRect(-5, -7, 5, 7);
+    ctx.fillRect(1, -7, 5, 7);
+  }
+  // Corps : armure, tabard bleu, ceinture
+  ctx.fillStyle = '#aab3c5';
+  ctx.beginPath();
+  ctx.roundRect(-7, -21, 14, 14, 4);
+  ctx.fill();
+  ctx.fillStyle = '#d6dde8';
+  ctx.beginPath();
+  ctx.roundRect(-7, -21, 12, 13, 4);
+  ctx.fill();
+  ctx.fillStyle = '#4cc3ff';
+  ctx.fillRect(-2.5, -20, 5, 12);
+  ctx.fillStyle = '#ffc93c';
+  ctx.fillRect(-1, -17, 2, 2);
+  ctx.fillStyle = '#8a5a2e';
+  ctx.fillRect(-7, -10, 14, 2.5);
+  // Bras et épée : balancée en courant, levée en l'air
+  const swing = !ground ? -1.1 : moving ? -0.5 + Math.sin(run) * 0.35 : -0.25;
+  ctx.save();
+  ctx.translate(4, -15);
+  ctx.rotate(swing);
+  ctx.fillStyle = '#e8eef5';
+  ctx.fillRect(4, -1.5, 13, 3);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(4, -1.5, 13, 1);
+  ctx.fillStyle = '#ffc93c';
+  ctx.fillRect(3, -4, 2.5, 8);
+  ctx.fillStyle = '#8d96aa';
+  ctx.beginPath();
+  ctx.arc(1, 0, 3, 0, TAU);
+  ctx.fill();
+  ctx.restore();
+  // Casque, visière, regard
+  ctx.fillStyle = '#aab3c5';
+  ctx.beginPath();
+  ctx.roundRect(-7, -33, 14, 13, 5);
+  ctx.fill();
+  ctx.fillStyle = '#e8eef5';
+  ctx.beginPath();
+  ctx.roundRect(-7, -33, 13, 12, 5);
+  ctx.fill();
   ctx.fillStyle = '#1b1626';
-  ctx.fillRect(X + 3, Y + 10, w - 6, 7);
+  ctx.fillRect(-1, -29, 8, 4);
+  ctx.fillStyle = '#ffc93c';
+  const blink = anim.blink > 0;
+  ctx.fillRect(3, blink ? -27.5 : -28.5, 2.4, blink ? 0.8 : 2.4);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillRect(-5, -31, 3, 2);
+  // Plumet qui ondule
+  const pw = Math.sin(time * 8) * 1.5 + (moving ? 2.5 : 0);
+  ctx.strokeStyle = '#ffc93c';
+  ctx.lineWidth = 3.5;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(0, -33);
+  ctx.quadraticCurveTo(-3, -39, -8 - pw, -37 + pw * 0.3);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// Robo : un petit robot coureur, en fantôme
+function drawRobo(ctx, x, y, done, run, dir) {
+  const cx = x * T + 0.35 * T;
+  const fy = y * T + 0.9 * T;
+  ctx.save();
+  ctx.globalAlpha = 0.5;
+  ctx.translate(cx, fy);
+  ctx.scale(dir, 1);
+  ctx.fillStyle = '#8d96aa';
+  const a = Math.sin(run) * 3.5;
+  ctx.fillRect(-6 + a, -7, 5, 7);
+  ctx.fillRect(1 - a, -7, 5, 7);
+  ctx.fillStyle = '#c9d2e3';
+  ctx.beginPath();
+  ctx.roundRect(-8, -24, 16, 18, 5);
+  ctx.fill();
+  ctx.fillStyle = '#1b1626';
+  ctx.beginPath();
+  ctx.roundRect(-5, -21, 11, 7, 3);
+  ctx.fill();
   ctx.fillStyle = done ? '#ff5fa2' : '#3ee6a8';
-  ctx.fillRect(X + 5, Y + 12, 4, 3);
-  ctx.fillRect(X + w - 9, Y + 12, 4, 3);
-  ctx.fillRect(X + w / 2 - 1, Y - 4, 2, 9);
-  ctx.globalAlpha = 0.8;
+  ctx.fillRect(-3, -19, 3, 3);
+  ctx.fillRect(2, -19, 3, 3);
+  ctx.strokeStyle = '#c9d2e3';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, -24);
+  ctx.lineTo(2, -30);
+  ctx.stroke();
+  ctx.fillStyle = done ? '#ff5fa2' : '#3ee6a8';
+  ctx.beginPath();
+  ctx.arc(2, -31, 2.2, 0, TAU);
+  ctx.fill();
+  ctx.restore();
+  ctx.globalAlpha = 0.85;
   ctx.font = '800 9px Rubik, sans-serif';
   ctx.textAlign = 'center';
   ctx.fillStyle = '#ffffff';
-  ctx.fillText('ROBO', X + w / 2, Y - 8);
+  ctx.fillText('ROBO', cx, fy - 36);
   ctx.globalAlpha = 1;
 }
 
@@ -757,7 +1147,7 @@ function renderOptions() {
         <textarea class="input" rows="2" spellcheck="false" aria-label="Code d’un niveau" placeholder="PQ1.…"></textarea>
         <button type="button" class="btn btn--sm btn--primary" data-play-code-go>Jouer ce niveau</button>
       </div>
-      <p class="pq-hint" id="pq-hint">Niveau choisi : ${sel.w}-${sel.n}. Robo t’attend sur chaque niveau.</p>
+      <p class="pq-hint" id="pq-hint">Niveau choisi : ${sel.w}-${sel.n}. Arrive avant Robo pour valider chaque niveau.</p>
     </div>`;
 }
 gv.shell.startExtra.addEventListener('click', (e) => {
@@ -767,7 +1157,7 @@ gv.shell.startExtra.addEventListener('click', (e) => {
   if (b.dataset.lv) {
     const [w, n] = b.dataset.lv.split('-').map(Number);
     if (!levelOpen(w, n)) {
-      hint.textContent = worldOpen(w) ? 'Termine le niveau précédent pour ouvrir celui-ci.' : `Bats Robo-Boss au bout du monde ${w - 1} pour ouvrir ce monde.`;
+      hint.textContent = worldOpen(w) ? 'Bats Robo sur le niveau précédent pour ouvrir celui-ci.' : `Bats Robo-Boss au bout du monde ${w - 1} pour ouvrir ce monde.`;
       gv.audio.play('error');
       return;
     }

@@ -48,14 +48,31 @@ test.describe('pixel quest', () => {
     w.expectClean();
   });
 
+  test('arrivé après Robo : le niveau n’est pas validé, le suivant reste fermé', async ({ page }) => {
+    await seed(page);
+    await page.goto('games/pixel-quest/');
+    await play(page);
+    await expect.poll(() => pq(page, 'state')).toBe('play');
+    await page.evaluate(() => {
+      window.__pq.S.f = window.__pq.ghost.frames + 20;
+      window.__pq.teleportToFlag();
+    });
+    await expect(over(page)).toHaveClass(/is-open/, { timeout: 8000 });
+    await expect(over(page)).toContainText('Robo a été plus rapide');
+    await expect(over(page)).toContainText('Arrive avant Robo pour valider');
+    await expect(page.locator('[data-pq="next"]')).toHaveCount(0);
+    expect((await readStore(page, 'gv:pixel-quest')).data.progress['1-1']?.done).toBeFalsy();
+    await page.goto('games/pixel-quest/');
+    await expect(page.locator('[data-lv="1-2"]')).toHaveAttribute('aria-disabled', 'true');
+  });
+
   test('chute : on repart du début, le chrono aussi', async ({ page }) => {
     await seed(page);
     await page.goto('games/pixel-quest/');
     await play(page);
-    await page.keyboard.down('ArrowRight');
-    await page.waitForTimeout(400);
-    await page.keyboard.up('ArrowRight');
-    expect(await pq(page, 'S.x')).toBeGreaterThan(3);
+    await expect.poll(() => pq(page, 'state')).toBe('play');
+    // Quelques mètres plus loin, sans dépendre de la durée d'un appui
+    await page.evaluate(() => (window.__pq.S.x = 6));
     await page.evaluate(() => window.__pq.kill());
     await expect.poll(() => pq(page, 'state')).toBe('play');
     expect(await pq(page, 'deaths')).toBe(1);
@@ -74,7 +91,7 @@ test.describe('pixel quest', () => {
       window.__pq.teleportToFlag();
     });
     await expect(over(page)).toHaveClass(/is-open/, { timeout: 8000 });
-    await expect(over(page)).toContainText('Bats Robo-Boss');
+    await expect(over(page)).toContainText('Arrive avant Robo-Boss');
     expect((await readStore(page, 'gv:pixel-quest')).data.progress['1-10']?.done).toBeFalsy();
     // Assez vite : monde 2 ouvert
     await page.locator('[data-act="replay"]').click();
